@@ -143,6 +143,8 @@ namespace PSFile
                 {
                     DeleteFile(Path + ":Zone.Identifier");
                 }
+
+                WriteObject(new FileSummary(Path, true));
             }
         }
     }

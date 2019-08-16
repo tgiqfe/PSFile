@@ -45,11 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmdlet\CopyFile.cs" />
     <Compile Include="EmbeddedResource.cs" />
     <Compile Include="FileControl.cs" />
     <Compile Include="FileSummary.cs" />
     <Compile Include="Cmdlet\GetFile.cs" />
     <Compile Include="GlobalParam.cs" />
+    <Compile Include="GrantFile.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Cmdlet\NewFile.cs" />
     <Compile Include="Message.cs" />
