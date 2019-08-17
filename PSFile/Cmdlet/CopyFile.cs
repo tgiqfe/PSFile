@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Management.Automation;
+using Microsoft.VisualBasic.FileIO;
 
 namespace PSFile
 {
@@ -20,9 +21,19 @@ namespace PSFile
 
         protected override void ProcessRecord()
         {
+            if (Directory.Exists(Destination))
+            {
+                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
+            }
+
             try
             {
-                File.Copy(Path, Destination, Force);
+                if (!Directory.Exists(System.IO.Path.GetDirectoryName(Destination)))
+                {
+                    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Destination));
+                }
+                FileSystem.CopyFile(Path, Destination, Force);
+                //File.Copy(Path, Destination, Force);
             }
             catch (UnauthorizedAccessException)
             {
@@ -33,6 +44,8 @@ namespace PSFile
                     File.Copy(Path, Destination, Force);
                 }
             }
+
+            WriteObject(new FileSummary(Destination, true));
         }
     }
 }
