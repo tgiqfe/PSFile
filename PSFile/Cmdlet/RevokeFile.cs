@@ -74,11 +74,6 @@ namespace PSFile.Cmdlet
             }
 
             WriteObject(new FileSummary(Path, true));
-
         }
-
-
-
-
     }
 }

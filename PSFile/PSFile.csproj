@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cmdlet\CopyFile.cs" />
+    <Compile Include="Cmdlet\RemoveFile.cs" />
     <Compile Include="EmbeddedResource.cs" />
     <Compile Include="FileControl.cs" />
     <Compile Include="FileSummary.cs" />

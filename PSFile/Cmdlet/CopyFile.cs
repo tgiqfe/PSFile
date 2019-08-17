@@ -28,14 +28,7 @@ namespace PSFile.Cmdlet
 
             try
             {
-                /*
-                if (!Directory.Exists(System.IO.Path.GetDirectoryName(Destination)))
-                {
-                    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Destination));
-                }
-                */
                 FileSystem.CopyFile(Path, Destination, Force);
-                //File.Copy(Path, Destination, Force);
             }
             catch (UnauthorizedAccessException)
             {
@@ -43,7 +36,7 @@ namespace PSFile.Cmdlet
                 if (Force)
                 {
                     new FileInfo(Destination).IsReadOnly = false;
-                    File.Copy(Path, Destination, Force);
+                    FileSystem.CopyFile(Path, Destination, Force);
                 }
             }
 
