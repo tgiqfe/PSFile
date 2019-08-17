@@ -26,6 +26,10 @@ namespace PSFile
         public long Size { get; set; }
         public bool? IsSecurityBlock { get; set; }
 
+        /// <summary>
+        /// Compare-File、Compre-DirectoryでRootPathLengthの値だけ、Pathから削ることがあるので、
+        /// 各種Pathへの操作は「_Path」に対して行うことにする。
+        /// </summary>
         private string _Path;
 
         public FileSummary() { }
@@ -76,7 +80,6 @@ namespace PSFile
             if (!ignoreSize) { LoadSize(); }
             if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
         }
-
 
         /// <summary>
         /// Access, Owner, Inheritedの情報を読み込み

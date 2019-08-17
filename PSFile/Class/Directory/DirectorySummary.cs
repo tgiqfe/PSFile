@@ -24,6 +24,10 @@ namespace PSFile
         public long Size { get; set; }
         public List<FileSummary> Files { get; set; }
 
+        /// <summary>
+        /// Compare-DirectoryでRootPathLengthの値だけ、Pathから削ることがあるので、
+        /// 各種Pathへの操作は「_Path」に対して行うことにする。
+        /// </summary>
         private string _Path;
 
         public DirectorySummary() { }
@@ -130,12 +134,16 @@ namespace PSFile
         }
 
         /// <summary>
-        /// 配下ファイルのFileSummaryを取得
+        /// 配下ファイルのFileSummaryを取得。Publicなので外部からの呼び出しもOK
         /// </summary>
         public void LoadFiles()
         {
             LoadFiles(false);
         }
+        /// <summary>
+        /// 配下ファイルのFileSummaryを取得。
+        /// </summary>
+        /// <param name="isLightFiles">Hash,SecurityBlockをスキップするかどうか</param>
         private void LoadFiles(bool isLightFiles)
         {
             Files = new List<FileSummary>();
@@ -144,6 +152,11 @@ namespace PSFile
                 Files.Add(new FileSummary(fi.FullName, false, false, isLightFiles, false, false, isLightFiles));
             }
         }
+        /// <summary>
+        /// 配下ファイルのFileSummaryを取得。
+        /// </summary>
+        /// <param name="isLightFiles">Hash,SecurityBlockをスキップするかどうか</param>
+        /// <param name="rootPathLength">Compare-Directory用。指定した値だけ、Pathの文字列を削る</param>
         private void LoadFiles(bool isLightFiles, int rootPathLength)
         {
             Files = new List<FileSummary>();
