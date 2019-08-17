@@ -26,16 +26,20 @@ namespace PSFile
         public long Size { get; set; }
         public bool? IsSecurityBlock { get; set; }
 
+        private string _Path;
+
         public FileSummary() { }
         public FileSummary(string path)
         {
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
+            _Path = path;
         }
         public FileSummary(string path, bool isLoad)
         {
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
+            _Path = path;
             if (isLoad)
             {
                 LoadSecurity();
@@ -51,6 +55,20 @@ namespace PSFile
         {
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
+            _Path = path;
+            if (!ignoreSecurity) { LoadSecurity(); }
+            if (!ignoreTime) { LoadTime(); }
+            if (!ignoreHash) { LoadHash(); }
+            if (!ignoreAttributes) { LoadAttributes(); }
+            if (!ignoreSize) { LoadSize(); }
+            if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
+        }
+        public FileSummary(string path, int rootPathLength,
+            bool ignoreSecurity, bool ignoreTime, bool ignoreHash, bool ignoreAttributes, bool ignoreSize, bool ignoreSecurityBlock)
+        {
+            this.Path = path.Substring(rootPathLength);
+            this.Name = System.IO.Path.GetFileName(path);
+            _Path = path;
             if (!ignoreSecurity) { LoadSecurity(); }
             if (!ignoreTime) { LoadTime(); }
             if (!ignoreHash) { LoadHash(); }
@@ -59,12 +77,13 @@ namespace PSFile
             if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
         }
 
+
         /// <summary>
         /// Access, Owner, Inheritedの情報を読み込み
         /// </summary>
         public void LoadSecurity()
         {
-            FileSecurity security = File.GetAccessControl(Path);
+            FileSecurity security = File.GetAccessControl(_Path);
 
             //  Access
             List<string> fileAccessRuleList = new List<string>();
@@ -76,10 +95,8 @@ namespace PSFile
 
                 fileAccessRuleList.Add(string.Format(
                     "{0};{1};{2}",
+                    rule.IdentityReference.Value,
                     tempRights,
-                    //rule.IdentityReference.Value,
-                    //(rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString(),
-                    rule.FileSystemRights,
                     rule.AccessControlType));
             }
             this.Access = string.Join("/", fileAccessRuleList);
@@ -91,11 +108,14 @@ namespace PSFile
             this.IsInherited = !security.AreAccessRulesProtected;
         }
 
+        /// <summary>
+        /// ファイルの作成日時,更新日時,アクセス日時を取得
+        /// </summary>
         public void LoadTime()
         {
-            this.CreationTime = File.GetCreationTime(Path);
-            this.LastWriteTime = File.GetLastWriteTime(Path);
-            this.LastAccessTime = File.GetLastAccessTime(Path);
+            this.CreationTime = File.GetCreationTime(_Path);
+            this.LastWriteTime = File.GetLastWriteTime(_Path);
+            this.LastAccessTime = File.GetLastAccessTime(_Path);
         }
 
         /// <summary>
@@ -104,7 +124,7 @@ namespace PSFile
         public void LoadHash()
         {
             SHA256CryptoServiceProvider sha256 = new SHA256CryptoServiceProvider();
-            using (FileStream fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fs = new FileStream(_Path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 byte[] sha256bytes = sha256.ComputeHash(fs);
                 sha256.Clear();
@@ -117,7 +137,7 @@ namespace PSFile
         /// </summary>
         public void LoadAttributes()
         {
-            this.Attributes = File.GetAttributes(Path).ToString();
+            this.Attributes = File.GetAttributes(_Path).ToString();
         }
 
         /// <summary>
@@ -125,7 +145,7 @@ namespace PSFile
         /// </summary>
         public void LoadSize()
         {
-            this.Size = new System.IO.FileInfo(Path).Length;
+            this.Size = new System.IO.FileInfo(_Path).Length;
         }
 
         /// <summary>
@@ -136,7 +156,7 @@ namespace PSFile
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "cmd.exe";
-                proc.StartInfo.Arguments = $"/c more < \"{Path}\":Zone.Identifier";
+                proc.StartInfo.Arguments = $"/c more < \"{_Path}\":Zone.Identifier";
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.RedirectStandardOutput = true;

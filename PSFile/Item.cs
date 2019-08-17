@@ -121,6 +121,10 @@ namespace PSFile
         public const string CONTAIN = "Contain";
         public const string MATCH = "Match";
 
+        #region CheckCase
+        private static readonly string[] fields = 
+            typeof(Item).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => x.GetValue(null) as string).ToArray();
+
         /// <summary>
         /// 大文字/小文字解決
         /// </summary>
@@ -129,10 +133,6 @@ namespace PSFile
         public static string CheckCase(string val)
         {
             if (val == null) { return null; }
-
-            string[] fields =
-                typeof(Item).GetFields(BindingFlags.Public | BindingFlags.Static).
-                Select(x => x.GetValue(null) as string).ToArray();
             string[] valu = GlobalParam.reg_Delimitor.Split(val);
             for (int i = 0; i < valu.Length; i++)
             {
@@ -143,35 +143,6 @@ namespace PSFile
                 }
             }
             return string.Join(", ", valu);
-
-
-
-
-
-            /*
-            if (val.Contains(","))
-            {   
-                
-                string[] valu = val.Split(',').Select(x => x.Trim()).ToArray();
-                for (int i = 0; i < valu.Length; i++)
-                {
-                    FieldInfo fi = typeof(Item).GetFields().
-                        FirstOrDefault(x => x.Name.Equals(valu[i], StringComparison.OrdinalIgnoreCase));
-                    if (fi != null)
-                    {
-                        valu[i] = fi.GetValue(null) as string;
-                    }
-                }
-                return string.Join(", ", valu);
-               
-            }
-            else
-            {
-                FieldInfo fi = typeof(Item).GetFields().
-                    FirstOrDefault(x => x.Name.Equals(val, StringComparison.OrdinalIgnoreCase));
-                return fi == null ? string.Empty : fi.GetValue(null) as string;
-            }
-            */
         }
         public static string CheckCase(string[] valu)
         {
@@ -182,5 +153,6 @@ namespace PSFile
             }
             return string.Join(", ", valu);
         }
+        #endregion
     }
 }
