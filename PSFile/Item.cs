@@ -41,6 +41,24 @@ namespace PSFile
         public const string DISABLE = "Disable";
         public const string REMOVE = "Remove";
 
+        //  属性
+        public const string ARCHIVE = "Archive";
+        public const string COMPRESSED = "Compressed";
+        public const string DEVICE = "Device";
+        public const string DIRECTORY = "Directory";
+        public const string ENCRYPTED = "Encrypted";
+        public const string HIDDEN = "Hidden";
+        public const string INTEGRITYSTREAM = "IntegrityStream";
+        public const string NORMAL = "Normal";
+        public const string NOSCRUBDATA = "NoScrubData";
+        public const string NOTCONTENTINDEXED = "NotContentIndexed";
+        public const string OFFLINE = "Offline";
+        public const string READONLY = "ReadOnly";
+        public const string REPARSEPOINT = "ReparsePoint";
+        public const string SPARSEFILE = "SparseFile";
+        public const string SYSTEM = "System";
+        public const string TEMPORARY = "Temporary";
+
         //  アクセス権種別
         public const string APPENDDATA = "AppendData";
         public const string CHANGEPERMISSIONS = "ChangePermissions";

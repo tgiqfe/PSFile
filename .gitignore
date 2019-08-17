@@ -260,7 +260,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-# for PowerReg
+# for PSFile
 /Sample
 /PS
 /TestCode

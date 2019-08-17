@@ -5,11 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 
 namespace PSFile
 {
     class FileControl
     {
+
+        /// <summary>
+        /// ファイルのセキュリティブロック解除
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteFile(string name);
+        public static void RemoveSecurityBlock(string path)
+        {
+            DeleteFile(path + ":Zone.Identifier");
+        }
+
         /// <summary>
         /// 文字列からFileSystemAccessのListを取得
         /// </summary>

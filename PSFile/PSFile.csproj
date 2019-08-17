@@ -51,10 +51,11 @@
     <Compile Include="FileSummary.cs" />
     <Compile Include="Cmdlet\GetFile.cs" />
     <Compile Include="GlobalParam.cs" />
-    <Compile Include="GrantFile.cs" />
+    <Compile Include="Cmdlet\GrantFile.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Cmdlet\NewFile.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="Cmdlet\RevokeFile.cs" />
     <Compile Include="SecuritySummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cmdlet\TestFile.cs" />

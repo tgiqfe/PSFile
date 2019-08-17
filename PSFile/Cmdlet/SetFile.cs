@@ -8,7 +8,6 @@ using System.IO;
 using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace PSFile
 {
@@ -35,11 +34,6 @@ namespace PSFile
         private string _Attributes = null;
         [Parameter]
         public SwitchParameter RemoveSecurityBlock { get; set; }
-
-        //  ファイルのセキュリティブロック解除用
-        [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteFile(string name);
 
         protected override void BeginProcessing()
         {
@@ -141,7 +135,7 @@ namespace PSFile
                 //  セキュリティブロックの解除
                 if (RemoveSecurityBlock)
                 {
-                    DeleteFile(Path + ":Zone.Identifier");
+                    FileControl.RemoveSecurityBlock(Path);
                 }
 
                 WriteObject(new FileSummary(Path, true));

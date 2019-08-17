@@ -91,6 +91,11 @@ namespace PSFile
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
                     FileAttributes nowAttr = File.GetAttributes(Path);
+                    FileAttributes addAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
+                    File.SetAttributes(Path, nowAttr | addAttr);
+
+                    /*
+                    FileAttributes nowAttr = File.GetAttributes(Path);
                     string[] nowAttrArray = GlobalParam.reg_Delimitor.Split(nowAttr.ToString());
                     string[] addAttrArray = GlobalParam.reg_Delimitor.Split(_Attributes);
                     foreach (string addAttr in addAttrArray)
@@ -100,6 +105,7 @@ namespace PSFile
                             File.SetAttributes(Path, nowAttr | (FileAttributes)Enum.Parse(typeof(FileAttributes), addAttr));
                         }
                     }
+                    */
                 }
 
                 WriteObject(new FileSummary(Path, true));
