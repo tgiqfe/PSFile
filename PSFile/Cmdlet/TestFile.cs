@@ -8,7 +8,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Security.AccessControl;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsDiagnostic.Test, "File")]
     public class TestFile : PSCmdlet

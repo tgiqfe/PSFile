@@ -7,7 +7,7 @@ using System.IO;
 using System.Management.Automation;
 using Microsoft.VisualBasic.FileIO;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsCommon.Copy, "File")]
     public class CopyFile : PSCmdlet
@@ -21,17 +21,19 @@ namespace PSFile
 
         protected override void ProcessRecord()
         {
-            if (Directory.Exists(Destination))
+            if (Directory.Exists(Destination) || Destination.EndsWith("\\"))
             {
                 Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
             }
 
             try
             {
+                /*
                 if (!Directory.Exists(System.IO.Path.GetDirectoryName(Destination)))
                 {
                     Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Destination));
                 }
+                */
                 FileSystem.CopyFile(Path, Destination, Force);
                 //File.Copy(Path, Destination, Force);
             }

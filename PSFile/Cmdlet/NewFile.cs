@@ -9,7 +9,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsCommon.New, "File")]
     public class NewFile : PSCmdlet

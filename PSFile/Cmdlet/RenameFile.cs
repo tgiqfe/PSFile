@@ -7,7 +7,7 @@ using System.Management.Automation;
 using System.IO;
 using Microsoft.VisualBasic.FileIO;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsCommon.Rename, "File")]
     public class RenameFile : PSCmdlet

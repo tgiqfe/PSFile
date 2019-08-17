@@ -9,7 +9,7 @@ using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Diagnostics;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsCommon.Set, "File")]
     public class SetFile : PSCmdlet

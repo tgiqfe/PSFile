@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsCommon.Get, "File")]
     public class GetFile : PSCmdlet

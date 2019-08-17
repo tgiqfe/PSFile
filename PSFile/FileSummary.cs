@@ -70,11 +70,17 @@ namespace PSFile
             List<string> fileAccessRuleList = new List<string>();
             foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
             {
+                string tempRights = rule.FileSystemRights == FileSystemRights.FullControl ?
+                    Item.FULLCONTROL :
+                    (rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString();
+
                 fileAccessRuleList.Add(string.Format(
                     "{0};{1};{2}",
-                    rule.IdentityReference.Value,
-                    (rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString(),
-                    rule.AccessControlType.ToString()));
+                    tempRights,
+                    //rule.IdentityReference.Value,
+                    //(rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString(),
+                    rule.FileSystemRights,
+                    rule.AccessControlType));
             }
             this.Access = string.Join("/", fileAccessRuleList);
 

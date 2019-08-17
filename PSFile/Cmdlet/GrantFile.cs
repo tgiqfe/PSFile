@@ -8,7 +8,7 @@ using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Management.Automation;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsSecurity.Grant, "File")]
     public class GrantFile : PSCmdlet

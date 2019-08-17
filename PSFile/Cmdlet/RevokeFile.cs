@@ -8,7 +8,7 @@ using System.Security.AccessControl;
 using System.Management.Automation;
 using System.IO;
 
-namespace PSFile
+namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsSecurity.Revoke, "File")]
     public class RevokeFile : PSCmdlet
