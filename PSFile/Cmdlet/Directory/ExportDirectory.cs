@@ -28,14 +28,11 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-
-            int rootPathLength = Path.Length;
-
             List<DirectorySummary> dsList = new List<DirectorySummary>();
             Action<string> getDirSummary = null;
             getDirSummary = (targetDirPath) =>
             {
-                dsList.Add(new DirectorySummary(targetDirPath, rootPathLength, false, false, false, false, false, IsLightFiles));
+                dsList.Add(new DirectorySummary(targetDirPath,false, false, false, false, false, IsLightFiles));
                 foreach (DirectoryInfo di in new DirectoryInfo(targetDirPath).GetDirectories())
                 {
                     getDirSummary(di.FullName);
