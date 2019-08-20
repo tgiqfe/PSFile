@@ -33,7 +33,7 @@ namespace PSFile
         public static List<FileSystemAccessRule> StringToAccessRules(string ruleString)
         {
             List<FileSystemAccessRule> ruleList = new List<FileSystemAccessRule>();
-            foreach (string ruleStr in GlobalParam.reg_Delimitor.Split(ruleString))
+            foreach (string ruleStr in ruleString.Split('/'))
             {
                 string[] fields = ruleStr.Split(';');
                 if (fields.Length >= 3)

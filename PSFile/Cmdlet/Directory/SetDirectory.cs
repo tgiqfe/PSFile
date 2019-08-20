@@ -28,8 +28,6 @@ namespace PSFile.Cmdlet
         [Parameter]
         public DateTime? LastWriteTime { get; set; }
         [Parameter]
-        public DateTime? LastAccessTime { get; set; }
-        [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
 
@@ -117,18 +115,15 @@ namespace PSFile.Cmdlet
                     Directory.SetLastWriteTime(Path, (DateTime)LastWriteTime);
                 }
 
-                //  最終アクセス日時
-                if (LastAccessTime != null)
-                {
-                    Directory.SetLastAccessTime(Path, (DateTime)LastAccessTime);
-                }
-
                 //  フォルダー属性
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
+                    if (!_Attributes.Contains(Item.DIRECTORY))
+                    {
+                        _Attributes += ", " + Item.DIRECTORY;
+                    }
                     File.SetAttributes(Path, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
                 }
-
 
                 WriteObject(new DirectorySummary(Path, true));
             }

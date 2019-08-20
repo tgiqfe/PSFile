@@ -41,6 +41,11 @@ namespace PSFile
         public const string DISABLE = "Disable";
         public const string REMOVE = "Remove";
 
+        public const string CONTAINERINHERIT = "ContainerInherit";
+        public const string OBJECTINHERIT = "ObjectInherit";
+        public const string INHERITONLY = "InheritOnly ";
+        public const string NOPROPAGATEINHERIT = "NoPropagateInherit";
+
         //  属性
         public const string ARCHIVE = "Archive";
         public const string COMPRESSED = "Compressed";

@@ -19,7 +19,6 @@ namespace PSFile
         public bool? IsInherited { get; set; }
         public DateTime? CreationTime { get; set; }
         public DateTime? LastWriteTime { get; set; }
-        public DateTime? LastAccessTime { get; set; }
         public string Attributes { get; set; }
         public long Size { get; set; }
         public List<FileSummary> Files { get; set; }
@@ -111,7 +110,6 @@ namespace PSFile
         {
             this.CreationTime = Directory.GetCreationTime(_Path);
             this.LastWriteTime = Directory.GetLastWriteTime(_Path);
-            this.LastAccessTime = Directory.GetLastAccessTime(_Path);
         }
 
         /// <summary>
@@ -147,9 +145,15 @@ namespace PSFile
         private void LoadFiles(bool isLightFiles)
         {
             Files = new List<FileSummary>();
+            /*
             foreach (FileInfo fi in new DirectoryInfo(_Path).GetFiles("*", SearchOption.TopDirectoryOnly))
             {
                 Files.Add(new FileSummary(fi.FullName, false, false, isLightFiles, false, false, isLightFiles));
+            }
+            */
+            foreach (string fileName in Directory.GetFiles(_Path))
+            {
+                Files.Add(new FileSummary(fileName, false, false, isLightFiles, false, false, isLightFiles));
             }
         }
         /// <summary>
@@ -160,9 +164,16 @@ namespace PSFile
         private void LoadFiles(bool isLightFiles, int rootPathLength)
         {
             Files = new List<FileSummary>();
+            /*
             foreach (FileInfo fi in new DirectoryInfo(_Path).GetFiles("*", SearchOption.TopDirectoryOnly))
             {
-                Files.Add(new FileSummary(fi.FullName, rootPathLength, 
+                Files.Add(new FileSummary(fi.FullName, rootPathLength,
+                    false, false, isLightFiles, false, false, isLightFiles));
+            }
+            */
+            foreach(string fileName in Directory.GetFiles(_Path))
+            {
+                Files.Add(new FileSummary(fileName, rootPathLength,
                     false, false, isLightFiles, false, false, isLightFiles));
             }
         }
