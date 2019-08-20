@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.NAME, Item.HASH, Item.ACCESS, Item.ATTRIBUTE, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE, Item.SECURITYBLOCK)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -25,6 +25,8 @@ namespace PSFile.Cmdlet
         public string Hash { get; set; }
         [Parameter]
         public string Access { get; set; }
+        [Parameter]
+        public string Owner { get; set; }
         [Parameter]
         public string Attributes { get; set; }
         [Parameter]
@@ -43,7 +45,7 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// Targetパラエメータの自動解析
-        /// 解析優先度： Hash -> Access -> Attributes -> SecurityBlock -> Name
+        /// 解析優先度： Hash -> Access -> Owner -> Attributes -> SecurityBlock -> Path
         /// </summary>
         private void DetectTargetParameter()
         {
@@ -57,6 +59,10 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ACCESS;
                 }
+                else if (!string.IsNullOrEmpty(Owner))
+                {
+                    Target = Item.OWNER;
+                }
                 else if (!string.IsNullOrEmpty(Attributes))
                 {
                     Target = Item.ATTRIBUTE;
@@ -67,7 +73,7 @@ namespace PSFile.Cmdlet
                 }
                 else
                 {
-                    Target = Item.NAME;
+                    Target = Item.PATH;
                 }
             }
         }
@@ -81,7 +87,7 @@ namespace PSFile.Cmdlet
                 Console.Error.WriteLine("対象のファイル無し： {0}", Path);
                 return;
             }
-            if (Target == Item.NAME)
+            if (Target == Item.PATH)
             {
                 retValue = true;
                 return;
@@ -128,6 +134,14 @@ namespace PSFile.Cmdlet
                 return;
             }
 
+            //  所有者チェック
+            if (Target == Item.OWNER)
+            {
+                string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
+                retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
+                    !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
+            }
+
             //  属性チェック
             if (Target == Item.ATTRIBUTE)
             {
@@ -170,6 +184,11 @@ namespace PSFile.Cmdlet
                 }
                 return;
             }
+        }
+
+        protected override void EndProcessing()
+        {
+            WriteObject(retValue);
         }
     }
 }

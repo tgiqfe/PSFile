@@ -46,5 +46,28 @@ namespace PSFile
             }
             return ruleList;
         }
+
+        /// <summary>
+        /// AccessRuleの配列から文字列を取得
+        /// </summary>
+        /// <param name="rules"></param>
+        /// <returns></returns>
+        public static string AccessRulesToString(AuthorizationRuleCollection rules)
+        {
+            List<string> fileAccessRuleList = new List<string>();
+            foreach (FileSystemAccessRule rule in rules)
+            {
+                string tempRights = rule.FileSystemRights == FileSystemRights.FullControl ?
+                    Item.FULLCONTROL :
+                    (rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString();
+
+                fileAccessRuleList.Add(string.Format(
+                    "{0};{1};{2}",
+                    rule.IdentityReference.Value,
+                    tempRights,
+                    rule.AccessControlType));
+            }
+            return string.Join("/", fileAccessRuleList);
+        }
     }
 }

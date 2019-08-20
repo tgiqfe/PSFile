@@ -89,6 +89,7 @@ namespace PSFile
             FileSecurity security = File.GetAccessControl(_Path);
 
             //  Access
+            /*
             List<string> fileAccessRuleList = new List<string>();
             foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
             {
@@ -103,6 +104,8 @@ namespace PSFile
                     rule.AccessControlType));
             }
             this.Access = string.Join("/", fileAccessRuleList);
+            */
+            this.Access = FileControl.AccessRulesToString(security.GetAccessRules(true, false, typeof(NTAccount)));
 
             //  Owner
             this.Owner = security.GetOwner(typeof(NTAccount)).Value;

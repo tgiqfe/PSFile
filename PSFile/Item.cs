@@ -110,7 +110,8 @@ namespace PSFile
         public const string YML = "Yml";
 
         //  テスト対象
-        public const string KEY = "Key";
+        //public const string KEY = "Key";
+        public const string PATH = "Path";
         public const string NAME = "Name";
         public const string VALUE = "Value";
         public const string TYPE = "Type";

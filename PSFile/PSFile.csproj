@@ -61,6 +61,7 @@
     <Compile Include="Class\Directory\DirectoryControl.cs" />
     <Compile Include="Cmdlet\Directory\GetDirectory.cs" />
     <Compile Include="Cmdlet\Directory\SetDirectory.cs" />
+    <Compile Include="Cmdlet\TestDirectory.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />
