@@ -89,22 +89,6 @@ namespace PSFile
             FileSecurity security = File.GetAccessControl(_Path);
 
             //  Access
-            /*
-            List<string> fileAccessRuleList = new List<string>();
-            foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
-            {
-                string tempRights = rule.FileSystemRights == FileSystemRights.FullControl ?
-                    Item.FULLCONTROL :
-                    (rule.FileSystemRights & (~FileSystemRights.Synchronize)).ToString();
-
-                fileAccessRuleList.Add(string.Format(
-                    "{0};{1};{2}",
-                    rule.IdentityReference.Value,
-                    tempRights,
-                    rule.AccessControlType));
-            }
-            this.Access = string.Join("/", fileAccessRuleList);
-            */
             this.Access = FileControl.AccessRulesToString(security.GetAccessRules(true, false, typeof(NTAccount)));
 
             //  Owner
