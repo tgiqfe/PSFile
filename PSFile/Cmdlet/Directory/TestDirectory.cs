@@ -3,26 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Management.Automation;
 using System.IO;
+using System.Management.Automation;
 using System.Security.Principal;
 using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
-    [Cmdlet(VerbsDiagnostic.Test, "File")]
-    public class TestFile : PSCmdlet
+    [Cmdlet(VerbsDiagnostic.Test, "Directory")]
+    public class TestDirectory : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
         public string TestMode { get; set; }
-        [Parameter]
-        public string Hash { get; set; }
         [Parameter]
         public string Access { get; set; }
         [Parameter]
@@ -30,8 +28,6 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
-        [Parameter]
-        public bool? SecurityBlock { get; set; }
 
         //  戻り値
         bool retValue = false;
@@ -47,17 +43,13 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// Targetパラメータの自動解析
-        /// 解析優先度： Hash -> Access -> Owner -> Attributes -> SecurityBlock -> Path
+        /// 解析優先度：Access -> Owner -> Attributes -> Path
         /// </summary>
         private void DetectTargetParameter()
         {
-            if (Target == null)
+            if(Target == null)
             {
-                if (!string.IsNullOrEmpty(Hash))
-                {
-                    Target = Item.HASH;
-                }
-                else if (!string.IsNullOrEmpty(Access))
+                if (!string.IsNullOrEmpty(Access))
                 {
                     Target = Item.ACCESS;
                 }
@@ -69,10 +61,6 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ATTRIBUTE;
                 }
-                else if (SecurityBlock != null)
-                {
-                    Target = Item.SECURITYBLOCK;
-                }
                 else
                 {
                     Target = Item.PATH;
@@ -82,39 +70,26 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            //  ファイルの有無チェック
-            if (!File.Exists(Path))
+            //  フォルダーの有無チェック
+            if (!Directory.Exists(Path))
             {
-                //  全条件でファイルの有無チェック
-                Console.Error.WriteLine("対象のファイル無し： {0}", Path);
+                //  全条件でフォルダーの有無チェック
+                Console.Error.WriteLine("対象のフォルダー無し： {0}", Path);
                 return;
             }
             if (Target == Item.PATH)
             {
                 retValue = true;
-                return;
-            }
-
-            //  Hashチェック
-            if (Target == Item.HASH)
-            {
-                string hashString = new FileSummary(Path, true, true, false, true, true, true).Hash;
-                retValue = hashString == Hash;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("ハッシュ不一致： {0} / {1}", Hash, hashString);
-                }
-                return;
             }
 
             //  アクセス権チェック
-            if (Target == Item.ACCESS)
+            if(Target == Item.ACCESS)
             {
                 if (TestMode == Item.CONTAIN)
                 {
-                    string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+                    string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
                     string[] tempAccessArray = tempAccess.Split('/');
-                    foreach (string ruleString in Access.Split('/'))
+                    foreach(string ruleString in Access.Split('/'))
                     {
                         retValue = tempAccessArray.Any(x => x.Equals(ruleString, StringComparison.OrdinalIgnoreCase));
                         if (!retValue)
@@ -126,20 +101,19 @@ namespace PSFile.Cmdlet
                 }
                 else
                 {
-                    string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+                    string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
                     retValue = tempAccess == Access;
                     if (!retValue)
                     {
                         Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
                     }
                 }
-                return;
             }
 
             //  所有者チェック
             if (Target == Item.OWNER)
             {
-                string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
+                string tempOwner = new DirectorySummary(Path, false, true, true, true, true, true).Owner;
                 retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
                     !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
                 if (!retValue)
@@ -151,7 +125,7 @@ namespace PSFile.Cmdlet
             //  属性チェック
             if (Target == Item.ATTRIBUTE)
             {
-                string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
+                string tempAttribute = new DirectorySummary(Path, true, true, false, true, true, true).Attributes;
                 if (TestMode == Item.CONTAIN)
                 {
                     string[] tempAttribArray = GlobalParam.reg_Delimitor.Split(tempAttribute);
@@ -174,18 +148,6 @@ namespace PSFile.Cmdlet
                     {
                         Console.Error.WriteLine("属性不一致： {0} / {1}", _Attributes, tempAttribute);
                     }
-                }
-                return;
-            }
-
-            //  セキュリティブロックチェック
-            if (Target == Item.SECURITYBLOCK)
-            {
-                bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).IsSecurityBlock;
-                retValue = tempSecurityBlock == SecurityBlock;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("セキュリティブロック設定一致： {0} / {1}", SecurityBlock, tempSecurityBlock);
                 }
                 return;
             }

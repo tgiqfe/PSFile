@@ -11,12 +11,6 @@ namespace PSFile
     class DirectoryControl
     {
 
-        //  ↓ここうまくいっていない。
-        //  多分FileControl.StringToAccessRuleもうまくいっていないかと。
-
-
-
-
         /// <summary>
         /// 文字列からFileSystemAccessのListを取得
         /// </summary>
