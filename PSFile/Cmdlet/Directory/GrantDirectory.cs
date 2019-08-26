@@ -58,7 +58,7 @@ namespace PSFile.Cmdlet
                         Recursive ? Item.CONTAINERINHERIT + ", " + Item.OBJECTINHERIT : Item.NONE,
                         Item.NONE,
                         AccessControl);
-                    foreach (FileSystemAccessRule addRule in Functions.StringToDirectoryAccessRules(ruleString))
+                    foreach (FileSystemAccessRule addRule in ConvertAccess.ToAccess_Directory(ruleString))
                     {
                         security.AddAccessRule(addRule);
                     }
@@ -68,7 +68,7 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Access))
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
-                    foreach (FileSystemAccessRule addRule in Functions.StringToDirectoryAccessRules(Access))
+                    foreach (FileSystemAccessRule addRule in ConvertAccess.ToAccess_Directory(Access))
                     {
                         security.AddAccessRule(addRule);
                     }

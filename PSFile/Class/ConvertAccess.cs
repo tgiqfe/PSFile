@@ -9,7 +9,7 @@ using System.IO;
 
 namespace PSFile
 {
-    public class Functions
+    public class ConvertAccess
     {
         /// <summary>
         /// File,Directory,Registryの内部判別用
@@ -18,15 +18,15 @@ namespace PSFile
 
         #region String_AccessRules
 
-        public static List<AccessRule> StringToFileAccessRules(string ruleString)
+        public static List<AccessRule> ToAccess_File(string ruleString)
         {
             return StringToAccessRules(ruleString, ObjectType.File);
         }
-        public static List<AccessRule> StringToDirectoryAccessRules(string ruleString)
+        public static List<AccessRule> ToAccess_Directory(string ruleString)
         {
             return StringToAccessRules(ruleString, ObjectType.Directory);
         }
-        public static List<AccessRule> StringToRegistryAccessRules(string ruleString)
+        public static List<AccessRule> ToAccess_Registry(string ruleString)
         {
             return StringToAccessRules(ruleString, ObjectType.Registry);
         }
@@ -100,15 +100,15 @@ namespace PSFile
 
         #region AccessRules_string
 
-        public static string FileAccessRulesToString(AuthorizationRuleCollection rules)
+        public static string ToString_File(AuthorizationRuleCollection rules)
         {
             return AccessRulesToString(rules, ObjectType.File);
         }
-        public static string DirectoryAccessRulesToString(AuthorizationRuleCollection rules)
+        public static string ToString_Directory(AuthorizationRuleCollection rules)
         {
             return AccessRulesToString(rules, ObjectType.Directory);
         }
-        public static string RegistryAccessRulesToString(AuthorizationRuleCollection rules)
+        public static string ToString_Registry(AuthorizationRuleCollection rules)
         {
             return AccessRulesToString(rules, ObjectType.Registry);
         }
@@ -119,7 +119,7 @@ namespace PSFile
         /// <param name="rules">AccessRuleのコレクション</param>
         /// <param name="oType">File,Directory,Registryのいずれか</param>
         /// <returns></returns>
-        private static string AccessRulesToString(AuthorizationRuleCollection rules, string oTypeString)
+        public static string AccessRulesToString(AuthorizationRuleCollection rules, string oTypeString)
         {
             switch (oTypeString.ToLower())
             {
