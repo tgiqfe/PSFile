@@ -154,7 +154,8 @@ namespace PSFile.Cmdlet
                 string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
                 if (TestMode == Item.CONTAIN)
                 {
-                    string[] tempAttribArray = GlobalParam.reg_Delimitor.Split(tempAttribute);
+                    //string[] tempAttribArray = Functions.reg_Delimitor.Split(tempAttribute);
+                    string[] tempAttribArray = Functions.SplitComma(tempAttribute);
 
                     foreach (string attribString in
                         _Attributes.Split(new string[1] { ", " }, StringSplitOptions.RemoveEmptyEntries))

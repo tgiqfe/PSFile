@@ -139,7 +139,8 @@ namespace PSFile
         public static string CheckCase(string val)
         {
             if (val == null) { return null; }
-            string[] valu = GlobalParam.reg_Delimitor.Split(val);
+            //string[] valu = Functions.reg_Delimitor.Split(val);
+            string[] valu = Functions.SplitComma(val);
             for (int i = 0; i < valu.Length; i++)
             {
                 string matchVal = fields.FirstOrDefault(x => x.Equals(valu[i], StringComparison.OrdinalIgnoreCase));

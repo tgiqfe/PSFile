@@ -67,14 +67,17 @@
     <Compile Include="Cmdlet\Directory\NewDirectory.cs" />
     <Compile Include="Cmdlet\Directory\RenameDirectory.cs" />
     <Compile Include="Cmdlet\Directory\RemoveDirectory.cs" />
-    <Compile Include="Cmdlet\MoveDirectory.cs" />
+    <Compile Include="Cmdlet\Directory\MoveDirectory.cs" />
+    <Compile Include="Class\RegistryControl.cs" />
+    <Compile Include="Class\RegistryHive.cs" />
+    <Compile Include="Class\RegistrySummary.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />
     <Compile Include="Class\FileControl.cs" />
     <Compile Include="Class\FileSummary.cs" />
     <Compile Include="Cmdlet\File\GetFile.cs" />
-    <Compile Include="GlobalParam.cs" />
+    <Compile Include="Functions.cs" />
     <Compile Include="Cmdlet\File\GrantFile.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Cmdlet\File\NewFile.cs" />
@@ -92,6 +95,8 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Cmdlet\Registry\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
