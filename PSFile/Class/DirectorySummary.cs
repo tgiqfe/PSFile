@@ -20,7 +20,7 @@ namespace PSFile
         public DateTime? CreationTime { get; set; }
         public DateTime? LastWriteTime { get; set; }
         public string Attributes { get; set; }
-        public long Size { get; set; }
+        public long? Size { get; set; }
         public List<FileSummary> Files { get; set; }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace PSFile
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (isLoad)
+            if (isLoad && Directory.Exists(_Path))
             {
                 LoadSecurity();
                 LoadTime();
@@ -56,11 +56,14 @@ namespace PSFile
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (!ignoreSecurity) { LoadSecurity(); }
-            if (!ignoreTime) { LoadTime(); }
-            if (!ignoreAttributes) { LoadAttributes(); }
-            if (!ignoreSize) { LoadSize(); }
-            if (!ignoreFiles) { LoadFiles(isLightFiles); }
+            if (Directory.Exists(_Path))
+            {
+                if (!ignoreSecurity) { LoadSecurity(); }
+                if (!ignoreTime) { LoadTime(); }
+                if (!ignoreAttributes) { LoadAttributes(); }
+                if (!ignoreSize) { LoadSize(); }
+                if (!ignoreFiles) { LoadFiles(isLightFiles); }
+            }
         }
         public DirectorySummary(string path, int rootPathLength,
             bool ignoreSecurity, bool ignoreTime, bool ignoreAttributes, bool ignoreSize, bool ignoreFiles, bool isLightFiles)
@@ -68,11 +71,14 @@ namespace PSFile
             this.Path = path.Substring(rootPathLength);
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (!ignoreSecurity) { LoadSecurity(); }
-            if (!ignoreTime) { LoadTime(); }
-            if (!ignoreAttributes) { LoadAttributes(); }
-            if (!ignoreSize) { LoadSize(); }
-            if (!ignoreFiles) { LoadFiles(isLightFiles, rootPathLength); }
+            if (Directory.Exists(_Path))
+            {
+                if (!ignoreSecurity) { LoadSecurity(); }
+                if (!ignoreTime) { LoadTime(); }
+                if (!ignoreAttributes) { LoadAttributes(); }
+                if (!ignoreSize) { LoadSize(); }
+                if (!ignoreFiles) { LoadFiles(isLightFiles, rootPathLength); }
+            }
         }
 
         /// <summary>
@@ -83,20 +89,6 @@ namespace PSFile
             DirectorySecurity security = Directory.GetAccessControl(_Path);
 
             //  Access
-            /*
-            List<string> directoryAccessRuleList = new List<string>();
-            foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
-            {
-                directoryAccessRuleList.Add(string.Format(
-                    "{0};{1};{2};{3};{4}",
-                    rule.IdentityReference.Value,
-                    rule.FileSystemRights,
-                    rule.InheritanceFlags,
-                    rule.PropagationFlags,
-                    rule.AccessControlType));
-            }
-            this.Access = string.Join("/", directoryAccessRuleList);
-            */
             this.Access = DirectoryControl.AccessRulesToString(security.GetAccessRules(true, false, typeof(NTAccount)));
 
             //  Owner
@@ -148,12 +140,6 @@ namespace PSFile
         private void LoadFiles(bool isLightFiles)
         {
             Files = new List<FileSummary>();
-            /*
-            foreach (FileInfo fi in new DirectoryInfo(_Path).GetFiles("*", SearchOption.TopDirectoryOnly))
-            {
-                Files.Add(new FileSummary(fi.FullName, false, false, isLightFiles, false, false, isLightFiles));
-            }
-            */
             foreach (string fileName in Directory.GetFiles(_Path))
             {
                 Files.Add(new FileSummary(fileName, false, false, isLightFiles, false, false, isLightFiles));
@@ -167,14 +153,7 @@ namespace PSFile
         private void LoadFiles(bool isLightFiles, int rootPathLength)
         {
             Files = new List<FileSummary>();
-            /*
-            foreach (FileInfo fi in new DirectoryInfo(_Path).GetFiles("*", SearchOption.TopDirectoryOnly))
-            {
-                Files.Add(new FileSummary(fi.FullName, rootPathLength,
-                    false, false, isLightFiles, false, false, isLightFiles));
-            }
-            */
-            foreach(string fileName in Directory.GetFiles(_Path))
+            foreach (string fileName in Directory.GetFiles(_Path))
             {
                 Files.Add(new FileSummary(fileName, rootPathLength,
                     false, false, isLightFiles, false, false, isLightFiles));

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Management.Automation;
 using System.IO;
 using Microsoft.VisualBasic.FileIO;
-using PATH = System.IO.Path;
 
 namespace PSFile.Cmdlet
 {
@@ -34,11 +33,11 @@ namespace PSFile.Cmdlet
                 }
             };
 
-            if (PATH.GetFileName(Path).Contains("*"))
+            if (System.IO.Path.GetFileName(Path).Contains("*"))
             {
                 //  ファイル名にワイルドカードを含む場合
                 foreach (string fileName in
-                    Directory.GetFiles(PATH.GetDirectoryName(Path), PATH.GetFileName(Path), System.IO.SearchOption.TopDirectoryOnly))
+                    Directory.GetFiles(System.IO.Path.GetDirectoryName(Path), System.IO.Path.GetFileName(Path), System.IO.SearchOption.TopDirectoryOnly))
                 {
                     deleteFileAction(fileName);
                 }

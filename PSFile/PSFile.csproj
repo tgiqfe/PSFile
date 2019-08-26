@@ -64,7 +64,10 @@
     <Compile Include="Cmdlet\Directory\TestDirectory.cs" />
     <Compile Include="Cmdlet\Directory\GrantDirectory.cs" />
     <Compile Include="Cmdlet\Directory\RevokeDirectory.cs" />
-    <Compile Include="Cmdlet\NewDirectory.cs" />
+    <Compile Include="Cmdlet\Directory\NewDirectory.cs" />
+    <Compile Include="Cmdlet\Directory\RenameDirectory.cs" />
+    <Compile Include="Cmdlet\Directory\RemoveDirectory.cs" />
+    <Compile Include="Cmdlet\MoveDirectory.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />

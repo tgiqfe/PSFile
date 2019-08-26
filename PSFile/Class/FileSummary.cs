@@ -23,7 +23,7 @@ namespace PSFile
         public DateTime? LastAccessTime { get; set; }
         public string Hash { get; set; }
         public string Attributes { get; set; }
-        public long Size { get; set; }
+        public long? Size { get; set; }
         public bool? IsSecurityBlock { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace PSFile
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (isLoad)
+            if (isLoad && File.Exists(_Path))
             {
                 LoadSecurity();
                 LoadTime();
@@ -60,12 +60,15 @@ namespace PSFile
             this.Path = path;
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (!ignoreSecurity) { LoadSecurity(); }
-            if (!ignoreTime) { LoadTime(); }
-            if (!ignoreHash) { LoadHash(); }
-            if (!ignoreAttributes) { LoadAttributes(); }
-            if (!ignoreSize) { LoadSize(); }
-            if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
+            if (File.Exists(_Path))
+            {
+                if (!ignoreSecurity) { LoadSecurity(); }
+                if (!ignoreTime) { LoadTime(); }
+                if (!ignoreHash) { LoadHash(); }
+                if (!ignoreAttributes) { LoadAttributes(); }
+                if (!ignoreSize) { LoadSize(); }
+                if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
+            }
         }
         public FileSummary(string path, int rootPathLength,
             bool ignoreSecurity, bool ignoreTime, bool ignoreHash, bool ignoreAttributes, bool ignoreSize, bool ignoreSecurityBlock)
@@ -73,12 +76,15 @@ namespace PSFile
             this.Path = path.Substring(rootPathLength);
             this.Name = System.IO.Path.GetFileName(path);
             _Path = path;
-            if (!ignoreSecurity) { LoadSecurity(); }
-            if (!ignoreTime) { LoadTime(); }
-            if (!ignoreHash) { LoadHash(); }
-            if (!ignoreAttributes) { LoadAttributes(); }
-            if (!ignoreSize) { LoadSize(); }
-            if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
+            if (File.Exists(_Path))
+            {
+                if (!ignoreSecurity) { LoadSecurity(); }
+                if (!ignoreTime) { LoadTime(); }
+                if (!ignoreHash) { LoadHash(); }
+                if (!ignoreAttributes) { LoadAttributes(); }
+                if (!ignoreSize) { LoadSize(); }
+                if (!ignoreSecurityBlock) { LoadSecurityBlock(); }
+            }
         }
 
         /// <summary>

@@ -9,8 +9,8 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace PSFile.Cmdlet
 {
-    [Cmdlet(VerbsCommon.Rename, "File")]
-    public class RenameFile : PSCmdlet
+    [Cmdlet(VerbsCommon.Rename, "Directory")]
+    public class RenameDirectory : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
@@ -23,12 +23,12 @@ namespace PSFile.Cmdlet
             {
                 NewName = System.IO.Path.GetFileName(NewName);
             }
-            if (File.Exists(Path))
+            if (Directory.Exists(Path))
             {
-                FileSystem.RenameFile(Path, NewName);
+                FileSystem.RenameDirectory(Path, NewName);
             }
             string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), NewName);
-            WriteObject(new FileSummary(newPath, true));
+            WriteObject(new DirectorySummary(newPath, true));
         }
     }
 }
