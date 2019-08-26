@@ -97,7 +97,7 @@ namespace PSFile
             }
             this.Access = string.Join("/", directoryAccessRuleList);
             */
-            this.Access = ConvertAccess.ToString_Directory(security.GetAccessRules(true, false, typeof(NTAccount)));
+            this.Access = DirectoryControl.AccessRulesToString(security.GetAccessRules(true, false, typeof(NTAccount)));
 
             //  Owner
             this.Owner = security.GetOwner(typeof(NTAccount)).Value;
