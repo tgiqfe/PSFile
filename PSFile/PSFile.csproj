@@ -71,6 +71,9 @@
     <Compile Include="Class\RegistryControl.cs" />
     <Compile Include="Class\RegistryHive.cs" />
     <Compile Include="Class\RegistrySummary.cs" />
+    <Compile Include="Cmdlet\Registry\GetRegistry.cs" />
+    <Compile Include="Cmdlet\SetRegistry.cs" />
+    <Compile Include="Cmdlet\TestRegistry.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />
@@ -95,8 +98,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cmdlet\Registry\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

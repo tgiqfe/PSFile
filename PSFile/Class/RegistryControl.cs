@@ -116,7 +116,7 @@ namespace PSFile
         }
 
         //  REG_BINARYの値の変換
-        public static byte[] RegBinaryStringToBytes(string val)
+        public static byte[] StringToRegBinary(string val)
         {
             if (Regex.IsMatch(val, @"^[0-9a-fA-F]+$"))
             {
