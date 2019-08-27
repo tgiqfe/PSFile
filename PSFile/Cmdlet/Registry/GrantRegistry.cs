@@ -7,7 +7,7 @@ using System.Security.Principal;
 namespace PSFile.Cmdlet
 {
     [Cmdlet(VerbsSecurity.Grant, "Registry")]
-    public class GrantRegistry :PSCmdlet
+    public class GrantRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
@@ -36,17 +36,18 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            bool isChange = false;
-
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, true))
             {
                 if (regKey == null) { return; }
 
-                RegistrySecurity security = regKey.GetAccessControl();
+                //RegistrySecurity security = regKey.GetAccessControl();
+                RegistrySecurity security = null;
 
                 //  アクセス権設定
                 if (!string.IsNullOrEmpty(Account))
                 {
+                    if (security == null) { security = regKey.GetAccessControl(); }
+
                     RegistryAccessRule rule = new RegistryAccessRule(
                         new NTAccount(Account),
                         (RegistryRights)Enum.Parse(typeof(RegistryRights), _Rights),
@@ -57,7 +58,6 @@ namespace PSFile.Cmdlet
                         (AccessControlType)Enum.Parse(typeof(AccessControlType), AccessControl));
 
                     security.SetAccessRule(rule);
-                    isChange = true;
                 }
 
                 //  Access文字列からの設定
@@ -68,40 +68,37 @@ namespace PSFile.Cmdlet
                         Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
                     {
                         security.SetAccessRule(RegistryControl.StringToAccessRule(ruleString));
-                        isChange = true;
                     }
                     */
+                    if (security == null) { security = regKey.GetAccessControl(); }
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
                         security.SetAccessRule(rule);
-                        isChange = true;
                     }
                 }
 
                 //  上位からのアクセス権継承の設定変更
-                switch (Inherited)
+                if (Inherited != Item.NONE)
                 {
-                    case Item.ENABLE:
-                        security.SetAccessRuleProtection(false, false);
-                        isChange = true;
-                        break;
-                    case Item.DISABLE:
-                        security.SetAccessRuleProtection(true, true);
-                        isChange = true;
-                        break;
-                    case Item.REMOVE:
-                        security.SetAccessRuleProtection(true, false);
-                        isChange = true;
-                        break;
+                    if (security == null) { security = regKey.GetAccessControl(); }
+                    switch (Inherited)
+                    {
+                        case Item.ENABLE:
+                            security.SetAccessRuleProtection(false, false);
+                            break;
+                        case Item.DISABLE:
+                            security.SetAccessRuleProtection(true, true);
+                            break;
+                        case Item.REMOVE:
+                            security.SetAccessRuleProtection(true, false);
+                            break;
+                    }
                 }
 
-                if (isChange)
-                {
-                    regKey.SetAccessControl(security);
-                }
+                if (security == null) { regKey.SetAccessControl(security); }
+
+                WriteObject(new RegistrySummary(Path, true));
             }
-
-            WriteObject(new RegistrySummary(Path, true));
         }
     }
 }

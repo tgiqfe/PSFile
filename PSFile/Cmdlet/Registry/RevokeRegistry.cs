@@ -18,14 +18,15 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            bool isChange = false;
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, true))
             {
-                RegistrySecurity security = regKey.GetAccessControl();
-                AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
+                bool isChange = false;
+                //RegistrySecurity security = regKey.GetAccessControl();
+                RegistrySecurity security = security = regKey.GetAccessControl();
+                //AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
                 if (All)
                 {
-                    foreach (RegistryAccessRule rule in rules)
+                    foreach (RegistryAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
                         security.RemoveAccessRule(rule);
                         isChange = true;
@@ -33,8 +34,17 @@ namespace PSFile.Cmdlet
                 }
                 else
                 {
-                    foreach (RegistryAccessRule rule in rules)
+                    foreach (RegistryAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
+                        string account = rule.IdentityReference.Value;
+                        if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                            !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
+                        {
+                            security.RemoveAccessRule(rule);
+                            isChange = true;
+                        }
+
+                        /*
                         if (Account.Contains("\\") &&
                             rule.IdentityReference.Value.Equals(Account, StringComparison.OrdinalIgnoreCase))
                         {
@@ -47,12 +57,11 @@ namespace PSFile.Cmdlet
                             security.RemoveAccessRule(rule);
                             isChange = true;
                         }
+                        */
                     }
                 }
-                if (isChange)
-                {
-                    regKey.SetAccessControl(security);
-                }
+
+                if (isChange) { regKey.SetAccessControl(security); }
             }
             WriteObject(new RegistrySummary(Path, true));
         }

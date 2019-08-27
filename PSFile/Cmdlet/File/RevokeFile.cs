@@ -32,32 +32,33 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            FileSecurity security = null;
+            bool isChange = false;
+            FileSecurity security = File.GetAccessControl(Path);
 
             //  アクセス権を剥奪
             if (All)
             {
-                if (security == null) { security = File.GetAccessControl(Path); }
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     security.RemoveAccessRule(rule);
+                    isChange = true;
                 }
             }
             else if (!string.IsNullOrEmpty(Account))
             {
-                if (security == null) { security = File.GetAccessControl(Path); }
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     string account = rule.IdentityReference.Value;
-                    if ((Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase)) ||
+                    if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                         !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
                     {
                         security.RemoveAccessRule(rule);
+                        isChange = true;
                     }
                 }
             }
 
-            if (security != null) { File.SetAccessControl(Path, security); }
+            if (isChange) { File.SetAccessControl(Path, security); }
 
             //  ファイル属性を剥奪
             if (!string.IsNullOrEmpty(_Attributes))

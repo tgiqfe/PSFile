@@ -83,8 +83,8 @@
     <Compile Include="Cmdlet\Registry\SetRegistry.cs" />
     <Compile Include="Cmdlet\Registry\TestRegistry.cs" />
     <Compile Include="Cmdlet\Registry\RevokeRegistry.cs" />
-    <Compile Include="Cmdlet\RemoveRegistry.cs" />
-    <Compile Include="Cmdlet\RenameRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\RemoveRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\RenameRegistry.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />
