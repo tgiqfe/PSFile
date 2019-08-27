@@ -52,6 +52,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmdlet\Registry\NewRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\GrantRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\MoveRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\ExportRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\CompareRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\CopyRegistry.cs" />
     <Compile Include="Cmdlet\Registry\CloseRegistry.cs" />
     <Compile Include="Cmdlet\Directory\CopyDirectory.cs" />
     <Compile Include="Cmdlet\Directory\ExportDirectory.cs" />
@@ -76,6 +82,9 @@
     <Compile Include="Cmdlet\Registry\GetRegistry.cs" />
     <Compile Include="Cmdlet\Registry\SetRegistry.cs" />
     <Compile Include="Cmdlet\Registry\TestRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\RevokeRegistry.cs" />
+    <Compile Include="Cmdlet\RemoveRegistry.cs" />
+    <Compile Include="Cmdlet\RenameRegistry.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
     <Compile Include="EmbeddedResource.cs" />

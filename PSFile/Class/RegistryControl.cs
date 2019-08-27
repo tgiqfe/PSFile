@@ -131,6 +131,7 @@ namespace PSFile
         }
 
         //  レジストリAccessと文字列の変換
+        /*
         public static RegistryAccessRule StringToAccessRule(string ruleString)
         {
             if (ruleString.Contains(";"))
@@ -145,7 +146,22 @@ namespace PSFile
             }
             return null;
         }
-
+        */
+        public static List<RegistryAccessRule> StringToAccessRules(string ruleString)
+        {
+            List<RegistryAccessRule> ruleList = new List<RegistryAccessRule>();
+            foreach (string ruleStr in ruleString.Split('/'))
+            {
+                string[] fields = ruleStr.Split(';');
+                ruleList.Add(new RegistryAccessRule(
+                    new NTAccount(fields[0]),
+                    Enum.TryParse(fields[1], out RegistryRights tempRights) ? tempRights : RegistryRights.ReadKey,
+                    Enum.TryParse(fields[2], out InheritanceFlags tempInheritance) ? tempInheritance : InheritanceFlags.ContainerInherit,
+                    Enum.TryParse(fields[3], out PropagationFlags tempPropagation) ? tempPropagation : PropagationFlags.None,
+                    Enum.TryParse(fields[4], out AccessControlType tempAccessControlType) ? tempAccessControlType : AccessControlType.Allow));
+            }
+            return ruleList;
+        }
 
         public static string AccessRulesToString(AuthorizationRuleCollection rules)
         {
