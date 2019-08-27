@@ -6,6 +6,14 @@ namespace PSFile
 {
     class EmbeddedResource
     {
+        public static string GetSubinacl(string appName)
+        {
+            string outputDir = Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), appName);
+            Expand(outputDir);
+            return Path.Combine(outputDir, "subinacl.exe");
+        }
+
+
         public static void Expand(string outputDir)
         {
             //  現バージョン以外で展開済みの場合、フォルダーごと削除
