@@ -41,8 +41,8 @@ namespace PSFile.Cmdlet
             List<FileSummary> compare_ref = GetSummaryList(Path,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
             string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
-            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
-                false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(
+                System.IO.Path.Combine(tempDir, "compre_ref.json"), false, Encoding.UTF8))
             {
                 sw.WriteLine(text_ref);
             }
@@ -51,8 +51,8 @@ namespace PSFile.Cmdlet
             List<FileSummary> compare_dif = GetSummaryList(Difference,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
             string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
-            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
-                false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(
+                System.IO.Path.Combine(tempDir, "compre_dif.json"), false, Encoding.UTF8))
             {
                 sw.WriteLine(text_dif);
             }

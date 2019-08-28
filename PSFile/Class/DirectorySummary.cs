@@ -62,7 +62,7 @@ namespace PSFile
                 if (!ignoreTime) { LoadTime(); }
                 if (!ignoreAttributes) { LoadAttributes(); }
                 if (!ignoreSize) { LoadSize(); }
-                if (!ignoreFiles) { LoadFiles(isLightFiles); }
+                if (!ignoreFiles) { LoadFiles(ignoreSecurity, ignoreTime, ignoreAttributes, ignoreSize, isLightFiles); }
             }
         }
         public DirectorySummary(string path, int rootPathLength,
@@ -77,7 +77,7 @@ namespace PSFile
                 if (!ignoreTime) { LoadTime(); }
                 if (!ignoreAttributes) { LoadAttributes(); }
                 if (!ignoreSize) { LoadSize(); }
-                if (!ignoreFiles) { LoadFiles(isLightFiles, rootPathLength); }
+                if (!ignoreFiles) { LoadFiles(rootPathLength, ignoreSecurity, ignoreTime, ignoreAttributes, ignoreSize, isLightFiles); }
             }
         }
 
@@ -131,18 +131,19 @@ namespace PSFile
         /// </summary>
         public void LoadFiles()
         {
-            LoadFiles(false);
+            LoadFiles(false, false, false, false, false);
         }
         /// <summary>
         /// 配下ファイルのFileSummaryを取得。
         /// </summary>
         /// <param name="isLightFiles">Hash,SecurityBlockをスキップするかどうか</param>
-        private void LoadFiles(bool isLightFiles)
+        private void LoadFiles(bool ignoreSecurity, bool ignoreTime, bool ignoreAttributes, bool ignoreSize, bool isLightFiles)
         {
             Files = new List<FileSummary>();
             foreach (string fileName in Directory.GetFiles(_Path))
             {
-                Files.Add(new FileSummary(fileName, false, false, isLightFiles, false, false, isLightFiles));
+                Files.Add(new FileSummary(fileName,
+                    ignoreSecurity, ignoreTime, isLightFiles, ignoreAttributes, ignoreSize, isLightFiles));
             }
         }
         /// <summary>
@@ -150,13 +151,13 @@ namespace PSFile
         /// </summary>
         /// <param name="isLightFiles">Hash,SecurityBlockをスキップするかどうか</param>
         /// <param name="rootPathLength">Compare-Directory用。指定した値だけ、Pathの文字列を削る</param>
-        private void LoadFiles(bool isLightFiles, int rootPathLength)
+        private void LoadFiles(int rootPathLength, bool ignoreSecurity, bool ignoreTime, bool ignoreAttributes, bool ignoreSize, bool isLightFiles)
         {
             Files = new List<FileSummary>();
             foreach (string fileName in Directory.GetFiles(_Path))
             {
                 Files.Add(new FileSummary(fileName, rootPathLength,
-                    false, false, isLightFiles, false, false, isLightFiles));
+                    ignoreSecurity, ignoreTime, isLightFiles, ignoreAttributes, ignoreSize, isLightFiles));
             }
         }
 

@@ -53,7 +53,7 @@ namespace PSFile.Cmdlet
         }
 
         /// <summary>
-        /// RegistryKeyInfoリストを取得
+        /// RegistrySummaryリストを取得
         /// </summary>
         /// <param name="path">レジストリキーのパス</param>
         /// <param name="ignoreSecurity">セキュリティ情報を除外して比較</param>
