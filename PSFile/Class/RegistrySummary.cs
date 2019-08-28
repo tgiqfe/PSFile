@@ -17,16 +17,19 @@ namespace PSFile
 
         //  コンストラクタ
         public RegistrySummary() { }
+        /*
         public RegistrySummary(string path)
         {
             this.Path = path;
             this.KeyName = System.IO.Path.GetFileName(this.Path);
         }
+        */
         public RegistrySummary(RegistryKey regKey)
         {
             this.Path = regKey.Name;
             this.KeyName = System.IO.Path.GetFileName(this.Path);
         }
+        /*
         public RegistrySummary(string path, bool isLoad)
         {
             this.Path = path;
@@ -37,6 +40,7 @@ namespace PSFile
                 GetValues();
             }
         }
+        */
         public RegistrySummary(RegistryKey regKey, bool isLoad)
         {
             this.Path = regKey.Name;

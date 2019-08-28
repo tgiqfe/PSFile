@@ -211,11 +211,13 @@ namespace PSFile.Cmdlet
                 //  Type用チェック
                 if (Target == Item.TYPE)
                 {
-                    retValue = valueKind == RegistryControl.StringToValueKind(Type);
+                    //retValue = valueKind == RegistryControl.StringToValueKind(Type);
+                    string tempVlueKind = RegistryControl.ValueKindToString(valueKind);
+                    retValue = tempVlueKind == Type;
                     if (!retValue)
                     {
                         Console.Error.WriteLine(
-                            "Type不一致： {0} / {1}", Type, RegistryControl.ValueKindToString(valueKind));
+                            "Type不一致： {0} / {1}", Type, tempVlueKind);
                     }
                     return;
                 }

@@ -23,8 +23,8 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            List<RegistrySummary> compare_ref = GetPRegList(Path, IgnoreSecurity, IgnoreValues);
-            List<RegistrySummary> compare_dif = GetPRegList(Difference, IgnoreSecurity, IgnoreValues);
+            List<RegistrySummary> compare_ref = GetSummaryList(Path, IgnoreSecurity, IgnoreValues);
+            List<RegistrySummary> compare_dif = GetSummaryList(Difference, IgnoreSecurity, IgnoreValues);
             int retVal = string.Compare(
                 JsonConvert.SerializeObject(compare_ref),
                 JsonConvert.SerializeObject(compare_dif));
@@ -38,28 +38,28 @@ namespace PSFile.Cmdlet
         /// <param name="ignoreSecurity">セキュリティ情報を除外して比較</param>
         /// <param name="ignoreValues">レジストリ値を場外して比較</param>
         /// <returns></returns>
-        private List<RegistrySummary> GetPRegList(string path, bool ignoreSecurity, bool ignoreValues)
+        private List<RegistrySummary> GetSummaryList(string path, bool ignoreSecurity, bool ignoreValues)
         {
-            int startKeyLength = 0;
-            List<RegistrySummary> pregList = new List<RegistrySummary>();
-            Action<RegistryKey> getPReg = null;
-            getPReg = (targetKey) =>
+            int startLength = 0;
+            List<RegistrySummary> summaryList = new List<RegistrySummary>();
+            Action<RegistryKey> getSummary = null;
+            getSummary = (targetPath) =>
             {
-                pregList.Add(new RegistrySummary(targetKey, startKeyLength, ignoreSecurity, ignoreValues));
-                foreach (string keyName in targetKey.GetSubKeyNames())
+                summaryList.Add(new RegistrySummary(targetPath, startLength, ignoreSecurity, ignoreValues));
+                foreach (string keyName in targetPath.GetSubKeyNames())
                 {
-                    using (RegistryKey subTargetKey = targetKey.OpenSubKey(keyName, false))
+                    using (RegistryKey subTargetKey = targetPath.OpenSubKey(keyName, false))
                     {
-                        getPReg(subTargetKey);
+                        getSummary(subTargetKey);
                     }
                 }
             };
             using (RegistryKey startKey = RegistryControl.GetRegistryKey(path, false, false))
             {
-                startKeyLength = startKey.Name.Length;
-                getPReg(startKey);
+                startLength = startKey.Name.Length;
+                getSummary(startKey);
             }
-            return pregList;
+            return summaryList;
         }
 
     }

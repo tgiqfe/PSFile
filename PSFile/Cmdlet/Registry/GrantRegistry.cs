@@ -97,7 +97,7 @@ namespace PSFile.Cmdlet
 
                 if (security == null) { regKey.SetAccessControl(security); }
 
-                WriteObject(new RegistrySummary(Path, true));
+                WriteObject(new RegistrySummary(regKey, true));
             }
         }
     }

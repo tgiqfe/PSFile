@@ -12,6 +12,12 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
+
+        [Parameter]
+        public SwitchParameter IgnoreSecurity { get; set; }
+        [Parameter]
+        public SwitchParameter IgnoreValues { get; set; }
+
         [Parameter]
         public SwitchParameter NoResolv { get; set; }
         [Parameter]
@@ -22,7 +28,10 @@ namespace PSFile.Cmdlet
             if (Name == null)
             {
                 //  レジストリキーの取得
-                WriteObject(new RegistrySummary(Path, true));
+                using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+                {
+                    WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues));
+                }
             }
             else
             {

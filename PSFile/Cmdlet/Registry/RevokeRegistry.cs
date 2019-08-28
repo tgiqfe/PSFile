@@ -62,8 +62,9 @@ namespace PSFile.Cmdlet
                 }
 
                 if (isChange) { regKey.SetAccessControl(security); }
+
+                WriteObject(new RegistrySummary(regKey, true));
             }
-            WriteObject(new RegistrySummary(Path, true));
         }
     }
 }

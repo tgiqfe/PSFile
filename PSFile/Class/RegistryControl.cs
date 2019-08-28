@@ -51,10 +51,14 @@ namespace PSFile
                 GetRootkey(path).OpenSubKey(keyName, writable);
         }
 
-        //  レジストリ値の種類の変換
-        public static RegistryValueKind StringToValueKind(string valueKind)
+        /// <summary>
+        /// レジストリ値の種類の変換
+        /// </summary>
+        /// <param name="valueKindString">レジストリ種類の文字列</param>
+        /// <returns>RegistryValueKind</returns>
+        public static RegistryValueKind StringToValueKind(string valueKindString)
         {
-            switch (valueKind.ToLower())
+            switch (valueKindString.ToLower())
             {
                 case "reg_sz": return RegistryValueKind.String;
                 case "reg_binary": return RegistryValueKind.Binary;
@@ -66,6 +70,12 @@ namespace PSFile
             }
             return RegistryValueKind.String;
         }
+
+        /// <summary>
+        /// レジストリ値の種類の変換
+        /// </summary>
+        /// <param name="valueKind">RegistryValueKind</param>
+        /// <returns>レジストリ種類の文字列</returns>
         public static string ValueKindToString(RegistryValueKind valueKind)
         {
             switch (valueKind)
@@ -84,6 +94,7 @@ namespace PSFile
         /// <summary>
         /// レジストリ値を文字列に変換
         /// </summary>
+        /*
         public static string RegistryValueToString(RegistryKey regKey, string name)
         {
             return RegistryValueToString(regKey, name, regKey.GetValueKind(name), true);
@@ -92,6 +103,7 @@ namespace PSFile
         {
             return RegistryValueToString(regKey, name, valueKind, true);
         }
+        */
         public static string RegistryValueToString(RegistryKey regKey, string name, RegistryValueKind valueKind, bool noResolv)
         {
             switch (valueKind)
@@ -130,23 +142,11 @@ namespace PSFile
             return null;
         }
 
-        //  レジストリAccessと文字列の変換
-        /*
-        public static RegistryAccessRule StringToAccessRule(string ruleString)
-        {
-            if (ruleString.Contains(";"))
-            {
-                string[] ruleArray = ruleString.Split(';');
-                return new RegistryAccessRule(
-                    new NTAccount(ruleArray[0]),
-                    Enum.TryParse(ruleArray[1], out RegistryRights tempRights) ? tempRights : RegistryRights.ReadKey,
-                    Enum.TryParse(ruleArray[2], out InheritanceFlags tempInheritance) ? tempInheritance : InheritanceFlags.ContainerInherit,
-                    Enum.TryParse(ruleArray[3], out PropagationFlags tempPropagation) ? tempPropagation : PropagationFlags.None,
-                    Enum.TryParse(ruleArray[4], out AccessControlType tempAccessControlType) ? tempAccessControlType : AccessControlType.Allow);
-            }
-            return null;
-        }
-        */
+        /// <summary>
+        /// 文字列からFileSystemAccessのListを取得
+        /// </summary>
+        /// <param name="ruleString">Access文字列</param>
+        /// <returns></returns>
         public static List<RegistryAccessRule> StringToAccessRules(string ruleString)
         {
             List<RegistryAccessRule> ruleList = new List<RegistryAccessRule>();
@@ -163,15 +163,29 @@ namespace PSFile
             return ruleList;
         }
 
+        /// <summary>
+        /// AccessRuleのリストから文字列を取得
+        /// </summary>
+        /// <param name="rules">AccessRuleのコレクション</param>
+        /// <returns>Access文字列</returns>
         public static string AccessRulesToString(AuthorizationRuleCollection rules)
         {
-            List<string> accessArrayList = new List<string>();
+            List<string> accessRuleList = new List<string>();
             foreach (RegistryAccessRule rule in rules)
             {
-                accessArrayList.Add(AccessRulesToString(rule));
+                accessRuleList.Add(string.Format(
+                    "{0};{1};{2};{3};{4}",
+                    rule.IdentityReference.Value,
+                    rule.RegistryRights.ToString(),
+                    rule.InheritanceFlags.ToString(),
+                    rule.PropagationFlags.ToString(),
+                    rule.AccessControlType.ToString()));
+
+                //accessRuleList.Add(AccessRulesToString(rule));
             }
-            return string.Join("/", accessArrayList);
+            return string.Join("/", accessRuleList);
         }
+        /*
         public static string AccessRulesToString(RegistryAccessRule rule)
         {
             string[] accessArray = new string[5];
@@ -182,5 +196,6 @@ namespace PSFile
             accessArray[4] = rule.AccessControlType.ToString();     //  AccessControlType
             return string.Join(";", accessArray);
         }
+        */
     }
 }

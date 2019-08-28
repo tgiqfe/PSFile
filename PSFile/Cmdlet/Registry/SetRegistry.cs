@@ -72,13 +72,6 @@ namespace PSFile.Cmdlet
                     //  Access文字列からのアクセス権設定
                     if (!string.IsNullOrEmpty(Access))
                     {
-                        /*
-                        foreach (string ruleString in
-                        Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
-                        {
-                            security.SetAccessRule(RegistryControl.StringToAccessRule(ruleString));
-                        }
-                        */
                         foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                         {
                             security.SetAccessRule(rule);
@@ -91,17 +84,6 @@ namespace PSFile.Cmdlet
             //  所有者変更
             if (Owner != null)
             {
-                //  埋め込みのsubinacl.exeを展開
-                /*
-                string tempDir = System.IO.Path.Combine(
-                    Environment.ExpandEnvironmentVariables("%TEMP%"),
-                    "PowerReg");
-                string subinacl = System.IO.Path.Combine(tempDir, "subinacl.exe");
-                if (!File.Exists(subinacl))
-                {
-                    EmbeddedResource.Expand(tempDir);
-                }
-                */
                 string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
 
                 //  管理者実行確認

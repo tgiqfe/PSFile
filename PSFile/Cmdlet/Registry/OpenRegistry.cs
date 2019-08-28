@@ -36,7 +36,7 @@ namespace PSFile.Cmdlet
             {
                 if (regKey != null)
                 {
-                    WriteObject(new RegistrySummary(Path));
+                    WriteObject(new RegistrySummary(regKey));
                     return;
                 }
             }
@@ -54,7 +54,7 @@ namespace PSFile.Cmdlet
             {
                 if (regKey != null)
                 {
-                    WriteObject(new RegistrySummary(Path));
+                    WriteObject(new RegistrySummary(regKey));
                 }
             }
         }
