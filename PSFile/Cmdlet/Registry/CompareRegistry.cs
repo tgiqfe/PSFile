@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Management.Automation;
+using System.IO;
 
 namespace PSFile.Cmdlet
 {
@@ -23,11 +24,31 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
+            string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), "PowerReg");
+            if (!Directory.Exists(tempDir))
+            {
+                Directory.CreateDirectory(tempDir);
+            }
+
+            //  比較元レジストリのサマリを取得
             List<RegistrySummary> compare_ref = GetSummaryList(Path, IgnoreSecurity, IgnoreValues);
+            string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
+                false, Encoding.UTF8))
+            {
+                sw.WriteLine(text_ref);
+            }
+
+            //  比較先レジストリのサマリを取得
             List<RegistrySummary> compare_dif = GetSummaryList(Difference, IgnoreSecurity, IgnoreValues);
-            int retVal = string.Compare(
-                JsonConvert.SerializeObject(compare_ref),
-                JsonConvert.SerializeObject(compare_dif));
+            string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
+                false, Encoding.UTF8))
+            {
+                sw.WriteLine(text_dif);
+            }
+
+            int retVal = string.Compare(text_ref, text_dif);
             WriteObject(retVal);
         }
 
@@ -45,7 +66,11 @@ namespace PSFile.Cmdlet
             Action<RegistryKey> getSummary = null;
             getSummary = (targetPath) =>
             {
-                summaryList.Add(new RegistrySummary(targetPath, startLength, ignoreSecurity, ignoreValues));
+                RegistrySummary summary = new RegistrySummary(targetPath, startLength, ignoreSecurity, ignoreValues);
+                summary.Name = "";
+                summaryList.Add(summary);
+                //summaryList.Add(new RegistrySummary(targetPath, startLength, ignoreSecurity, ignoreValues));
+
                 foreach (string keyName in targetPath.GetSubKeyNames())
                 {
                     using (RegistryKey subTargetKey = targetPath.OpenSubKey(keyName, false))

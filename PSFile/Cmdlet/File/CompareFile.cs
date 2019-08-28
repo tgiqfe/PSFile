@@ -40,7 +40,7 @@ namespace PSFile.Cmdlet
             //  比較元ファイルのサマリを取得
             List<FileSummary> compare_ref = GetSummaryList(Path,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
-            string text_ref = JsonConvert.SerializeObject(compare_ref);
+            string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
                 false, Encoding.UTF8))
             {
@@ -50,7 +50,7 @@ namespace PSFile.Cmdlet
             //  比較先ファイルのサマリを取得
             List<FileSummary> compare_dif = GetSummaryList(Difference,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
-            string text_dif = JsonConvert.SerializeObject(compare_dif);
+            string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
                 false, Encoding.UTF8))
             {

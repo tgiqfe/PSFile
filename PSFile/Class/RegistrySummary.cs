@@ -8,7 +8,7 @@ namespace PSFile
     class RegistrySummary
     {
         //  クラスパラメータ
-        public string KeyName { get; set; }
+        public string Name { get; set; }
         public string Path { get; set; }
         public string Owner { get; set; }
         public string Access { get; set; }
@@ -27,7 +27,7 @@ namespace PSFile
         public RegistrySummary(RegistryKey regKey)
         {
             this.Path = regKey.Name;
-            this.KeyName = System.IO.Path.GetFileName(this.Path);
+            this.Name = System.IO.Path.GetFileName(this.Path);
         }
         /*
         public RegistrySummary(string path, bool isLoad)
@@ -44,7 +44,7 @@ namespace PSFile
         public RegistrySummary(RegistryKey regKey, bool isLoad)
         {
             this.Path = regKey.Name;
-            this.KeyName = System.IO.Path.GetFileName(this.Path);
+            this.Name = System.IO.Path.GetFileName(this.Path);
             if (isLoad)
             {
                 GetSecurity(regKey);
@@ -54,14 +54,14 @@ namespace PSFile
         public RegistrySummary(RegistryKey regKey, bool IgnoreSecurity, bool IgnoreValues)
         {
             this.Path = regKey.Name;
-            this.KeyName = System.IO.Path.GetFileName(this.Path);
+            this.Name = System.IO.Path.GetFileName(this.Path);
             if (!IgnoreSecurity) { GetSecurity(regKey); }
             if (!IgnoreValues) { GetValues(regKey); }
         }
         public RegistrySummary(RegistryKey regKey, int rootKeyLength, bool IgnoreSecurity, bool IgnoreValues)
         {
             this.Path = regKey.Name.Substring(rootKeyLength);
-            this.KeyName = System.IO.Path.GetFileName(regKey.Name);
+            this.Name = System.IO.Path.GetFileName(regKey.Name);
             if (!IgnoreSecurity) { GetSecurity(regKey); }
             if (!IgnoreValues) { GetValues(regKey); }
         }

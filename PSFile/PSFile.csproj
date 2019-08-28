@@ -52,7 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cmdlet\CompareFile.cs" />
+    <Compile Include="Cmdlet\File\CompareFile.cs" />
     <Compile Include="Cmdlet\Registry\NewRegistry.cs" />
     <Compile Include="Cmdlet\Registry\GrantRegistry.cs" />
     <Compile Include="Cmdlet\Registry\MoveRegistry.cs" />
