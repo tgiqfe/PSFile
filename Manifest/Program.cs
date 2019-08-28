@@ -8,20 +8,12 @@ namespace Manifest
 {
     class Program
     {
-        /// <summary>
-        /// マニフェストファイル自動生成用
-        /// </summary>
-        /// <param name="args">
-        /// 引数1 ⇒ モジュールDLLファイルへのパス
-        /// 引数2 ⇒ .psd1ファイルへのパス
-        /// 引数3 ⇒ .psm1ファイルへのパス
-        /// </param>
         static void Main(string[] args)
         {
-            if (args.Length >= 3)
+            if (args.Length >= 4)
             {
-                PSD1.Create(args[0], args[1]);
-                PSM1.Create(args[0], args[2]);
+                PSD1.Create(args[0], args[1], args[2]);
+                PSM1.Create(args[0], args[1], args[3]);
             }
         }
     }

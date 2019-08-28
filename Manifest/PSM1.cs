@@ -9,11 +9,11 @@ namespace Manifest
 {
     class PSM1
     {
-        public static void Create(string dllFile, string outputFile)
+        public static void Create(string dllFile, string cmdletDir, string outputFile)
         {
             using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.UTF8))
             {
-                //  生成する内容をここに
+                sw.WriteLine();
             }
         }
     }

@@ -74,6 +74,7 @@ namespace PSFile.Cmdlet
             if (Owner != null)
             {
                 //  埋め込みのsubinacl.exeを展開
+                /*
                 string tempDir = System.IO.Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
                     "PowerReg");
@@ -82,6 +83,8 @@ namespace PSFile.Cmdlet
                 {
                     EmbeddedResource.Expand(tempDir);
                 }
+                */
+                string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
 
                 //  管理者実行確認
                 Message.CheckAdmin();

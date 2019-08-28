@@ -1,5 +1,3 @@
 ContainerInherit, ObjectInherit等の略称に対応させる。
 System, ReadOnly, Hidden等の略称に対応させる。
 System, ReadOnly, Hiddenの順番変更にも対応させる。
-
-FileControl, DirectoryControlはFunctionsに統合する。
