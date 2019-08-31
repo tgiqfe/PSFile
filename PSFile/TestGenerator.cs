@@ -82,7 +82,6 @@ namespace PSFile
                 "@(\"" + string.Join("\", \"", Functions.SplitComma(attributes.ToString())) + "\")",
                 isContain);
         }
-
         public void FileInherited(string path, bool inherited)
         {
             WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -Inherited ${2}",
@@ -94,8 +93,88 @@ namespace PSFile
                 path, Item.SECURITYBLOCK, securityBlock));
         }
 
+        public void FileSize(string path, long size)
+        {
+            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -Size {2}",
+                path, Item.SIZE, size));
+        }
+        public void FileCreationTime(string path, DateTime creationTime)
+        {
+            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
+                path, Item.CREATIONTIME, creationTime.ToString("yyyy/MM/dd hh:mm:ss")));
+        }
+        public void FileLastWriteTime(string path, DateTime lastWriteTime)
+        {
+            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
+                path, Item.CREATIONTIME, lastWriteTime.ToString("yyyy/MM/dd hh:mm:ss")));
+        }
+
         #endregion
 
+        //  ================================================================================
+
+        #region Directory
+
+        public void DirectoryPath(string path)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1}",
+                path, Item.PATH));
+        }
+        public void DirectoryHash(string path, string hash)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Hash \"{2}\"",
+                path, Item.HASH, hash));
+        }
+        public void DirectoryAccess(string path, string access, bool isContain)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Access \"{2}\" -TestMode {3}",
+                path, Item.ACCESS, access, isContain ? Item.CONTAIN : Item.MATCH));
+        }
+        public void DirectoryOwner(string path, string owner)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Owner \"{2}\"",
+                path, Item.OWNER, owner));
+        }
+        public void DirectoryAttributes(string path, string attributes, bool isContain)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Attributes \"{2}\" -TestMode {3}",
+                path, Item.ATTRIBUTES, attributes, isContain ? Item.CONTAIN : Item.MATCH));
+        }
+        public void DirectoryAttributes(string path, DirectoryAttributes attributes, bool isContain)
+        {
+            DirectoryAttributes(
+                path,
+                "@(\"" + string.Join("\", \"", Functions.SplitComma(attributes.ToString())) + "\")",
+                isContain);
+        }
+        public void DirectoryInherited(string path, bool inherited)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Inherited ${2}",
+                path, Item.INHERITED, inherited));
+        }
+        public void DirectorySecurityBlock(string path, bool securityBlock)
+        {
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -SecurityBlock ${2}",
+                path, Item.SECURITYBLOCK, securityBlock));
+        }
+
+        public void DirectorySize(string path, long size)
+        {
+            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -Size {2}",
+                path, Item.SIZE, size));
+        }
+        public void DirectoryCreationTime(string path, DateTime creationTime)
+        {
+            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
+                path, Item.CREATIONTIME, creationTime.ToString("yyyy/MM/dd hh:mm:ss")));
+        }
+        public void DirectoryLastWriteTime(string path, DateTime lastWriteTime)
+        {
+            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
+                path, Item.CREATIONTIME, lastWriteTime.ToString("yyyy/MM/dd hh:mm:ss")));
+        }
+
+        #endregion
 
     }
 }

@@ -24,8 +24,6 @@ namespace PSFile.Cmdlet
         [Parameter]
         public DateTime? LastWriteTime { get; set; }
         [Parameter]
-        public DateTime? LastAccessTime { get; set; }
-        [Parameter]
         public long? Size { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
@@ -71,7 +69,6 @@ namespace PSFile.Cmdlet
                 }
             }
         }
-
 
         protected override void ProcessRecord()
         {
