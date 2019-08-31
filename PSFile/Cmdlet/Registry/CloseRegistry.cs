@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             //  管理者実行確認
-            Message.CheckAdmin();
+            Functions.CheckAdmin();
 
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
             {

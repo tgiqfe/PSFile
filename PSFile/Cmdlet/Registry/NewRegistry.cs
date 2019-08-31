@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management.Automation;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System.Diagnostics;
-using System.IO;
-using System.Security.Principal;
+using System.Management.Automation;
 using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
@@ -55,12 +48,6 @@ namespace PSFile.Cmdlet
                     //  Access文字列からのアクセス権設定
                     if (!string.IsNullOrEmpty(Access))
                     {
-                        /*
-                        foreach (string ruleString in
-                            Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
-                        {
-                            security.SetAccessRule(RegistryControl.StringToAccessRule(ruleString));
-                        }*/
                         foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                         {
                             security.SetAccessRule(rule);
@@ -74,20 +61,10 @@ namespace PSFile.Cmdlet
             if (Owner != null)
             {
                 //  埋め込みのsubinacl.exeを展開
-                /*
-                string tempDir = System.IO.Path.Combine(
-                    Environment.ExpandEnvironmentVariables("%TEMP%"),
-                    "PowerReg");
-                string subinacl = System.IO.Path.Combine(tempDir, "subinacl.exe");
-                if (!File.Exists(subinacl))
-                {
-                    EmbeddedResource.Expand(tempDir);
-                }
-                */
                 string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
 
                 //  管理者実行確認
-                Message.CheckAdmin();
+                Functions.CheckAdmin();
 
                 using (Process proc = new Process())
                 {

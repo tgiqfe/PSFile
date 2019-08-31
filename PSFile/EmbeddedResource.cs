@@ -13,7 +13,6 @@ namespace PSFile
             return Path.Combine(outputDir, "subinacl.exe");
         }
 
-
         public static void Expand(string outputDir)
         {
             //  現バージョン以外で展開済みの場合、フォルダーごと削除

@@ -28,36 +28,36 @@ namespace PSFile
             this.Name = System.IO.Path.GetFileName(this.Path);
             if (isLoad)
             {
-                GetSecurity(regKey);
-                GetValues(regKey);
+                LoadSecurity(regKey);
+                LoadValues(regKey);
             }
         }
         public RegistrySummary(RegistryKey regKey, bool IgnoreSecurity, bool IgnoreValues)
         {
             this.Path = regKey.Name;
             this.Name = System.IO.Path.GetFileName(this.Path);
-            if (!IgnoreSecurity) { GetSecurity(regKey); }
-            if (!IgnoreValues) { GetValues(regKey); }
+            if (!IgnoreSecurity) { LoadSecurity(regKey); }
+            if (!IgnoreValues) { LoadValues(regKey); }
         }
         public RegistrySummary(RegistryKey regKey, int rootKeyLength, bool IgnoreSecurity, bool IgnoreValues)
         {
             this.Path = regKey.Name.Substring(rootKeyLength);
             this.Name = System.IO.Path.GetFileName(regKey.Name);
-            if (!IgnoreSecurity) { GetSecurity(regKey); }
-            if (!IgnoreValues) { GetValues(regKey); }
+            if (!IgnoreSecurity) { LoadSecurity(regKey); }
+            if (!IgnoreValues) { LoadValues(regKey); }
         }
 
         /// <summary>
         /// セキュリティ情報を取得
         /// </summary>
-        private void GetSecurity()
+        public void LoadSecurity()
         {
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
             {
-                GetSecurity(regKey);
+                LoadSecurity(regKey);
             }
         }
-        private void GetSecurity(RegistryKey regKey)
+        private void LoadSecurity(RegistryKey regKey)
         {
             RegistrySecurity security = regKey.GetAccessControl();
             this.Owner = security.GetOwner(typeof(NTAccount)).Value;
@@ -68,14 +68,14 @@ namespace PSFile
         /// <summary>
         /// 値を取得
         /// </summary>
-        private void GetValues()
+        public void LoadValues()
         {
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
             {
-                GetValues(regKey);
+                LoadValues(regKey);
             }
         }
-        private void GetValues(RegistryKey regKey)
+        private void LoadValues(RegistryKey regKey)
         {
             Values = new SerializableDictionary<string, string>();
 

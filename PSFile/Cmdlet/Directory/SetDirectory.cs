@@ -64,7 +64,7 @@ namespace PSFile.Cmdlet
                     string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
 
                     //  管理者実行確認
-                    Message.CheckAdmin();
+                    Functions.CheckAdmin();
 
                     using (Process proc = new Process())
                     {

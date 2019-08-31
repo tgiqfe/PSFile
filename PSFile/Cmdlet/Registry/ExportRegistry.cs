@@ -126,7 +126,7 @@ namespace PSFile.Cmdlet
         private void OutputDat()
         {
             //  管理者実行確認
-            Message.CheckAdmin();
+            Functions.CheckAdmin();
 
             if (File == null)
             {

@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management.Automation;
-using System.IO;
-using Microsoft.Win32;
-using System.Text.RegularExpressions;
-using System.Security.Principal;
-using System.Security.AccessControl;
+﻿using Microsoft.Win32;
 using System.Diagnostics;
+using System.Management.Automation;
+using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
@@ -87,7 +79,7 @@ namespace PSFile.Cmdlet
                 string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
 
                 //  管理者実行確認
-                Message.CheckAdmin();
+                Functions.CheckAdmin();
 
                 using (Process proc = new Process())
                 {

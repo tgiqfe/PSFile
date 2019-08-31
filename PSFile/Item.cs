@@ -41,27 +41,27 @@ namespace PSFile
         public const string DISABLE = "Disable";
         public const string REMOVE = "Remove";
 
-        public const string CONTAINERINHERIT = "ContainerInherit";
-        public const string OBJECTINHERIT = "ObjectInherit";
-        public const string INHERITONLY = "InheritOnly ";
+        public const string CONTAINERINHERIT = "ContainerInherit";      //  略称：CI
+        public const string OBJECTINHERIT = "ObjectInherit";            //  略称：OI
+        public const string INHERITONLY = "InheritOnly ";               //  略称：IO
         public const string NOPROPAGATEINHERIT = "NoPropagateInherit";
 
         //  属性
-        public const string ARCHIVE = "Archive";
+        public const string ARCHIVE = "Archive";                        //  略称：A
         public const string COMPRESSED = "Compressed";
         public const string DEVICE = "Device";
         public const string DIRECTORY = "Directory";
         public const string ENCRYPTED = "Encrypted";
-        public const string HIDDEN = "Hidden";
-        public const string INTEGRITYSTREAM = "IntegrityStream";
+        public const string HIDDEN = "Hidden";                          //  略称：H
+        public const string INTEGRITYSTREAM = "IntegrityStream";        //  略称：V
         public const string NORMAL = "Normal";
-        public const string NOSCRUBDATA = "NoScrubData";
-        public const string NOTCONTENTINDEXED = "NotContentIndexed";
-        public const string OFFLINE = "Offline";
-        public const string READONLY = "ReadOnly";
+        public const string NOSCRUBDATA = "NoScrubData";                //  略称：X
+        public const string NOTCONTENTINDEXED = "NotContentIndexed";    //  略称：I
+        public const string OFFLINE = "Offline";                        //  略称：O
+        public const string READONLY = "ReadOnly";                      //  略称：R
         public const string REPARSEPOINT = "ReparsePoint";
         public const string SPARSEFILE = "SparseFile";
-        public const string SYSTEM = "System";
+        public const string SYSTEM = "System";                          //  略称：S
         public const string TEMPORARY = "Temporary";
 
         //  アクセス権種別
@@ -110,7 +110,6 @@ namespace PSFile
         public const string YML = "Yml";
 
         //  テスト対象
-        //public const string KEY = "Key";
         public const string PATH = "Path";
         public const string NAME = "Name";
         public const string VALUE = "Value";
@@ -128,8 +127,22 @@ namespace PSFile
         public const string MATCH = "Match";
 
         #region CheckCase
-        private static readonly string[] fields = 
+        private static readonly string[] fields =
             typeof(Item).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => x.GetValue(null) as string).ToArray();
+        private static readonly Dictionary<string, string> simpleFields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "CI",  CONTAINERINHERIT },
+            { "OI",  OBJECTINHERIT },
+            { "IO", INHERITONLY },
+            { "A", ARCHIVE },
+            { "H", HIDDEN },
+            { "V", INTEGRITYSTREAM },
+            { "X", NOSCRUBDATA },
+            { "I", NOTCONTENTINDEXED },
+            { "O", OFFLINE },
+            { "R", READONLY },
+            { "S", SYSTEM }
+        };
 
         /// <summary>
         /// 大文字/小文字解決
@@ -139,7 +152,21 @@ namespace PSFile
         public static string CheckCase(string val)
         {
             if (val == null) { return null; }
-            //string[] valu = Functions.reg_Delimitor.Split(val);
+            List<string> valueList = new List<string>();
+            foreach (string valuu in Functions.SplitComma(val))
+            {
+                string matchVal = fields.FirstOrDefault(x => x.Equals(valuu, StringComparison.OrdinalIgnoreCase));
+                if(matchVal != null)
+                {
+                    valueList.Add(matchVal);
+                }
+                else if (simpleFields.ContainsKey(valuu))
+                {
+                    valueList.Add(simpleFields[valuu]);
+                }
+            }
+            return string.Join(", ", valueList);
+            /*
             string[] valu = Functions.SplitComma(val);
             for (int i = 0; i < valu.Length; i++)
             {
@@ -150,15 +177,24 @@ namespace PSFile
                 }
             }
             return string.Join(", ", valu);
+            */
         }
         public static string CheckCase(string[] valu)
         {
             if (valu == null) { return null; }
+            List<string> valueList = new List<string>();
+            foreach (string valuu in valu)
+            {
+                valueList.Add(Item.CheckCase(valuu));
+            }
+            return string.Join(", ", valueList);
+            /*
             for (int i = 0; i < valu.Length; i++)
             {
                 valu[i] = Item.CheckCase(valu[i]);
             }
             return string.Join(", ", valu);
+            */
         }
         #endregion
     }

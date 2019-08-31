@@ -97,7 +97,6 @@
     <Compile Include="Cmdlet\File\GrantFile.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Cmdlet\File\NewFile.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Cmdlet\File\RevokeFile.cs" />
     <Compile Include="Cmdlet\File\RenameFile.cs" />
     <Compile Include="Cmdlet\File\MoveFile.cs" />

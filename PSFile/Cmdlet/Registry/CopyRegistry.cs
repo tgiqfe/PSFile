@@ -23,7 +23,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (Message.CheckChildItem(Path, Destination)) { return; }
+            if (Functions.CheckChildItem(Path, Destination)) { return; }
 
             if (Name == null)
             {

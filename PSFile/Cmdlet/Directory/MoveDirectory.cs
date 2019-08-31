@@ -26,7 +26,7 @@ namespace PSFile.Cmdlet
                 Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
             }
 
-            bool ret = Message.CheckChildItem(Path, Destination);
+            bool ret = Functions.CheckChildItem(Path, Destination);
             if (!ret)
             {
                 FileSystem.MoveDirectory(Path, Destination, Force);

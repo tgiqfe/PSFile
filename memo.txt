@@ -1,3 +1,11 @@
+
+
+====================================================
+
 ContainerInherit, ObjectInherit等の略称に対応させる。
+⇒済み
 System, ReadOnly, Hidden等の略称に対応させる。
+⇒済み
 System, ReadOnly, Hiddenの順番変更にも対応させる。
+⇒済み
+
