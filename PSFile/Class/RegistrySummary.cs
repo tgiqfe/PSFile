@@ -12,7 +12,7 @@ namespace PSFile
         public string Path { get; set; }
         public string Owner { get; set; }
         public string Access { get; set; }
-        public bool Inherited { get; set; }
+        public bool? Inherited { get; set; }
         public SerializableDictionary<string, string> Values { get; set; }
 
         //  コンストラクタ

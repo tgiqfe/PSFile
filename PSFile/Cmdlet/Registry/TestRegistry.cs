@@ -24,14 +24,14 @@ namespace PSFile.Cmdlet
         [ValidateSet(Item.REG_SZ, Item.REG_BINARY, Item.REG_DWORD, Item.REG_QWORD, Item.REG_MULTI_SZ, Item.REG_EXPAND_SZ, Item.REG_NONE)]
         public string Type { get; set; } = Item.REG_SZ;
         [Parameter]
-        [ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.INHERIT)]
+        [ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.INHERITED)]
         public string Target { get; set; }
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
         public string Access { get; set; }
         [Parameter]
-        public bool? IsInherit { get; set; }
+        public bool? IsInherited { get; set; }
 
         /// <summary>
         /// いくつかのテスト項目で、モード切替が必要な場合の為のパラメータ
@@ -124,14 +124,14 @@ namespace PSFile.Cmdlet
                 }
 
                 //  継承設定チェック
-                if (Target == Item.INHERIT)
+                if (Target == Item.INHERITED)
                 {
                     //retValue = !security.AreAccessRulesProtected == IsInherit;
-                    bool tempInherit = new RegistrySummary(regKey, false, true).Inherited;
-                    retValue = tempInherit == IsInherit;
+                    bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;
+                    retValue = tempInherit == IsInherited;
                     if (!retValue)
                     {
-                        Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherit, tempInherit);
+                        Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherited, tempInherit);
                     }
                     return;
                 }
@@ -174,9 +174,9 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ACCESS;
                 }
-                else if (IsInherit != null)
+                else if (IsInherited != null)
                 {
-                    Target = Item.INHERIT;
+                    Target = Item.INHERITED;
                 }
                 else
                 {

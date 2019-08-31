@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE, Item.INHERITED, Item.SECURITYBLOCK)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -30,6 +30,8 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public bool? IsInherited { get; set; }
         [Parameter]
         public bool? SecurityBlock { get; set; }
 
@@ -47,7 +49,7 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// Targetパラメータの自動解析
-        /// 解析優先度： Hash -> Access -> Owner -> Attributes -> SecurityBlock -> Path
+        /// 解析優先度： Hash -> Access -> Owner -> Attributes -> Inherited -> SecurityBlock -> Path
         /// </summary>
         private void DetectTargetParameter()
         {
@@ -68,6 +70,10 @@ namespace PSFile.Cmdlet
                 else if (!string.IsNullOrEmpty(_Attributes))
                 {
                     Target = Item.ATTRIBUTE;
+                }
+                else if (IsInherited != null)
+                {
+                    Target = Item.INHERITED;
                 }
                 else if (SecurityBlock != null)
                 {
@@ -179,10 +185,22 @@ namespace PSFile.Cmdlet
                 return;
             }
 
+            //  継承設定チェック
+            if (Target == Item.INHERITED)
+            {
+                bool tempInherit = (bool)new FileSummary(Path, false, true, true, false, true, true).Inherited;
+                retValue = tempInherit == IsInherited;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherited, tempInherit);
+                }
+                return;
+            }
+
             //  セキュリティブロックチェック
             if (Target == Item.SECURITYBLOCK)
             {
-                bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).IsSecurityBlock;
+                bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).SecurityBlock;
                 retValue = tempSecurityBlock == SecurityBlock;
                 if (!retValue)
                 {

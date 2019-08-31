@@ -17,14 +17,14 @@ namespace PSFile
         public string Name { get; set; }
         public string Access { get; set; }
         public string Owner { get; set; }
-        public bool? IsInherited { get; set; }
+        public bool? Inherited { get; set; }
         public DateTime? CreationTime { get; set; }
         public DateTime? LastWriteTime { get; set; }
         public DateTime? LastAccessTime { get; set; }
         public string Hash { get; set; }
         public string Attributes { get; set; }
         public long? Size { get; set; }
-        public bool? IsSecurityBlock { get; set; }
+        public bool? SecurityBlock { get; set; }
 
         /// <summary>
         /// Compare-File、Compre-DirectoryでRootPathLengthの値だけ、Pathから削ることがあるので、
@@ -101,7 +101,7 @@ namespace PSFile
             this.Owner = security.GetOwner(typeof(NTAccount)).Value;
 
             //  Inherited
-            this.IsInherited = !security.AreAccessRulesProtected;
+            this.Inherited = !security.AreAccessRulesProtected;
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace PSFile
                 proc.Start();
 
                 string resultString = proc.StandardOutput.ReadToEnd();
-                this.IsSecurityBlock = resultString.Contains("ZoneId=3");
+                this.SecurityBlock = resultString.Contains("ZoneId=3");
 
                 proc.WaitForExit();
             }

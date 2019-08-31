@@ -16,6 +16,11 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Difference { get; set; }
+
+        [Parameter]
+        
+
+
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
