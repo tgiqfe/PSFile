@@ -129,6 +129,9 @@ namespace PSFile
         public const string CONTAIN = "Contain";
         public const string MATCH = "Match";
 
+        //  アプリケーション名
+        public const string APPLICATION_NAME = "PSFile";
+
         #region CheckCase
         private static readonly string[] fields =
             typeof(Item).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => x.GetValue(null) as string).ToArray();

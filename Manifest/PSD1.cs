@@ -37,7 +37,7 @@ namespace Manifest
             
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(dllFile);
 
-            string RootModule = "PowerReg.dll";
+            string RootModule = "PSFile.dll";
             string ModuleVersion = fvi.FileVersion;
             string Guid = "EBBAF360-F8E4-4EFC-A089-F9E0C78530E2";   //  GUIDは固定で
             string Author = "q";

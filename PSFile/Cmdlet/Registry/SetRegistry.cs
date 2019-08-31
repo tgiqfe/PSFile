@@ -76,7 +76,7 @@ namespace PSFile.Cmdlet
             //  所有者変更
             if (Owner != null)
             {
-                string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
+                string subinacl = EmbeddedResource.GetSubinacl(Item.APPLICATION_NAME);
 
                 //  管理者実行確認
                 Functions.CheckAdmin();

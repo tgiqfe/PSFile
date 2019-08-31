@@ -90,7 +90,7 @@ namespace PSFile.Cmdlet
                 //  reg export一時出力先
                 string tempDir = System.IO.Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
-                    "PowerReg");
+                    Item.APPLICATION_NAME);
                 File = System.IO.Path.Combine(tempDir, "Reg_Export.reg");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
 
@@ -132,7 +132,7 @@ namespace PSFile.Cmdlet
             {
                 string tempDir = System.IO.Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
-                    "PowerReg");
+                    Item.APPLICATION_NAME);
                 File = System.IO.Path.Combine(tempDir, "Reg_Export.dat");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
             }

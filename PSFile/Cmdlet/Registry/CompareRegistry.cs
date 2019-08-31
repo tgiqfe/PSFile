@@ -46,7 +46,7 @@ namespace PSFile.Cmdlet
         {
             if (Target == Item.PATH)
             {
-                string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), "PowerReg");
+                string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), Item.APPLICATION_NAME);
                 if (!Directory.Exists(tempDir))
                 {
                     Directory.CreateDirectory(tempDir);

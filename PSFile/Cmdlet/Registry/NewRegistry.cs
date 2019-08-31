@@ -61,7 +61,7 @@ namespace PSFile.Cmdlet
             if (Owner != null)
             {
                 //  埋め込みのsubinacl.exeを展開
-                string subinacl = EmbeddedResource.GetSubinacl("PowerReg");
+                string subinacl = EmbeddedResource.GetSubinacl(Item.APPLICATION_NAME);
 
                 //  管理者実行確認
                 Functions.CheckAdmin();
