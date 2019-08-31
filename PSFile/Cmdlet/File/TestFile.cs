@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTE, Item.INHERITED, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTES, Item.INHERITED, Item.SECURITYBLOCK)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -69,7 +69,7 @@ namespace PSFile.Cmdlet
                 }
                 else if (!string.IsNullOrEmpty(_Attributes))
                 {
-                    Target = Item.ATTRIBUTE;
+                    Target = Item.ATTRIBUTES;
                 }
                 else if (IsInherited != null)
                 {
@@ -155,7 +155,7 @@ namespace PSFile.Cmdlet
             }
 
             //  属性チェック
-            if (Target == Item.ATTRIBUTE)
+            if (Target == Item.ATTRIBUTES)
             {
                 string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
                 if (TestMode == Item.CONTAIN)

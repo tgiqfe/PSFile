@@ -118,7 +118,7 @@ namespace PSFile
         public const string ACCESS = "Access";
         public const string INHERITED = "Inherited";
         public const string HASH = "Hash";
-        public const string ATTRIBUTE = "Attribute";
+        public const string ATTRIBUTES = "Attributes";
         public const string SIZE = "Size";
         public const string SECURITYBLOCK = "SecurityBlock";
         public const string CREATIONTIME = "CreationTime";
