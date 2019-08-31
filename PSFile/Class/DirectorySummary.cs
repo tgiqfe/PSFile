@@ -16,7 +16,7 @@ namespace PSFile
         public string Name { get; set; }
         public string Access { get; set; }
         public string Owner { get; set; }
-        public bool? IsInherited { get; set; }
+        public bool? Inherited { get; set; }
         public DateTime? CreationTime { get; set; }
         public DateTime? LastWriteTime { get; set; }
         public string Attributes { get; set; }
@@ -95,7 +95,7 @@ namespace PSFile
             this.Owner = security.GetOwner(typeof(NTAccount)).Value;
 
             //  Inherited
-            this.IsInherited = !security.AreAccessRulesProtected;
+            this.Inherited = !security.AreAccessRulesProtected;
         }
 
         /// <summary>

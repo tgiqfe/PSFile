@@ -188,7 +188,7 @@ namespace PSFile.Cmdlet
             //  継承設定チェック
             if (Target == Item.INHERITED)
             {
-                bool tempInherit = (bool)new FileSummary(Path, false, true, true, false, true, true).Inherited;
+                bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
                 retValue = tempInherit == IsInherited;
                 if (!retValue)
                 {
