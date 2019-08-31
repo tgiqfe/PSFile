@@ -123,10 +123,9 @@ namespace PSFile.Cmdlet
                     return;
                 }
 
-                //  継承設定チェック
+                //  Inheritedチェック
                 if (Target == Item.INHERITED)
                 {
-                    //retValue = !security.AreAccessRulesProtected == IsInherit;
                     bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;
                     retValue = tempInherit == IsInherited;
                     if (!retValue)

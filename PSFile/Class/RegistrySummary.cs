@@ -32,19 +32,19 @@ namespace PSFile
                 LoadValues(regKey);
             }
         }
-        public RegistrySummary(RegistryKey regKey, bool IgnoreSecurity, bool IgnoreValues)
+        public RegistrySummary(RegistryKey regKey, bool ignoreSecurity, bool ignoreValues)
         {
             this.Path = regKey.Name;
             this.Name = System.IO.Path.GetFileName(this.Path);
-            if (!IgnoreSecurity) { LoadSecurity(regKey); }
-            if (!IgnoreValues) { LoadValues(regKey); }
+            if (!ignoreSecurity) { LoadSecurity(regKey); }
+            if (!ignoreValues) { LoadValues(regKey); }
         }
-        public RegistrySummary(RegistryKey regKey, int rootKeyLength, bool IgnoreSecurity, bool IgnoreValues)
+        public RegistrySummary(RegistryKey regKey, int rootPathLength, bool ignoreSecurity, bool ignoreValues)
         {
-            this.Path = regKey.Name.Substring(rootKeyLength);
+            this.Path = regKey.Name.Substring(rootPathLength);
             this.Name = System.IO.Path.GetFileName(regKey.Name);
-            if (!IgnoreSecurity) { LoadSecurity(regKey); }
-            if (!IgnoreValues) { LoadValues(regKey); }
+            if (!ignoreSecurity) { LoadSecurity(regKey); }
+            if (!ignoreValues) { LoadValues(regKey); }
         }
 
         /// <summary>

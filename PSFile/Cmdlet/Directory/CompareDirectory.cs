@@ -9,6 +9,10 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダー比較
+    /// TestGenerator : 無し
+    /// </summary>
     [Cmdlet(VerbsData.Compare, "Directory")]
     public class CompareDirectory : PSCmdlet
     {

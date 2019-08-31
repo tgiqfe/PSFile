@@ -15,11 +15,10 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
-        [Parameter]
-        [ValidateSet(Item.PATH)]
-        public string Target { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Difference { get; set; }
+        [Parameter, ValidateSet(Item.PATH)]
+        public string Target { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
