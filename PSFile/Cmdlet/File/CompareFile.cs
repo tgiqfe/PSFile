@@ -16,7 +16,8 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Position = 1)]
         public string Difference { get; set; }
-        [ValidateSet(Item.PATH, Item.CREATIONTIME, Item.LASTWRITETIME, Item.LASTACCESSTIME)]
+        [Parameter]
+        [ValidateSet(Item.PATH, Item.SIZE, Item.CREATIONTIME, Item.LASTWRITETIME, Item.LASTACCESSTIME)]
         public string Target { get; set; }
         [Parameter]
         public DateTime? CreationTime { get; set; }
@@ -80,7 +81,7 @@ namespace PSFile.Cmdlet
             }
 
             //  CreationTime比較
-            if(Target == Item.CREATIONTIME)
+            if (Target == Item.CREATIONTIME)
             {
                 DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
                 tempDate = tempDate.AddTicks(-(tempDate.Ticks % TimeSpan.TicksPerSecond));
@@ -144,13 +145,14 @@ namespace PSFile.Cmdlet
         private List<FileSummary> GetSummaryList(string path,
             bool ignoreSecurity, bool ignoreTime, bool ignoreHash, bool ignoreAttributes, bool ignoreSize, bool ignoreSecurityBlock)
         {
-            FileSummary summary = new FileSummary(path, path.Length,
-                ignoreSecurity, ignoreTime, ignoreHash, ignoreAttributes, ignoreSize, ignoreSecurityBlock);
-            summary.Name = "";
-
             List<FileSummary> summaryList = new List<FileSummary>();
-            summaryList.Add(summary);
-
+            if (!string.IsNullOrEmpty(path) && File.Exists(path))
+            {
+                FileSummary summary = new FileSummary(path, path.Length,
+                    ignoreSecurity, ignoreTime, ignoreHash, ignoreAttributes, ignoreSize, ignoreSecurityBlock);
+                summary.Name = "";
+                summaryList.Add(summary);
+            }
             return summaryList;
         }
     }

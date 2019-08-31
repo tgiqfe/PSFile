@@ -16,7 +16,9 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Position = 1)]
         public string Difference { get; set; }
-
+        [Parameter]
+        [ValidateSet(Item.PATH, Item.SIZE, Item.CREATIONTIME, Item.LASTWRITETIME, Item.LASTACCESSTIME)]
+        public string Target { get; set; }
         [Parameter]
         public DateTime? CreationTime { get; set; }
         [Parameter]
@@ -25,7 +27,6 @@ namespace PSFile.Cmdlet
         public DateTime? LastAccessTime { get; set; }
         [Parameter]
         public long? Size { get; set; }
-
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
@@ -39,10 +40,67 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IsLightFiles { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            DetectTargetParameter();
+        }
+
+        /// <summary>
+        /// Targetパラメータの自動解析
+        /// 解析優先度： Size -> CreationTime -> LastWriteTime -> Path
+        /// </summary>
+        private void DetectTargetParameter()
+        {
+            if (Target == null)
+            {
+                if (Size != null)
+                {
+                    Target = Item.SIZE;
+                }
+                else if (CreationTime != null)
+                {
+                    Target = Item.CREATIONTIME;
+                }
+                else if (LastWriteTime != null)
+                {
+                    Target = Item.LASTWRITETIME;
+                }
+                else
+                {
+                    Target = Item.PATH;
+                }
+            }
+        }
 
 
         protected override void ProcessRecord()
         {
+            //  Size比較
+            if (Target == Item.SIZE)
+            {
+                long tempSize = (long)new DirectorySummary(Path, true, true, true, false, true, true).Size;
+                WriteObject(tempSize.CompareTo(Size));
+                return;
+            }
+
+            //  CreationTime比較
+            if (Target == Item.CREATIONTIME)
+            {
+                DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).CreationTime;
+                tempDate = tempDate.AddTicks(-(tempDate.Ticks % TimeSpan.TicksPerSecond));
+                WriteObject(tempDate.CompareTo(CreationTime));
+                return;
+            }
+
+            //  LastWriteTime比較
+            if (Target == Item.LASTWRITETIME)
+            {
+                DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).CreationTime;
+                tempDate = tempDate.AddTicks(-(tempDate.Ticks % TimeSpan.TicksPerSecond));
+                WriteObject(tempDate.CompareTo(LastWriteTime));
+                return;
+            }
+
             #region Compare Path
             //  Path比較
             string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), "PowerReg");
@@ -90,8 +148,9 @@ namespace PSFile.Cmdlet
         private List<DirectorySummary> GetSummaryList(string path,
             bool ignoreSecurity, bool ignoreTime, bool ignoreAttributes, bool ignoreSize, bool ignoreFiles, bool isLightFiles)
         {
-            int startLength = path.Length;
             List<DirectorySummary> summaryList = new List<DirectorySummary>();
+            int startLength = 0;
+            
             Action<string> getSummary = null;
             getSummary = (targetPath) =>
             {
@@ -105,7 +164,12 @@ namespace PSFile.Cmdlet
                     getSummary(subTargetPath);
                 }
             };
-            getSummary(path);
+
+            if (Directory.Exists(path))
+            {
+                startLength = path.Length;
+                getSummary(path);
+            }
 
             return summaryList;
         }

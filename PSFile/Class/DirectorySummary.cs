@@ -120,6 +120,7 @@ namespace PSFile
         /// </summary>
         public void LoadSize()
         {
+            this.Size = 0;
             foreach (FileInfo fi in new DirectoryInfo(_Path).GetFiles("*", SearchOption.AllDirectories))
             {
                 this.Size += fi.Length;
