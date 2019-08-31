@@ -14,8 +14,18 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
-        [Parameter(Mandatory = true, Position = 1)]
+        [Parameter(Position = 1)]
         public string Difference { get; set; }
+
+        [Parameter]
+        public DateTime? CreationTime { get; set; }
+        [Parameter]
+        public DateTime? LastWriteTime { get; set; }
+        [Parameter]
+        public DateTime? LastAccessTime { get; set; }
+        [Parameter]
+        public long? Size { get; set; }
+
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
@@ -29,8 +39,12 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IsLightFiles { get; set; }
 
+
+
         protected override void ProcessRecord()
         {
+            #region Compare Path
+            //  Path比較
             string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), "PowerReg");
             if (!Directory.Exists(tempDir))
             {
@@ -57,8 +71,9 @@ namespace PSFile.Cmdlet
                 sw.WriteLine(text_dif);
             }
 
-            int retVal = string.Compare(text_ref, text_dif);
-            WriteObject(retVal);
+            int retValue = string.Compare(text_ref, text_dif);
+            WriteObject(retValue);
+            #endregion
         }
 
         /// <summary>

@@ -121,6 +121,9 @@ namespace PSFile
         public const string ATTRIBUTE = "Attribute";
         public const string SIZE = "Size";
         public const string SECURITYBLOCK = "SecurityBlock";
+        public const string CREATIONTIME = "CreationTime";
+        public const string LASTWRITETIME = "LastWriteTime";
+        public const string LASTACCESSTIME = "LastAccessTime";
 
         //  テストモード
         public const string CONTAIN = "Contain";

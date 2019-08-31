@@ -14,13 +14,16 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
-        [Parameter(Mandatory = true, Position = 1)]
+        [Parameter(Position = 1)]
         public string Difference { get; set; }
-
+        [ValidateSet(Item.PATH, Item.CREATIONTIME, Item.LASTWRITETIME, Item.LASTACCESSTIME)]
+        public string Target { get; set; }
         [Parameter]
-        
-
-
+        public DateTime? CreationTime { get; set; }
+        [Parameter]
+        public DateTime? LastWriteTime { get; set; }
+        [Parameter]
+        public long? Size { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
@@ -34,8 +37,68 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IgnoreSecurityBlock { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            DetectTargetParameter();
+        }
+
+        /// <summary>
+        /// Targetパラメータの自動解析
+        /// 解析優先度： Size -> CreationTime -> LastWriteTime -> Path
+        /// </summary>
+        private void DetectTargetParameter()
+        {
+            if (Target == null)
+            {
+                if (Size != null)
+                {
+                    Target = Item.SIZE;
+                }
+                else if (CreationTime != null)
+                {
+                    Target = Item.CREATIONTIME;
+                }
+                else if (LastWriteTime != null)
+                {
+                    Target = Item.LASTWRITETIME;
+                }
+                else
+                {
+                    Target = Item.PATH;
+                }
+            }
+        }
+
         protected override void ProcessRecord()
         {
+            //  Size比較
+            if (Target == Item.SIZE)
+            {
+                long tempSize = (long)new FileSummary(Path, true, true, true, true, false, true).Size;
+                WriteObject(tempSize.CompareTo(Size));
+                return;
+            }
+
+            //  CreationTime比較
+            if(Target == Item.CREATIONTIME)
+            {
+                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+                tempDate = tempDate.AddTicks(-(tempDate.Ticks % TimeSpan.TicksPerSecond));
+                WriteObject(tempDate.CompareTo(CreationTime));
+                return;
+            }
+
+            //  LastWriteTime比較
+            if (Target == Item.LASTWRITETIME)
+            {
+                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).LastWriteTime;
+                tempDate = tempDate.AddTicks(-(tempDate.Ticks % TimeSpan.TicksPerSecond));
+                WriteObject(tempDate.CompareTo(LastWriteTime));
+                return;
+            }
+
+            //  Path比較
+            #region Compare Path
             string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), "PowerReg");
             if (!Directory.Exists(tempDir))
             {
@@ -62,10 +125,22 @@ namespace PSFile.Cmdlet
                 sw.WriteLine(text_dif);
             }
 
-            int retVal = string.Compare(text_ref, text_dif);
-            WriteObject(retVal);
+            int retValue = string.Compare(text_ref, text_dif);
+            WriteObject(retValue);
+            #endregion
         }
 
+        /// <summary>
+        /// FileSummaryリストを取得
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="ignoreSecurity"></param>
+        /// <param name="ignoreTime"></param>
+        /// <param name="ignoreHash"></param>
+        /// <param name="ignoreAttributes"></param>
+        /// <param name="ignoreSize"></param>
+        /// <param name="ignoreSecurityBlock"></param>
+        /// <returns></returns>
         private List<FileSummary> GetSummaryList(string path,
             bool ignoreSecurity, bool ignoreTime, bool ignoreHash, bool ignoreAttributes, bool ignoreSize, bool ignoreSecurityBlock)
         {
