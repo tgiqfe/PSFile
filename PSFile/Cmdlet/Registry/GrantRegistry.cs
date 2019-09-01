@@ -40,7 +40,6 @@ namespace PSFile.Cmdlet
             {
                 if (regKey == null) { return; }
 
-                //RegistrySecurity security = regKey.GetAccessControl();
                 RegistrySecurity security = null;
 
                 //  アクセス権設定
@@ -56,20 +55,16 @@ namespace PSFile.Cmdlet
                             InheritanceFlags.None,
                         PropagationFlags.None,
                         (AccessControlType)Enum.Parse(typeof(AccessControlType), AccessControl));
-
-                    security.SetAccessRule(rule);
+                    security.AddAccessRule(rule);
                 }
 
                 //  Access文字列からの設定
                 if (!string.IsNullOrEmpty(Access))
                 {
                     if (security == null) { security = regKey.GetAccessControl(); }
-
-                    //  Grantでアクセス権追加なのに、Setで上書きしてしまっていませんか?
-
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
-                        security.SetAccessRule(rule);
+                        security.AddAccessRule(rule);
                     }
                 }
 
@@ -91,7 +86,7 @@ namespace PSFile.Cmdlet
                     }
                 }
 
-                if (security == null) { regKey.SetAccessControl(security); }
+                if (security != null) { regKey.SetAccessControl(security); }
 
                 WriteObject(new RegistrySummary(regKey, true));
             }

@@ -1,5 +1,4 @@
-Grant-Registry
-⇒アクセス権追加なのに、上書きしてしまっているような
+
 Test-Registry
 ⇒TestModeが未実装
 
@@ -13,4 +12,7 @@ System, ReadOnly, Hidden等の略称に対応させる。
 ⇒済み
 System, ReadOnly, Hiddenの順番変更にも対応させる。
 ⇒済み
+Grant-Registry
+⇒アクセス権追加なのに、上書きしてしまっているような
+⇒OK
 

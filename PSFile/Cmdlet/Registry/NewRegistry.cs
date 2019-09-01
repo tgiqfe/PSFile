@@ -27,9 +27,44 @@ namespace PSFile.Cmdlet
         {
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
             {
+                //if (regKey == null) { return; }
+
+                RegistrySecurity security = null;
+
+                //  Access文字列からの設定
+                if (!string.IsNullOrEmpty(Access))
+                {
+                    if (security == null) { security = regKey.GetAccessControl(); }
+                    foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
+                    {
+                        security.AddAccessRule(rule);
+                    }
+                }
+
+                //  上位からのアクセス権継承の設定変更
+                if (Inherited != Item.NONE)
+                {
+                    if (security == null) { security = regKey.GetAccessControl(); }
+                    switch (Inherited)
+                    {
+                        case Item.ENABLE:
+                            security.SetAccessRuleProtection(false, false);
+                            break;
+                        case Item.DISABLE:
+                            security.SetAccessRuleProtection(true, true);
+                            break;
+                        case Item.REMOVE:
+                            security.SetAccessRuleProtection(true, false);
+                            break;
+                    }
+                }
+
+                if (security != null) { regKey.SetAccessControl(security); }
+
+                /*
                 if (Inherited != Item.NONE || !string.IsNullOrEmpty(Access))
                 {
-                    RegistrySecurity security = regKey.GetAccessControl();
+                    //RegistrySecurity security = regKey.GetAccessControl();
 
                     //  上位からのアクセス権継承の設定変更
                     switch (Inherited)
@@ -53,8 +88,10 @@ namespace PSFile.Cmdlet
                             security.SetAccessRule(rule);
                         }
                     }
+
                     regKey.SetAccessControl(security);
                 }
+                */
             }
 
             //  所有者変更

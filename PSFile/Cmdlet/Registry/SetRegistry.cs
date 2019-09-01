@@ -41,13 +41,26 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (Inherited != Item.NONE || !string.IsNullOrEmpty(Access))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
             {
-                using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
-                {
-                    RegistrySecurity security = regKey.GetAccessControl();
+                if (regKey == null) { return; }
 
-                    //  上位からのアクセス権継承の設定変更
+                RegistrySecurity security = null;
+
+                //  Access文字列からの設定
+                if (!string.IsNullOrEmpty(Access))
+                {
+                    if (security == null) { security = regKey.GetAccessControl(); }
+                    foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
+                    {
+                        security.AddAccessRule(rule);
+                    }
+                }
+
+                //  上位からのアクセス権継承の設定変更
+                if (Inherited != Item.NONE)
+                {
+                    if (security == null) { security = regKey.GetAccessControl(); }
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -60,17 +73,9 @@ namespace PSFile.Cmdlet
                             security.SetAccessRuleProtection(true, false);
                             break;
                     }
-
-                    //  Access文字列からのアクセス権設定
-                    if (!string.IsNullOrEmpty(Access))
-                    {
-                        foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
-                        {
-                            security.SetAccessRule(rule);
-                        }
-                    }
-                    regKey.SetAccessControl(security);
                 }
+
+                if (security != null) { regKey.SetAccessControl(security); }
             }
 
             //  所有者変更
