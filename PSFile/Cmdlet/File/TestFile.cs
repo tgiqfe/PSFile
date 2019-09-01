@@ -31,7 +31,7 @@ namespace PSFile.Cmdlet
         public string[] Attributes { get; set; }
         private string _Attributes = null;
         [Parameter]
-        public bool? IsInherited { get; set; }
+        public bool? Inherited { get; set; }
         [Parameter]
         public bool? SecurityBlock { get; set; }
 
@@ -71,7 +71,7 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ATTRIBUTES;
                 }
-                else if (IsInherited != null)
+                else if (Inherited != null)
                 {
                     Target = Item.INHERITED;
                 }
@@ -187,10 +187,10 @@ namespace PSFile.Cmdlet
             if (Target == Item.INHERITED)
             {
                 bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
-                retValue = tempInherit == IsInherited;
+                retValue = tempInherit == Inherited;
                 if (!retValue)
                 {
-                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherited, tempInherit);
+                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
                 }
                 return;
             }

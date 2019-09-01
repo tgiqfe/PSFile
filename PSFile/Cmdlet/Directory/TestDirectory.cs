@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTES)]
+        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTES, Item.INHERITED)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -29,7 +29,7 @@ namespace PSFile.Cmdlet
         public string[] Attributes { get; set; }
         private string _Attributes = null;
         [Parameter]
-        public bool? IsInherited { get; set; }
+        public bool? Inherited { get; set; }
 
         //  戻り値
         bool retValue = false;
@@ -63,7 +63,7 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ATTRIBUTES;
                 }
-                else if (IsInherited != null)
+                else if (Inherited != null)
                 {
                     Target = Item.INHERITED;
                 }
@@ -162,10 +162,10 @@ namespace PSFile.Cmdlet
             if (Target == Item.INHERITED)
             {
                 bool tempInherit = (bool)new DirectorySummary(Path, false, true, true, true, true, true).Inherited;
-                retValue = tempInherit == IsInherited;
+                retValue = tempInherit == Inherited;
                 if (!retValue)
                 {
-                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherited, tempInherit);
+                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
                 }
                 return;
             }

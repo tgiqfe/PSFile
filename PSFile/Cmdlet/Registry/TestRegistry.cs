@@ -31,7 +31,7 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string Access { get; set; }
         [Parameter]
-        public bool? IsInherited { get; set; }
+        public bool? Inherited { get; set; }
 
         /// <summary>
         /// いくつかのテスト項目で、モード切替が必要な場合の為のパラメータ
@@ -127,10 +127,10 @@ namespace PSFile.Cmdlet
                 if (Target == Item.INHERITED)
                 {
                     bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;
-                    retValue = tempInherit == IsInherited;
+                    retValue = tempInherit == Inherited;
                     if (!retValue)
                     {
-                        Console.Error.WriteLine("継承設定不一致： {0} / {1}", IsInherited, tempInherit);
+                        Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
                     }
                     return;
                 }
@@ -173,7 +173,7 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ACCESS;
                 }
-                else if (IsInherited != null)
+                else if (Inherited != null)
                 {
                     Target = Item.INHERITED;
                 }

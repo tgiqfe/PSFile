@@ -81,6 +81,10 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Access))
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.DirectoryAccess(Path, Access, true);
+
                     foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(Access))
                     {
                         security.AddAccessRule(addRule);
@@ -91,6 +95,10 @@ namespace PSFile.Cmdlet
                 if (Inherited != Item.NONE)
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.DirectoryInherited(Path, Inherited == Item.ENABLE);
+
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -110,6 +118,9 @@ namespace PSFile.Cmdlet
                 //  フォルダー属性を追加
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
+                    //  テスト自動生成
+                    _generator.DirectoryAttributes(Path, _Attributes, true);
+
                     FileAttributes nowAttr = File.GetAttributes(Path);
                     FileAttributes addAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
                     File.SetAttributes(Path, nowAttr | addAttr);
