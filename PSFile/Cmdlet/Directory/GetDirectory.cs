@@ -8,6 +8,10 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダー情報を取得してDirectorySummaryインスタンスで返す
+    /// TestGenerator : 無し
+    /// </summary>
     [Cmdlet(VerbsCommon.Get, "Directory")]
     public class GetDirectory : PSCmdlet
     {

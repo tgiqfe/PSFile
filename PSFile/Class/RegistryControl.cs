@@ -145,12 +145,12 @@ namespace PSFile
         /// <summary>
         /// 文字列からFileSystemAccessのListを取得
         /// </summary>
-        /// <param name="ruleString">Access文字列</param>
+        /// <param name="accessString">Access文字列</param>
         /// <returns></returns>
-        public static List<RegistryAccessRule> StringToAccessRules(string ruleString)
+        public static List<RegistryAccessRule> StringToAccessRules(string accessString)
         {
             List<RegistryAccessRule> ruleList = new List<RegistryAccessRule>();
-            foreach (string ruleStr in ruleString.Split('/'))
+            foreach (string ruleStr in accessString.Split('/'))
             {
                 string[] fields = ruleStr.Split(';');
                 ruleList.Add(new RegistryAccessRule(

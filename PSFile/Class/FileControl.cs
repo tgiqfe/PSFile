@@ -28,12 +28,12 @@ namespace PSFile
         /// <summary>
         /// 文字列からFileSystemAccessのListを取得
         /// </summary>
-        /// <param name="ruleString">Access文字列</param>
+        /// <param name="accessString">Access文字列</param>
         /// <returns></returns>
-        public static List<FileSystemAccessRule> StringToAccessRules(string ruleString)
+        public static List<FileSystemAccessRule> StringToAccessRules(string accessString)
         {
             List<FileSystemAccessRule> ruleList = new List<FileSystemAccessRule>();
-            foreach (string ruleStr in ruleString.Split('/'))
+            foreach (string ruleStr in accessString.Split('/'))
             {
                 string[] fields = ruleStr.Split(';');
                 if (fields.Length >= 3)

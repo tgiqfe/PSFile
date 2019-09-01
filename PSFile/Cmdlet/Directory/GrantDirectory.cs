@@ -10,6 +10,11 @@ using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダーにアクセス権あるいは属性を追加
+    /// TestGenerator : Test-Directory -Path ～ -Access ～
+    ///                 Test-Directory -Path ～ -Attributes ～
+    /// </summary>
     [Cmdlet(VerbsSecurity.Grant, "Directory")]
     public class GrantDirectory : PSCmdlet
     {
@@ -33,6 +38,9 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
@@ -40,6 +48,8 @@ namespace PSFile.Cmdlet
             AccessControl = Item.CheckCase(AccessControl);
             _Rights = Item.CheckCase(Rights);
             _Attributes = Item.CheckCase(Attributes);
+
+            if (!string.IsNullOrEmpty(Test)) { _generator = new TestGenerator(Test); }
         }
 
         protected override void ProcessRecord()
@@ -52,14 +62,17 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Account))
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
-                    string ruleString = string.Format("{0};{1};{2};{3};{4}",
+                    string accessString = string.Format("{0};{1};{2};{3};{4}",
                         Account,
                         _Rights,
                         Recursive ? Item.CONTAINERINHERIT + ", " + Item.OBJECTINHERIT : Item.NONE,
                         Item.NONE,
                         AccessControl);
-                    foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(ruleString))
+                    foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(accessString))
                     {
+                        //  テスト自動生成
+                        _generator.DirectoryAccess(Path, accessString, true);
+
                         security.AddAccessRule(addRule);
                     }
                 }

@@ -63,14 +63,10 @@ namespace PSFile.Cmdlet
                 //  Access文字列からの設定
                 if (!string.IsNullOrEmpty(Access))
                 {
-                    /*
-                    foreach (string ruleString in
-                        Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
-                    {
-                        security.SetAccessRule(RegistryControl.StringToAccessRule(ruleString));
-                    }
-                    */
                     if (security == null) { security = regKey.GetAccessControl(); }
+
+                    //  Grantでアクセス権追加なのに、Setで上書きしてしまっていませんか?
+
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
                         security.SetAccessRule(rule);

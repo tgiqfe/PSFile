@@ -99,10 +99,10 @@ namespace PSFile.Cmdlet
                         string tempAccess = new RegistrySummary(regKey, false, true).Access;
                         //string tempAccess = RegistryControl.AccessToString(regKey);
                         string[] tempAccessArray = tempAccess.Contains("/") ? tempAccess.Split('/') : new string[1] { tempAccess };
-                        foreach (string ruleString in
+                        foreach (string accessString in
                             Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
                         {
-                            retValue = tempAccessArray.Any(x => x.Equals(ruleString, StringComparison.OrdinalIgnoreCase));
+                            retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
                             if (!retValue)
                             {
                                 Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);

@@ -8,6 +8,10 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダー情報をエクスポートしてDirectorySummaryインスタンスをシリアライズ
+    /// TestGeneratro : 無し
+    /// </summary>
     [Cmdlet(VerbsData.Export, "Directory")]
     public class ExportDirectory : PSCmdlet
     {
