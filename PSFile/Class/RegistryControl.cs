@@ -94,16 +94,6 @@ namespace PSFile
         /// <summary>
         /// レジストリ値を文字列に変換
         /// </summary>
-        /*
-        public static string RegistryValueToString(RegistryKey regKey, string name)
-        {
-            return RegistryValueToString(regKey, name, regKey.GetValueKind(name), true);
-        }
-        public static string RegistryValueToString(RegistryKey regKey, string name, RegistryValueKind valueKind)
-        {
-            return RegistryValueToString(regKey, name, valueKind, true);
-        }
-        */
         public static string RegistryValueToString(RegistryKey regKey, string name, RegistryValueKind valueKind, bool noResolv)
         {
             switch (valueKind)
@@ -180,22 +170,78 @@ namespace PSFile
                     rule.InheritanceFlags.ToString(),
                     rule.PropagationFlags.ToString(),
                     rule.AccessControlType.ToString()));
-
-                //accessRuleList.Add(AccessRulesToString(rule));
             }
             return string.Join("/", accessRuleList);
         }
-        /*
-        public static string AccessRulesToString(RegistryAccessRule rule)
+
+        /// <summary>
+        /// Access文字列2つの内容をチェックして一致確認
+        /// </summary>
+        /// <param name="accessStringA"></param>
+        /// <param name="accessStringB"></param>
+        /// <returns></returns>
+        public static bool IsMatchAccess(string accessStringA, string accessStringB)
         {
-            string[] accessArray = new string[5];
-            accessArray[0] = rule.IdentityReference.Value;          //  Account
-            accessArray[1] = rule.RegistryRights.ToString();        //  Rights
-            accessArray[2] = rule.InheritanceFlags.ToString();      //  InheritanceFlags
-            accessArray[3] = rule.PropagationFlags.ToString();      //  PropagationFlags
-            accessArray[4] = rule.AccessControlType.ToString();     //  AccessControlType
-            return string.Join(";", accessArray);
+            string[] accessStringArrayA = accessStringA.Split(';');
+            string[] accessStringArrayB = accessStringB.Split(';');
+
+            //  Accountチェック
+            string accountA = accessStringArrayA[0];
+            string accountB = accessStringArrayB[0];
+            if (accountA.Contains("\\") && !accountB.Contains("\\"))
+            {
+                accountB = accountA.Substring(0, accountA.IndexOf("\\") + 1) + accountB;
+            }
+            if (!accountA.Contains("\\") && accountB.Contains("\\"))
+            {
+                accountA = accountB.Substring(0, accountB.IndexOf("\\") + 1) + accountA;
+            }
+            if (!accountA.Equals(accountB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  Rightsチェック
+            string rightsA = Item.CheckCase(accessStringArrayA[1]);
+            string rightsB = Item.CheckCase(accessStringArrayB[1]);
+            rightsA = Enum.TryParse(rightsA, out RegistryRights tempRightsA) ? tempRightsA.ToString() : "nullA";
+            rightsB = Enum.TryParse(rightsB, out RegistryRights tempRightsB) ? tempRightsB.ToString() : "nullB";
+            if (rightsA != rightsB)
+            {
+                return false;
+            }
+
+            //  InheritanceFlagsチェック
+            string ifA = Item.CheckCase(accessStringArrayA[2]);
+            string ifB = Item.CheckCase(accessStringArrayB[2]);
+            ifA = Enum.TryParse(ifA, out InheritanceFlags tempIFA) ? tempIFA.ToString() : "nullA";
+            ifB = Enum.TryParse(ifB, out InheritanceFlags tempIFB) ? tempIFB.ToString() : "nullB";
+            if (ifA != ifB)
+            {
+                return false;
+            }
+
+            //  PropagationFlagsチェック
+            string pfA = Item.CheckCase(accessStringArrayA[3]);
+            string pfB = Item.CheckCase(accessStringArrayB[3]);
+            pfA = Enum.TryParse(pfA, out PropagationFlags tempPFA) ? tempPFA.ToString() : "nullA";
+            pfB = Enum.TryParse(pfB, out PropagationFlags tempPFB) ? tempPFB.ToString() : "nullB";
+            if (pfA != pfB)
+            {
+                return false;
+            }
+
+            //  AccessControlチェック
+            string acA = Item.CheckCase(accessStringArrayA[4]);
+            string acB = Item.CheckCase(accessStringArrayB[4]);
+            acA = Enum.TryParse(acA, out AccessControlType tempACA) ? tempACA.ToString() : "nullA";
+            acB = Enum.TryParse(acB, out AccessControlType tempACB) ? tempACB.ToString() : "nullB";
+            if (acA != acB)
+            {
+                return false;
+            }
+
+            return true;
         }
-        */
     }
 }

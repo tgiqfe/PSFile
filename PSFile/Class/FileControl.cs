@@ -69,5 +69,55 @@ namespace PSFile
             }
             return string.Join("/", fileAccessRuleList);
         }
+
+        /// <summary>
+        /// Access文字列2つの内容をチェックして一致確認
+        /// </summary>
+        /// <param name="accessStringA"></param>
+        /// <param name="accessStringB"></param>
+        /// <returns></returns>
+        public static bool IsMatchAccess(string accessStringA, string accessStringB)
+        {
+            string[] accessStringArrayA = accessStringA.Split(';');
+            string[] accessStringArrayB = accessStringB.Split(';');
+
+            //  Accountチェック
+            string accountA = accessStringArrayA[0];
+            string accountB = accessStringArrayB[0];
+            if (accountA.Contains("\\") && !accountB.Contains("\\"))
+            {
+                accountB = accountA.Substring(0, accountA.IndexOf("\\") + 1) + accountB;
+            }
+            if (!accountA.Contains("\\") && accountB.Contains("\\"))
+            {
+                accountA = accountB.Substring(0, accountB.IndexOf("\\") + 1) + accountA;
+            }
+            if (!accountA.Equals(accountB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  Rightsチェック
+            string rightsA = Item.CheckCase(accessStringArrayA[1]);
+            string rightsB = Item.CheckCase(accessStringArrayB[1]);
+            rightsA = Enum.TryParse(rightsA, out FileSystemRights tempRightsA) ? tempRightsA.ToString() : "nullA";
+            rightsB = Enum.TryParse(rightsB, out FileSystemRights tempRightsB) ? tempRightsB.ToString() : "nullB";
+            if (rightsA != rightsB)
+            {
+                return false;
+            }
+
+            //  AccessControlチェック
+            string acA = Item.CheckCase(accessStringArrayA[2]);
+            string acB = Item.CheckCase(accessStringArrayB[2]);
+            acA = Enum.TryParse(acA, out AccessControlType tempACA) ? tempACA.ToString() : "nullA";
+            acB = Enum.TryParse(acB, out AccessControlType tempACB) ? tempACB.ToString() : "nullB";
+            if (acA != acB)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

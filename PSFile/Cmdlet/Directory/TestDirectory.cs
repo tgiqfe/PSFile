@@ -109,7 +109,24 @@ namespace PSFile.Cmdlet
                 else
                 {
                     string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
-                    retValue = tempAccess == Access;
+                    List<string> accessListA = new List<string>();
+                    accessListA.AddRange(tempAccess.Split('/'));
+
+                    List<string> accessListB = new List<string>();
+                    accessListB.AddRange(Access.Split('/'));
+
+                    for (int i = accessListA.Count - 1; i >= 0; i--)
+                    {
+                        string matchString = 
+                            accessListB.FirstOrDefault(x => DirectoryControl.IsMatchAccess(x, accessListA[i]));
+                        if(matchString != null)
+                        {
+                            accessListB.Remove(matchString);
+                        }
+                    }
+                    retValue = accessListB.Count == 0;
+
+                    //retValue = tempAccess == Access;
                     if (!retValue)
                     {
                         Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
