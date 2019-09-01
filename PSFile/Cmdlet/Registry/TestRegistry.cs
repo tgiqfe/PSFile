@@ -20,12 +20,13 @@ namespace PSFile.Cmdlet
         public string Name { get; set; }
         [Parameter]
         public string Value { get; set; }
-        [Parameter]
-        [ValidateSet(Item.REG_SZ, Item.REG_BINARY, Item.REG_DWORD, Item.REG_QWORD, Item.REG_MULTI_SZ, Item.REG_EXPAND_SZ, Item.REG_NONE)]
+        [Parameter, ValidateSet(Item.REG_SZ, Item.REG_BINARY, Item.REG_DWORD, Item.REG_QWORD, Item.REG_MULTI_SZ, Item.REG_EXPAND_SZ, Item.REG_NONE)]
         public string Type { get; set; } = Item.REG_SZ;
-        [Parameter]
-        [ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.INHERITED)]
+        [Parameter, ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.INHERITED)]
         public string Target { get; set; }
+        [Parameter]
+        [ValidateSet(Item.CONTAIN, Item.MATCH)]
+        public string TestMode { get; set; }
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
@@ -33,12 +34,7 @@ namespace PSFile.Cmdlet
         [Parameter]
         public bool? Inherited { get; set; }
 
-        /// <summary>
-        /// いくつかのテスト項目で、モード切替が必要な場合の為のパラメータ
-        /// </summary>
-        [Parameter]
-        [ValidateSet(Item.CONTAIN, Item.MATCH)]
-        public string TestMode { get; set; }
+        
 
         //  戻り値
         bool retValue = false;
@@ -97,12 +93,12 @@ namespace PSFile.Cmdlet
                         //  Accessパラメータで指定したAccess文字列が、対象のレジストリキーに含まれているかチェック
                         //  Access文字列は複数の場合は、全て対象のレジストリキーに含まれているかをチェック
                         string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        //string tempAccess = RegistryControl.AccessToString(regKey);
-                        string[] tempAccessArray = tempAccess.Contains("/") ? tempAccess.Split('/') : new string[1] { tempAccess };
-                        foreach (string accessString in
-                            Access.Contains("/") ? Access.Split('/') : new string[1] { Access })
+                        //string[] tempAccessArray = tempAccess.Contains("/") ? tempAccess.Split('/') : new string[1] { tempAccess };
+                        string[] tempAccessArray = tempAccess.Split('/');
+                        foreach (string accessString in Access.Split('/'))
                         {
-                            retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                            //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                            retValue = tempAccessArray.Any(x => RegistryControl.IsMatchAccess(x, accessString));
                             if (!retValue)
                             {
                                 Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
@@ -113,8 +109,31 @@ namespace PSFile.Cmdlet
                     else
                     {
                         string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        //string access = RegistryControl.AccessToString(regKey);
-                        retValue = tempAccess == Access;
+                        List<string> accessListA = new List<string>();
+                        accessListA.AddRange(tempAccess.Split('/'));
+
+                        List<string> accessListB = new List<string>();
+                        accessListB.AddRange(Access.Split('/'));
+
+                        if (accessListA.Count == accessListB.Count)
+                        {
+                            for (int i = accessListA.Count - 1; i >= 0; i--)
+                            {
+                                string matchString =
+                                    accessListB.FirstOrDefault(x => RegistryControl.IsMatchAccess(x, accessListA[i]));
+                                if (matchString != null)
+                                {
+                                    accessListB.Remove(matchString);
+                                }
+                            }
+                            retValue = accessListB.Count == 0;
+                        }
+                        else
+                        {
+                            retValue = false;
+                        }
+
+                        //retValue = tempAccess == Access;
                         if (!retValue)
                         {
                             Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);

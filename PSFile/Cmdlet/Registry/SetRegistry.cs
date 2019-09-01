@@ -1,7 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using System;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace PSFile.Cmdlet
 {
@@ -51,10 +53,21 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Access))
                 {
                     if (security == null) { security = regKey.GetAccessControl(); }
+                    foreach (RegistryAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
+                    {
+                        security.RemoveAccessRule(removeRule);
+                    }
+                    foreach (RegistryAccessRule addRule in RegistryControl.StringToAccessRules(Access))
+                    {
+                        security.AddAccessRule(addRule);
+                    }
+
+                    /*
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
-                        security.AddAccessRule(rule);
+                        security.SetAccessRule(rule);
                     }
+                    */
                 }
 
                 //  上位からのアクセス権継承の設定変更
