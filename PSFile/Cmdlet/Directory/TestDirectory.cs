@@ -49,7 +49,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void DetectTargetParameter()
         {
-            if(Target == null)
+            if (Target == null)
             {
                 if (!string.IsNullOrEmpty(Access))
                 {
@@ -89,15 +89,16 @@ namespace PSFile.Cmdlet
             }
 
             //  アクセス権チェック
-            if(Target == Item.ACCESS)
+            if (Target == Item.ACCESS)
             {
                 if (TestMode == Item.CONTAIN)
                 {
                     string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
                     string[] tempAccessArray = tempAccess.Split('/');
-                    foreach(string accessString in Access.Split('/'))
+                    foreach (string accessString in Access.Split('/'))
                     {
-                        retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                        //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                        retValue = tempAccessArray.Any(x => DirectoryControl.IsMatchAccess(x, accessString));
                         if (!retValue)
                         {
                             Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);

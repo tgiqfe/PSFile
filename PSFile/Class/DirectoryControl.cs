@@ -58,5 +58,61 @@ namespace PSFile
             }
             return string.Join("/", accessRuleList);
         }
+
+        public static bool IsMatchAccess(string accessStringA, string accessStringB)
+        {
+            string[] accessStringArrayA = accessStringA.Split(';');
+            string[] accessStringArrayB = accessStringB.Split(';');
+
+            //  Accountチェック
+            string accountA = accessStringArrayA[0];
+            string accountB = accessStringArrayB[0];
+            if (accountA.Contains("\\") && !accountB.Contains("\\"))
+            {
+                accountB = accountA.Substring(0, accountA.IndexOf("\\") + 1) + accountB;
+            }
+            if (!accountA.Contains("\\") && accountB.Contains("\\"))
+            {
+                accountA = accountB.Substring(0, accountB.IndexOf("\\") + 1) + accountA;
+            }
+            if (!accountA.Equals(accountB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  Rightsチェック
+            string rightsA = Item.CheckCase(accessStringArrayA[1]);
+            string rightsB = Item.CheckCase(accessStringArrayB[1]);
+            if(!rightsA.Equals(rightsB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  InheritedFlagsチェック
+            string ifA = Item.CheckCase(accessStringArrayA[2]);
+            string ifB = Item.CheckCase(accessStringArrayB[2]);
+            if(!ifA.Equals(ifB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  PropagationFlagsチェック
+            string pfA = Item.CheckCase(accessStringArrayA[3]);
+            string pfB = Item.CheckCase(accessStringArrayB[3]);
+            if (!pfA.Equals(pfB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            //  AccessControlチェック
+            string acA = Item.CheckCase(accessStringArrayA[4]);
+            string acB = Item.CheckCase(accessStringArrayB[4]);
+            if (!acA.Equals(acB, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
