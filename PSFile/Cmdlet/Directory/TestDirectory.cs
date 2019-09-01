@@ -115,16 +115,23 @@ namespace PSFile.Cmdlet
                     List<string> accessListB = new List<string>();
                     accessListB.AddRange(Access.Split('/'));
 
-                    for (int i = accessListA.Count - 1; i >= 0; i--)
+                    if (accessListA.Count == accessListB.Count)
                     {
-                        string matchString = 
-                            accessListB.FirstOrDefault(x => DirectoryControl.IsMatchAccess(x, accessListA[i]));
-                        if(matchString != null)
+                        for (int i = accessListA.Count - 1; i >= 0; i--)
                         {
-                            accessListB.Remove(matchString);
+                            string matchString =
+                                accessListB.FirstOrDefault(x => DirectoryControl.IsMatchAccess(x, accessListA[i]));
+                            if (matchString != null)
+                            {
+                                accessListB.Remove(matchString);
+                            }
                         }
+                        retValue = accessListB.Count == 0;
                     }
-                    retValue = accessListB.Count == 0;
+                    else
+                    {
+                        retValue = false;
+                    }
 
                     //retValue = tempAccess == Access;
                     if (!retValue)

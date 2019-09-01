@@ -112,6 +112,11 @@ namespace PSFile.Cmdlet
                     proc.WaitForExit();
                 }
             }
+
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            {
+                WriteObject(new RegistrySummary(regKey, true));
+            }   
         }
     }
 }

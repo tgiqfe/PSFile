@@ -122,7 +122,8 @@ namespace PSFile.Cmdlet
                     string[] tempAccessArray = tempAccess.Split('/');
                     foreach (string accessString in Access.Split('/'))
                     {
-                        retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                        //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                        retValue = tempAccessArray.Any(x => FileControl.IsMatchAccess(x, accessString));
                         if (!retValue)
                         {
                             Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
@@ -133,7 +134,31 @@ namespace PSFile.Cmdlet
                 else
                 {
                     string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
-                    retValue = tempAccess == Access;
+                    List<string> accessListA = new List<string>();
+                    accessListA.AddRange(tempAccess.Split('/'));
+
+                    List<string> accessListB = new List<string>();
+                    accessListB.AddRange(Access.Split('/'));
+
+                    if (accessListA.Count == accessListB.Count)
+                    {
+                        for (int i = accessListA.Count - 1; i >= 0; i--)
+                        {
+                            string matchString =
+                                accessListB.FirstOrDefault(x => FileControl.IsMatchAccess(x, accessListA[i]));
+                            if (matchString != null)
+                            {
+                                accessListB.Remove(matchString);
+                            }
+                        }
+                        retValue = accessListB.Count == 0;
+                    }
+                    else
+                    {
+                        retValue = false;
+                    }
+
+                    //retValue = tempAccess == Access;
                     if (!retValue)
                     {
                         Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
