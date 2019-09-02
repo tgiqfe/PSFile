@@ -11,6 +11,16 @@ using System.Diagnostics;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// 新規フォルダー作成
+    /// TestGenerator : Test-Directory -Path ～
+    ///                 Test-Directory -Path ～ -Access ～
+    ///                 Test-Directory -Path ～ -Owner ～
+    ///                 Test-Directory -Path ～ -Inherited ～
+    ///                 Test-Directory -Path ～ -Attributes ～
+    ///                 Compare-Directory -Path ～ -CreationTime ～
+    ///                 Compare-Directory -Path ～ -LastWriteTime ～
+    /// </summary>
     [Cmdlet(VerbsCommon.New, "Directory")]
     public class NewDirectory : PSCmdlet
     {
@@ -30,16 +40,24 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
             Inherited = Item.CheckCase(Inherited);
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
         {
             if (Directory.Exists(Path)){ return; }
+
+            //  テスト自動生成
+            _generator.DirectoryPath(Path);
 
             Directory.CreateDirectory(Path);
 
@@ -49,10 +67,16 @@ namespace PSFile.Cmdlet
             if (!string.IsNullOrEmpty(Access))
             {
                 if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                //  テスト自動生成
+                _generator.DirectoryAccess(Path, Access, false);
+
+                /*
                 foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     security.RemoveAccessRule(removeRule);
                 }
+                */
                 foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(Access))
                 {
                     security.AddAccessRule(addRule);
@@ -68,6 +92,9 @@ namespace PSFile.Cmdlet
                 //  管理者実行確認
                 Functions.CheckAdmin();
 
+                //  テスト自動生成
+                _generator.DirectoryOwner(Path, Owner);
+
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = subinacl;
@@ -82,6 +109,10 @@ namespace PSFile.Cmdlet
             if (Inherited != Item.NONE)
             {
                 if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                //  テスト自動生成
+                _generator.DirectoryInherited(Path, Inherited == Item.ENABLE);
+
                 switch (Inherited)
                 {
                     case Item.ENABLE:
@@ -101,12 +132,14 @@ namespace PSFile.Cmdlet
             //  作成日時
             if (CreationTime != null)
             {
+
                 Directory.SetCreationTime(Path, (DateTime)CreationTime);
             }
 
             //  更新一時
             if (LastWriteTime != null)
             {
+
                 Directory.SetLastWriteTime(Path, (DateTime)LastWriteTime);
             }
 

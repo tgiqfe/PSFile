@@ -17,63 +17,41 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Difference { get; set; }
-        [Parameter, ValidateSet(Item.PATH)]
-        public string Target { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
         public SwitchParameter IgnoreValues { get; set; }
 
-        protected override void BeginProcessing()
-        {
-            DetectTargetParameter();
-        }
-
-        /// <summary>
-        /// Targetパラメータの自動解析
-        /// 解析優先度：Path のみ
-        /// </summary>
-        private void DetectTargetParameter()
-        {
-            if (Target == null)
-            {
-                Target = Item.PATH;
-            }
-        }
-
         protected override void ProcessRecord()
         {
-            if (Target == Item.PATH)
+            string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), Item.APPLICATION_NAME);
+            if (!Directory.Exists(tempDir))
             {
-                string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), Item.APPLICATION_NAME);
-                if (!Directory.Exists(tempDir))
-                {
-                    Directory.CreateDirectory(tempDir);
-                }
-
-                //  比較元レジストリのサマリを取得
-                List<RegistrySummary> compare_ref = GetSummaryList(Path, IgnoreSecurity, IgnoreValues);
-                string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
-                using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
-                    false, Encoding.UTF8))
-                {
-                    sw.WriteLine(text_ref);
-                }
-
-                //  比較先レジストリのサマリを取得
-                List<RegistrySummary> compare_dif = GetSummaryList(Difference, IgnoreSecurity, IgnoreValues);
-                string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
-                using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
-                    false, Encoding.UTF8))
-                {
-                    sw.WriteLine(text_dif);
-                }
-
-                int retVal = string.Compare(text_ref, text_dif);
-                WriteObject(retVal);
+                Directory.CreateDirectory(tempDir);
             }
+
+            //  比較元レジストリのサマリを取得
+            List<RegistrySummary> compare_ref = GetSummaryList(Path, IgnoreSecurity, IgnoreValues);
+            string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
+                false, Encoding.UTF8))
+            {
+                sw.WriteLine(text_ref);
+            }
+
+            //  比較先レジストリのサマリを取得
+            List<RegistrySummary> compare_dif = GetSummaryList(Difference, IgnoreSecurity, IgnoreValues);
+            string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
+                false, Encoding.UTF8))
+            {
+                sw.WriteLine(text_dif);
+            }
+
+            int retVal = string.Compare(text_ref, text_dif);
+            WriteObject(retVal);
         }
-        
+
         /// <summary>
         /// RegistrySummaryリストを取得
         /// </summary>
@@ -108,6 +86,5 @@ namespace PSFile.Cmdlet
             }
             return summaryList;
         }
-
     }
 }
