@@ -116,6 +116,7 @@ namespace PSFile
         public const string TYPE = "Type";
         public const string OWNER = "Owner";
         public const string ACCESS = "Access";
+        public const string ACCOUNT = "Account";
         public const string INHERITED = "Inherited";
         public const string HASH = "Hash";
         public const string ATTRIBUTES = "Attributes";

@@ -22,7 +22,7 @@ namespace PSFile.Cmdlet
         public string Value { get; set; }
         [Parameter, ValidateSet(Item.REG_SZ, Item.REG_BINARY, Item.REG_DWORD, Item.REG_QWORD, Item.REG_MULTI_SZ, Item.REG_EXPAND_SZ, Item.REG_NONE)]
         public string Type { get; set; } = Item.REG_SZ;
-        [Parameter, ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.INHERITED)]
+        [Parameter, ValidateSet(Item.PATH, Item.NAME, Item.VALUE, Item.TYPE, Item.OWNER, Item.ACCESS, Item.ACCOUNT, Item.INHERITED)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -31,6 +31,8 @@ namespace PSFile.Cmdlet
         public string Owner { get; set; }
         [Parameter]
         public string Access { get; set; }
+        [Parameter]
+        public string Account { get; set; }
         [Parameter]
         public bool? Inherited { get; set; }
 
@@ -44,6 +46,52 @@ namespace PSFile.Cmdlet
             TestMode = Item.CheckCase(TestMode);
 
             DetectTargetParameter();
+        }
+
+        /// <summary>
+        /// Targetパラメータの自動解析
+        /// 解析優先度：Value -> Type -> Name -> Owner -> Access -> Inherit -> Path
+        /// </summary>
+        private void DetectTargetParameter()
+        {
+            if (Target == null)
+            {
+                if (Name != null)
+                {
+                    if (!string.IsNullOrEmpty(Value))
+                    {
+                        Target = Item.VALUE;
+                    }
+                    else if (!string.IsNullOrEmpty(Type))
+                    {
+                        Target = Item.TYPE;
+                    }
+                    else
+                    {
+                        Target = Item.NAME;
+                    }
+                }
+                else if (!string.IsNullOrEmpty(Owner))
+                {
+                    Target = Item.OWNER;
+                }
+                else if (!string.IsNullOrEmpty(Access))
+                {
+                    Target = Item.ACCESS;
+                }
+                else if (!string.IsNullOrEmpty(Account))
+                {
+                    Target = Item.ACCOUNT;
+                }
+                else if (Inherited != null)
+                {
+                    Target = Item.INHERITED;
+                }
+                else
+                {
+                    Target = Item.PATH;
+                }
+            }
         }
 
         protected override void ProcessRecord()
@@ -140,6 +188,26 @@ namespace PSFile.Cmdlet
                     return;
                 }
 
+                //  Accountチェック
+                if (Target == Item.ACCOUNT)
+                {
+                    string tempAccess = new RegistrySummary(regKey, false, true).Access;
+                    foreach (string tempAccessString in tempAccess.Split('/'))
+                    {
+                        string tempAccount = tempAccessString.Split(';')[0];
+                        retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                            !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
+                        if (retValue)
+                        {
+                            break;
+                        }
+                    }
+                    if (!retValue)
+                    {
+                        Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
+                    }
+                }
+
                 //  Inheritedチェック
                 if (Target == Item.INHERITED)
                 {
@@ -157,48 +225,6 @@ namespace PSFile.Cmdlet
         protected override void EndProcessing()
         {
             WriteObject(retValue);
-        }
-
-        /// <summary>
-        /// Targetパラメータの自動解析
-        /// 解析優先度：Value -> Type -> Name -> Owner -> Access -> Inherit -> Path
-        /// </summary>
-        private void DetectTargetParameter()
-        {
-            if (Target == null)
-            {
-                if (Name != null)
-                {
-                    if (!string.IsNullOrEmpty(Value))
-                    {
-                        Target = Item.VALUE;
-                    }
-                    else if (!string.IsNullOrEmpty(Type))
-                    {
-                        Target = Item.TYPE;
-                    }
-                    else
-                    {
-                        Target = Item.NAME;
-                    }
-                }
-                else if (!string.IsNullOrEmpty(Owner))
-                {
-                    Target = Item.OWNER;
-                }
-                else if (Access != null)
-                {
-                    Target = Item.ACCESS;
-                }
-                else if (Inherited != null)
-                {
-                    Target = Item.INHERITED;
-                }
-                else
-                {
-                    Target = Item.PATH;
-                }
-            }
         }
 
         /// <summary>

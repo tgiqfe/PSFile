@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE, Item.INHERITED, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.ACCOUNT, Item.OWNER, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE, Item.INHERITED, Item.SECURITYBLOCK)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -25,6 +25,8 @@ namespace PSFile.Cmdlet
         public string Hash { get; set; }
         [Parameter]
         public string Access { get; set; }
+        [Parameter]
+        public string Account { get; set; }
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
@@ -69,6 +71,10 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ACCESS;
                 }
+                else if (!string.IsNullOrEmpty(Account))
+                {
+                    Target = Item.ACCOUNT;
+                }
                 else if (!string.IsNullOrEmpty(Owner))
                 {
                     Target = Item.OWNER;
@@ -85,7 +91,7 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.ATTRIBUTES;
                 }
-                else if(Size != null)
+                else if (Size != null)
                 {
                     Target = Item.SIZE;
                 }
@@ -183,6 +189,26 @@ namespace PSFile.Cmdlet
                     }
                 }
                 return;
+            }
+
+            //  Accountチェック
+            if (Target == Item.ACCOUNT)
+            {
+                string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+                foreach (string tempAccessString in tempAccess.Split('/'))
+                {
+                    string tempAccount = tempAccessString.Split(';')[0];
+                    retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                        !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
+                    if (retValue)
+                    {
+                        break;
+                    }
+                }
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
+                }
             }
 
             //  所有者チェック

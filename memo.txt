@@ -1,4 +1,6 @@
 
+Test-Directory ～ Accessが空文字の場合、アクセス権設定無しのチェック
+
 ====================================================
 
 ContainerInherit, ObjectInherit等の略称に対応させる。

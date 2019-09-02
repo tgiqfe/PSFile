@@ -16,13 +16,15 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.INHERITED, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE)]
+        [ValidateSet(Item.PATH, Item.ACCESS, Item.ACCOUNT, Item.OWNER, Item.INHERITED, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
         public string TestMode { get; set; }
         [Parameter]
         public string Access { get; set; }
+        [Parameter]
+        public string Account { get; set; }
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
@@ -60,6 +62,10 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Access))
                 {
                     Target = Item.ACCESS;
+                }
+                else if (!string.IsNullOrEmpty(Account))
+                {
+                    Target = Item.ACCOUNT;
                 }
                 else if (!string.IsNullOrEmpty(Owner))
                 {
@@ -154,6 +160,26 @@ namespace PSFile.Cmdlet
                     {
                         Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
                     }
+                }
+            }
+
+            //  Accountチェック
+            if (Target == Item.ACCOUNT)
+            {
+                string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
+                foreach (string tempAccessString in tempAccess.Split('/'))
+                {
+                    string tempAccount = tempAccessString.Split(';')[0];
+                    retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                        !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
+                    if (retValue)
+                    {
+                        break;
+                    }
+                }
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
                 }
             }
 

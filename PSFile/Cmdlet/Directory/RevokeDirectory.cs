@@ -10,6 +10,9 @@ using System.Management.Automation;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダーへのアクセス権や属性を剥奪
+    /// </summary>
     [Cmdlet(VerbsSecurity.Revoke, "Directory")]
     public class RevokeDirectory : PSCmdlet
     {
