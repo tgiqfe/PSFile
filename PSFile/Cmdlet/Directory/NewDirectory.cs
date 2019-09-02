@@ -71,12 +71,6 @@ namespace PSFile.Cmdlet
                 //  テスト自動生成
                 _generator.DirectoryAccess(Path, Access, false);
 
-                /*
-                foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
-                {
-                    security.RemoveAccessRule(removeRule);
-                }
-                */
                 foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(Access))
                 {
                     security.AddAccessRule(addRule);

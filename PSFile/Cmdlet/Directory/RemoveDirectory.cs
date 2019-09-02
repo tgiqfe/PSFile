@@ -10,6 +10,11 @@ using PATH = System.IO.Path;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダー削除
+    /// TestGenerator : Test-Directory -Path ～
+    ///                 存在しないことを確認
+    /// </summary>
     [Cmdlet(VerbsCommon.Remove, "Directory")]
     public class RemoveDirectory : PSCmdlet
     {
@@ -17,11 +22,22 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter]
         public SwitchParameter SendToRecycleBin { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
             if (Directory.Exists(Path))
             {
+                //  テスト自動生成
+                _generator.DirectoryPath(Path);
+
                 FileSystem.DeleteDirectory(
                     Path,
                     UIOption.OnlyErrorDialogs, 
