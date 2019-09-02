@@ -25,10 +25,15 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -41,6 +46,9 @@ namespace PSFile.Cmdlet
             {
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
+                    //  テスト自動生成
+                    _generator.DirectoryAccount(Path, rule.IdentityReference.Value);
+
                     security.RemoveAccessRule(rule);
                     isChange = true;
                 }
@@ -50,6 +58,10 @@ namespace PSFile.Cmdlet
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     string account = rule.IdentityReference.Value;
+
+                    //  テスト自動生成
+                    _generator.DirectoryAccount(Path, account);
+
                     if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                         !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
                     {
@@ -64,6 +76,9 @@ namespace PSFile.Cmdlet
             //  フォルダー属性を剥奪
             if (!string.IsNullOrEmpty(_Attributes))
             {
+                //  テスト自動生成
+                _generator.DirectoryAttributes(Path, _Attributes, true);
+
                 FileAttributes nowAttr = File.GetAttributes(Path);
                 FileAttributes delAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
                 File.SetAttributes(Path, nowAttr & (~delAttr));

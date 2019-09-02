@@ -67,6 +67,12 @@ namespace PSFile
             WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -Access \"{2}\" -TestMode {3}",
                 path, Item.ACCESS, access, isContain ? Item.CONTAIN : Item.MATCH));
         }
+        public void FileAccount(string path, string account)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -Account \"{2}\"",
+                path, Item.ACCOUNT, account));
+        }
         public void FileOwner(string path, string owner)
         {
             if (!_writable) { return; }
@@ -150,6 +156,12 @@ namespace PSFile
             WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Access \"{2}\" -TestMode {3}",
                 path, Item.ACCESS, access, isContain ? Item.CONTAIN : Item.MATCH));
         }
+        public void DirectoryAccount(string path, string account)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Account \"{2}\"",
+                path, Item.ACCOUNT, account));
+        }
         public void DirectoryOwner(string path, string owner)
         {
             if (!_writable) { return; }
@@ -226,6 +238,12 @@ namespace PSFile
             if (!_writable) { return; }
             WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Access \"{2}\" -TestMode {3}",
                 path, Item.ACCESS, access, isContain ? Item.CONTAIN : Item.MATCH));
+        }
+        public void RegistryAccount(string path, string account)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Account \"{2}\"",
+                path, Item.ACCOUNT, account));
         }
         public void RegistryOwner(string path, string owner)
         {
