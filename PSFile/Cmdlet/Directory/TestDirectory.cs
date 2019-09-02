@@ -142,7 +142,9 @@ namespace PSFile.Cmdlet
             WriteObject(retValue);
         }
 
-        //  Accessチェック
+        /// <summary>
+        /// Accessチェック
+        /// </summary>
         private void CheckAccess()
         {
             string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
@@ -202,7 +204,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Accountチェック
+        /// <summary>
+        /// Accountチェック
+        /// </summary>
         private void CheckAccount()
         {
             string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
@@ -222,7 +226,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Ownerチェック
+        /// <summary>
+        /// Ownerチェック
+        /// </summary>
         private void CheckOwner()
         {
             string tempOwner = new DirectorySummary(Path, false, true, true, true, true, true).Owner;
@@ -234,7 +240,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  CreationTime
+        /// <summary>
+        /// CreationTime
+        /// </summary>
         private void CheckCreationTime()
         {
             DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).CreationTime;
@@ -245,7 +253,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  LastWriteTime
+        /// <summary>
+        /// LastWriteTime
+        /// </summary>
         private void CheckLastWriteTime()
         {
             DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).LastWriteTime;
@@ -256,7 +266,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Attributesチェック
+        /// <summary>
+        /// Attributesチェック
+        /// </summary>
         private void CheckAttributes()
         {
             string tempAttribute = new DirectorySummary(Path, true, true, false, true, true, true).Attributes;
@@ -285,7 +297,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Sizeチェック
+        /// <summary>
+        /// Sizeチェック
+        /// </summary>
         private void CheckSize()
         {
             long tempSize = (long)new DirectorySummary(Path, true, true, true, false, true, true).Size;
@@ -296,7 +310,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Inheritedチェック
+        /// <summary>
+        /// Inheritedチェック
+        /// </summary>
         private void CheckInherited()
         {
             bool tempInherit = (bool)new DirectorySummary(Path, false, true, true, true, true, true).Inherited;

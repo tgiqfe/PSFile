@@ -190,7 +190,10 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  所有者チェック
+        /// <summary>
+        /// 所有者チェック
+        /// </summary>
+        /// <param name="regKey"></param>
         private void CheckOwner(RegistryKey regKey)
         {
             //string owner = security.GetOwner(typeof(NTAccount)).Value;
@@ -202,7 +205,10 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  アクセス権チェック
+        /// <summary>
+        /// アクセス権チェック
+        /// </summary>
+        /// <param name="regKey"></param>
         private void CheckAccess(RegistryKey regKey)
         {
             string tempAccess = new RegistrySummary(regKey, false, true).Access;
@@ -265,7 +271,10 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Accountチェック
+        /// <summary>
+        /// Accountチェック
+        /// </summary>
+        /// <param name="regKey"></param>
         private void CheckAccount(RegistryKey regKey)
         {
             string tempAccess = new RegistrySummary(regKey, false, true).Access;
@@ -285,7 +294,10 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Inheritedチェック
+        /// <summary>
+        /// Inheritedチェック
+        /// </summary>
+        /// <param name="regKey"></param>
         private void CheckInherited(RegistryKey regKey)
         {
             bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;

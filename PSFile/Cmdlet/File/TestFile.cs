@@ -160,7 +160,9 @@ namespace PSFile.Cmdlet
             WriteObject(retValue);
         }
 
-        //  Hashチェック
+        /// <summary>
+        /// Hashチェック
+        /// </summary>
         private void CheckHash()
         {
             string hashString = new FileSummary(Path, true, true, false, true, true, true).Hash;
@@ -171,7 +173,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Accessチェック
+        /// <summary>
+        /// Accessチェック
+        /// </summary>
         private void CheckAccess()
         {
             string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
@@ -233,7 +237,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Accountチェック
+        /// <summary>
+        /// Accountチェック
+        /// </summary>
         private void CheckAccount()
         {
             string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
@@ -253,7 +259,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  所有者チェック
+        /// <summary>
+        /// 所有者チェック
+        /// </summary>
         private void CheckOwner()
         {
             string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
@@ -265,7 +273,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  CreationTime
+        /// <summary>
+        /// CreationTime
+        /// </summary>
         private void CheckCreationTime()
         {
             DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
@@ -276,7 +286,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  LastWriteTime
+        /// <summary>
+        /// LastWriteTime
+        /// </summary>
         private void CheckLastWriteTime()
         {
             DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
@@ -287,7 +299,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  属性チェック
+        /// <summary>
+        /// 属性チェック
+        /// </summary>
         private void CheckAttributes()
         {
             string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
@@ -315,7 +329,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  Sizeチェック
+        /// <summary>
+        /// Sizeチェック
+        /// </summary>
         private void CheckSize()
         {
             long tempSize = (long)new FileSummary(Path, true, true, true, false, true, true).Size;
@@ -326,7 +342,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  継承設定チェック
+        /// <summary>
+        /// 継承設定チェック
+        /// </summary>
         private void CheckInherited()
         {
             bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
@@ -337,7 +355,9 @@ namespace PSFile.Cmdlet
             }
         }
 
-        //  セキュリティブロックチェック
+        /// <summary>
+        /// セキュリティブロックチェック
+        /// </summary>
         private void CheckSecurityBlock()
         {
             bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).SecurityBlock;
