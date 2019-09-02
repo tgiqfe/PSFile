@@ -52,7 +52,7 @@ namespace PSFile
         {
             if (!_writable) { return; }
             WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1}",
-            path, Item.PATH));
+                path, Item.PATH));
 
         }
         public void FileHash(string path, string hash)
@@ -126,9 +126,10 @@ namespace PSFile
         public void FileCompare(string path, string difference,
             bool ignoreSecurity, bool ignoreTime, bool ignoreHash, bool ignoreAttributes, bool ignoreSize, bool ignoreSecurityBlock)
         {
+            if (!_writable) { return; }
             StringBuilder sb = new StringBuilder();
-            sb.Append(string.Format("Compare-File -Path \"{0}\" -Target {1} -Difference \"{2}\"",
-                path, Item.PATH, difference));
+            sb.Append(string.Format("Compare-File -Path \"{0}\" -Difference \"{1}\"",
+                path, difference));
             if (ignoreSecurity) { sb.Append(" -IgnoreSecurity"); }
             if (ignoreTime) { sb.Append(" -IgnoreTime"); }
             if (ignoreHash) { sb.Append(" -IgnoreHash"); }
@@ -209,9 +210,10 @@ namespace PSFile
         public void DirectoryCompare(string path, string difference,
             bool ignoreSecurity, bool ignoreTime, bool ignoreAttributes, bool ignoreSize, bool ignoreFiles, bool isLightFiles)
         {
+            if (!_writable) { return; }
             StringBuilder sb = new StringBuilder();
-            sb.Append(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -Difference \"{2}\"",
-                path, Item.PATH, difference));
+            sb.Append(string.Format("Compare-Directory -Path \"{0}\" -Difference \"{1}\"",
+                path, difference));
             if (ignoreSecurity) { sb.Append(" -IgnoreSecurity"); }
             if (ignoreTime) { sb.Append(" -IgnoreTime"); }
             if (ignoreAttributes) { sb.Append(" -IgnoreAttributes"); }
@@ -261,9 +263,10 @@ namespace PSFile
         public void RegistryCompare(string path, string difference,
             bool ignoreSecurity, bool ignoreValues)
         {
+            if (!_writable) { return; }
             StringBuilder sb = new StringBuilder();
-            sb.Append(string.Format("Compare-Registry -Path \"{0}\" -Target {1} -Difference \"{2}\"",
-                path, Item.PATH, difference));
+            sb.Append(string.Format("Compare-Registry -Path \"{0}\" -Difference \"{1}\"",
+                path, difference));
             if (ignoreSecurity) { sb.Append(" -IgnoreSecurity"); }
             if (ignoreValues) { sb.Append(" -IgnoreValues"); }
             WriteCode(sb.ToString());

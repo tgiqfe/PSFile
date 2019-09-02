@@ -10,6 +10,12 @@ using System.Management.Automation;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイルにアクセス権あるいは属性を追加
+    /// TestGenerator : Test-File -Path ～ -Access ～
+    ///                 Test-File -Path ～ -Attributes ～
+    ///                 Test-Directory -Path ～ -Inherited ～
+    /// </summary>
     [Cmdlet(VerbsSecurity.Grant, "File")]
     public class GrantFile : PSCmdlet
     {
@@ -19,18 +25,19 @@ namespace PSFile.Cmdlet
         public string Access { get; set; }
         [Parameter]
         public string Account { get; set; }
-        [Parameter]
-        [ValidateSet(Item.NONE, Item.ENABLE, Item.DISABLE, Item.REMOVE)]
+        [Parameter, ValidateSet(Item.NONE, Item.ENABLE, Item.DISABLE, Item.REMOVE)]
         public string Inherited { get; set; } = Item.NONE;
         [Parameter]
         public string[] Rights { get; set; } = new string[1] { Item.READANDEXECUTE };
         private string _Rights = null;
-        [Parameter]
-        [ValidateSet(Item.ALLOW, Item.DENY)]
+        [Parameter, ValidateSet(Item.ALLOW, Item.DENY)]
         public string AccessControl { get; set; } = Item.ALLOW;
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
@@ -38,6 +45,8 @@ namespace PSFile.Cmdlet
             AccessControl = Item.CheckCase(AccessControl);
             _Rights = Item.CheckCase(Rights);
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -50,8 +59,15 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Account))
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
-                    foreach (FileSystemAccessRule addRule in
-                        FileControl.StringToAccessRules(string.Format("{0};{1};{2}", Account, _Rights, AccessControl)))
+                    string accessString = string.Format("{0};{1};{2}",
+                        Account,
+                        _Rights,
+                        AccessControl);
+
+                    //  テスト自動生成
+                    _generator.FileAccess(Path, accessString, true);
+
+                    foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(accessString))
                     {
                         security.AddAccessRule(addRule);
                     }
@@ -61,6 +77,10 @@ namespace PSFile.Cmdlet
                 if (!string.IsNullOrEmpty(Access))
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.FileAccess(Path, Access, true);
+
                     foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
                     {
                         security.AddAccessRule(addRule);
@@ -71,6 +91,10 @@ namespace PSFile.Cmdlet
                 if (Inherited != Item.NONE)
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.FileInherited(Path, Inherited == Item.ENABLE);
+
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -90,6 +114,9 @@ namespace PSFile.Cmdlet
                 //  ファイル属性を追加
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
+                    //  テスト自動生成
+                    _generator.FileAttributes(Path, _Attributes, true);
+
                     FileAttributes nowAttr = File.GetAttributes(Path);
                     FileAttributes addAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
                     File.SetAttributes(Path, nowAttr | addAttr);

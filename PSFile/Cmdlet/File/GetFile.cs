@@ -7,6 +7,10 @@ using System.Management.Automation;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイル情報を取得してDirectorySummaryインスタンスで返す
+    /// TestGenerator : 無し
+    /// </summary>
     [Cmdlet(VerbsCommon.Get, "File")]
     public class GetFile : PSCmdlet
     {

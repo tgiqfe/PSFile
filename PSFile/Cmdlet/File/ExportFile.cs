@@ -7,6 +7,10 @@ using System.Management.Automation;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイル情報をエクスポートしてDirectorySummaryインスタンスをシリアライズ
+    /// TestGenerator : 無し
+    /// </summary>
     [Cmdlet(VerbsData.Export, "File")]
     public class ExportFile : PSCmdlet
     {

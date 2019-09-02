@@ -9,6 +9,10 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイルをコピー
+    /// TestGenerator : Test-File -Path ～
+    /// </summary>
     [Cmdlet(VerbsCommon.Copy, "File")]
     public class CopyFile : PSCmdlet
     {
@@ -18,6 +22,14 @@ namespace PSFile.Cmdlet
         public string Destination { get; set; }
         [Parameter]
         public SwitchParameter Force { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -25,6 +37,11 @@ namespace PSFile.Cmdlet
             {
                 Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
             }
+
+            //  テスト自動生成
+            _generator.FilePath(Path);
+            _generator.FilePath(Destination);
+            _generator.FileCompare(Path, Destination, false, true, false, false, false, false);
 
             try
             {

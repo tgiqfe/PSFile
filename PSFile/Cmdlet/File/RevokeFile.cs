@@ -10,6 +10,12 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイルへのアクセス権や属性を剥奪
+    /// TestGenerator : Test-File -Path ～ -Access ""    (ALLの場合)
+    ///                 Test-File -Path ～ -Account ～   (一部アクセス権を剥奪した場合)
+    ///                 Test-File -Path ～ -Attributes ～ (属性を剥奪した場合)
+    /// </summary>
     [Cmdlet(VerbsSecurity.Revoke, "File")]
     public class RevokeFile : PSCmdlet
     {
@@ -24,10 +30,15 @@ namespace PSFile.Cmdlet
         private string _Attributes = null;
         [Parameter]
         public SwitchParameter RemoveSecurityBlock { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -38,6 +49,9 @@ namespace PSFile.Cmdlet
             //  アクセス権を剥奪
             if (All)
             {
+                //  テスト自動生成
+                _generator.FileAccess(Path, "", false);
+
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     security.RemoveAccessRule(rule);
@@ -49,6 +63,10 @@ namespace PSFile.Cmdlet
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
                     string account = rule.IdentityReference.Value;
+
+                    //  テスト自動生成
+                    _generator.FileAccount(Path, account);
+
                     if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                         !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
                     {
@@ -63,6 +81,9 @@ namespace PSFile.Cmdlet
             //  ファイル属性を剥奪
             if (!string.IsNullOrEmpty(_Attributes))
             {
+                //  テスト自動生成
+                _generator.FileAttributes(Path, _Attributes, true);
+
                 FileAttributes nowAttr = File.GetAttributes(Path);
                 FileAttributes delAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
                 File.SetAttributes(Path, nowAttr & (~delAttr));
@@ -71,6 +92,9 @@ namespace PSFile.Cmdlet
             //  セキュリティブロックの解除
             if (RemoveSecurityBlock)
             {
+                //  テスト自動生成
+                _generator.FileSecurityBlock(Path, false);
+
                 FileControl.RemoveSecurityBlock(Path);
             }
 

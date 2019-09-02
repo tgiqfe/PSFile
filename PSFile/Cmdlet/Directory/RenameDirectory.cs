@@ -39,8 +39,8 @@ namespace PSFile.Cmdlet
             string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), NewName);
 
             //  テスト自動生成
-            _generator.DirectoryPath(newPath);
             _generator.DirectoryPath(Path);
+            _generator.DirectoryPath(newPath);
 
             if (Directory.Exists(Path))
             {

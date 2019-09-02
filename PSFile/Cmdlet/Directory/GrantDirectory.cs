@@ -14,6 +14,7 @@ namespace PSFile.Cmdlet
     /// フォルダーにアクセス権あるいは属性を追加
     /// TestGenerator : Test-Directory -Path ～ -Access ～
     ///                 Test-Directory -Path ～ -Attributes ～
+    ///                 Test-Directory -Path ～ -Inherited ～
     /// </summary>
     [Cmdlet(VerbsSecurity.Grant, "Directory")]
     public class GrantDirectory : PSCmdlet
@@ -68,11 +69,12 @@ namespace PSFile.Cmdlet
                         Recursive ? Item.CONTAINERINHERIT + ", " + Item.OBJECTINHERIT : Item.NONE,
                         Item.NONE,
                         AccessControl);
+                    
+                    //  テスト自動生成
+                    _generator.DirectoryAccess(Path, accessString, true);
+
                     foreach (FileSystemAccessRule addRule in DirectoryControl.StringToAccessRules(accessString))
                     {
-                        //  テスト自動生成
-                        _generator.DirectoryAccess(Path, accessString, true);
-
                         security.AddAccessRule(addRule);
                     }
                 }

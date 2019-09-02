@@ -11,6 +11,17 @@ using System.Diagnostics;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイルへ各種設定
+    /// TestGenerator : Test-File -Path ～
+    ///                 Test-File -Path ～ -Access ～
+    ///                 Test-File -Path ～ -Owner ～
+    ///                 Test-File -Path ～ -Inherited ～
+    ///                 Test-File -Path ～ -Attributes ～
+    ///                 Test-File -Path ～ -CreationTime ～
+    ///                 Test-File -Path ～ -LastWriteTime ～
+    ///                 Test-File -Path ～ -securityBlock ～
+    /// </summary>
     [Cmdlet(VerbsCommon.Set, "File")]
     public class SetFile : PSCmdlet
     {
@@ -28,17 +39,20 @@ namespace PSFile.Cmdlet
         [Parameter]
         public DateTime? LastWriteTime { get; set; }
         [Parameter]
-        public DateTime? LastAccessTime { get; set; }
-        [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
         [Parameter]
         public SwitchParameter RemoveSecurityBlock { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
             Inherited = Item.CheckCase(Inherited);
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -52,6 +66,10 @@ namespace PSFile.Cmdlet
                 if (Access != null)
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.FileAccess(Path, Access, false);
+
                     foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
                         security.RemoveAccessRule(removeRule);
@@ -74,6 +92,9 @@ namespace PSFile.Cmdlet
                     //  管理者実行確認
                     Functions.CheckAdmin();
 
+                    //  テスト自動生成
+                    _generator.FileOwner(Path, Owner);
+
                     using (Process proc = new Process())
                     {
                         proc.StartInfo.FileName = subinacl;
@@ -88,6 +109,10 @@ namespace PSFile.Cmdlet
                 if (Inherited != Item.NONE)
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.FileInherited(Path, Inherited == Item.ENABLE);
+
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -107,31 +132,37 @@ namespace PSFile.Cmdlet
                 //  作成日時
                 if (CreationTime != null)
                 {
+                    //  テスト自動生成
+                    _generator.FileCreationTime(Path, (DateTime)CreationTime);
+
                     File.SetCreationTime(Path, (DateTime)CreationTime);
                 }
 
                 //  更新一時
                 if (LastWriteTime != null)
                 {
-                    File.SetLastWriteTime(Path, (DateTime)LastWriteTime);
-                }
+                    //  テスト自動生成
+                    _generator.FileLastWriteTime(Path, (DateTime)LastWriteTime);
 
-                //  最終アクセス日時
-                if (LastAccessTime != null)
-                {
-                    File.SetLastAccessTime(Path, (DateTime)LastAccessTime);
+                    File.SetLastWriteTime(Path, (DateTime)LastWriteTime);
                 }
 
                 //  ファイル属性
                 //if (!string.IsNullOrEmpty(Attributes))
                 if(!string.IsNullOrEmpty(_Attributes))
                 {
+                    //  テスト自動生成
+                    _generator.FileAttributes(Path, _Attributes, false);
+
                     File.SetAttributes(Path, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
                 }
 
                 //  セキュリティブロックの解除
                 if (RemoveSecurityBlock)
                 {
+                    //  テスト自動生成
+                    _generator.FileSecurityBlock(Path, false);
+
                     FileControl.RemoveSecurityBlock(Path);
                 }
 

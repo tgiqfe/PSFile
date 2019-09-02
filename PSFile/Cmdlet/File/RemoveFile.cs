@@ -9,6 +9,10 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイル削除
+    /// TestGenerator : Test-File -Path ～ (不在確認)
+    /// </summary>
     [Cmdlet(VerbsCommon.Remove, "File")]
     public class RemoveFile : PSCmdlet
     {
@@ -16,22 +20,27 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter]
         public SwitchParameter SendToRecycleBin { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
+            /*
             Action<string> deleteFileAction = (filePath) =>
             {
-                if (SendToRecycleBin)
-                {
-                    FileSystem.DeleteFile(
-                        filePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
-                }
-                else
-                {
-                    FileSystem.DeleteFile(
-                        filePath, UIOption.OnlyErrorDialogs, RecycleOption.DeletePermanently, UICancelOption.DoNothing);
-                }
+                FileSystem.DeleteFile(
+                    filePath,
+                    UIOption.OnlyErrorDialogs,
+                    SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
+                    UICancelOption.DoNothing);
             };
+            */
 
             if (System.IO.Path.GetFileName(Path).Contains("*"))
             {
@@ -39,12 +48,28 @@ namespace PSFile.Cmdlet
                 foreach (string fileName in
                     Directory.GetFiles(System.IO.Path.GetDirectoryName(Path), System.IO.Path.GetFileName(Path), System.IO.SearchOption.TopDirectoryOnly))
                 {
-                    deleteFileAction(fileName);
+                    //  テスト自動生成
+                    _generator.FilePath(fileName);
+
+                    //deleteFileAction(fileName);
+                    FileSystem.DeleteFile(
+                        fileName,
+                        UIOption.OnlyErrorDialogs,
+                        SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
+                        UICancelOption.DoNothing);
                 }
             }
             else if (File.Exists(Path))
             {
-                deleteFileAction(Path);
+                //  テスト自動生成
+                _generator.FilePath(Path);
+
+                //deleteFileAction(Path);
+                FileSystem.DeleteFile(
+                    Path,
+                    UIOption.OnlyErrorDialogs,
+                    SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
+                    UICancelOption.DoNothing);
             }
         }
     }

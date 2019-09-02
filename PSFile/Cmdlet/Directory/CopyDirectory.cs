@@ -41,6 +41,7 @@ namespace PSFile.Cmdlet
             }
 
             //  テスト自動生成
+            _generator.DirectoryPath(Path);
             _generator.DirectoryPath(Destination);
             _generator.DirectoryCompare(Path, Destination, true, true, false, false, false, true);
 

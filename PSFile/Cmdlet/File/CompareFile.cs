@@ -9,6 +9,9 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ファイル情報を比較
+    /// </summary>
     [Cmdlet(VerbsData.Compare, "File")]
     public class CompareFile : PSCmdlet
     {
