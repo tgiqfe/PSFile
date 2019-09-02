@@ -1,4 +1,8 @@
 
+Test-FileFCreation‚ÆLastWrite‚ÆSize‚ğ’Ç‰Á
+GestGenerator‚Éª‚Ì‚±‚Æ‚ğ’Ç‰Á
+
+
 ====================================================
 
 ContainerInherit, ObjectInherit“™‚Ì—ªÌ‚É‘Î‰‚³‚¹‚éB

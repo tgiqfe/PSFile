@@ -10,6 +10,9 @@ using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
+    //  CreationとLastWriteとSizeのTestを追加で
+
+
     [Cmdlet(VerbsDiagnostic.Test, "File")]
     public class TestFile : PSCmdlet
     {

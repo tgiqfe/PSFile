@@ -34,8 +34,6 @@ namespace PSFile.Cmdlet
         [Parameter]
         public bool? Inherited { get; set; }
 
-        
-
         //  戻り値
         bool retValue = false;
 
