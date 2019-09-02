@@ -30,7 +30,7 @@ namespace PSFile.Cmdlet
 
         protected override void BeginProcessing()
         {
-            if (!string.IsNullOrEmpty(Test)) { _generator = new TestGenerator(Test); }
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()

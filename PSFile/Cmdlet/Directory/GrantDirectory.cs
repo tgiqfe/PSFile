@@ -49,7 +49,7 @@ namespace PSFile.Cmdlet
             _Rights = Item.CheckCase(Rights);
             _Attributes = Item.CheckCase(Attributes);
 
-            if (!string.IsNullOrEmpty(Test)) { _generator = new TestGenerator(Test); }
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
