@@ -101,7 +101,6 @@ namespace PSFile.Cmdlet
                 //  レジストリキーの有無チェック
                 if (regKey == null)
                 {
-                    //  全条件でキーの有無チェック
                     Console.Error.WriteLine("対象のレジストリキー (Path) 無し： {0}", Path.ToString());
                     return;
                 }
@@ -111,7 +110,7 @@ namespace PSFile.Cmdlet
                     return;
                 }
 
-                //  レジストリのパラメータ名/種類/値のチェック (長かったので別のメソッドに)
+                //  レジストリのパラメータ名/種類/値のチェック
                 if (Target == Item.NAME || Target == Item.TYPE || Target == Item.VALUE)
                 {
                     CheckRegValue(regKey);
@@ -119,113 +118,16 @@ namespace PSFile.Cmdlet
                 }
 
                 //  所有者チェック
-                RegistrySecurity security = regKey.GetAccessControl();
-                if (Target == Item.OWNER)
-                {
-                    string owner = security.GetOwner(typeof(NTAccount)).Value;
-                    retValue = owner == Owner;
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("所有者名不一致： {0} / {1}", Owner, owner);
-                    }
-                    return;
-                }
+                if (Target == Item.OWNER) { CheckOwner(regKey); return; }
 
                 //  アクセス権チェック
-                if (Target == Item.ACCESS)
-                {
-                    if (Access == string.Empty)
-                    {
-                        string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        retValue = string.IsNullOrEmpty(tempAccess);
-                        if (!retValue)
-                        {
-                            Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
-                        }
-                    }
-                    else if (TestMode == Item.CONTAIN)
-                    {
-                        //  Accessパラメータで指定したAccess文字列が、対象のレジストリキーに含まれているかチェック
-                        //  Access文字列は複数の場合は、全て対象のレジストリキーに含まれているかをチェック
-                        string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        string[] tempAccessArray = tempAccess.Split('/');
-                        foreach (string accessString in Access.Split('/'))
-                        {
-                            retValue = tempAccessArray.Any(x => RegistryControl.IsMatchAccess(x, accessString));
-                            if (!retValue)
-                            {
-                                Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        List<string> accessListA = new List<string>();
-                        accessListA.AddRange(tempAccess.Split('/'));
-
-                        List<string> accessListB = new List<string>();
-                        accessListB.AddRange(Access.Split('/'));
-
-                        if (accessListA.Count == accessListB.Count)
-                        {
-                            for (int i = accessListA.Count - 1; i >= 0; i--)
-                            {
-                                string matchString =
-                                    accessListB.FirstOrDefault(x => RegistryControl.IsMatchAccess(x, accessListA[i]));
-                                if (matchString != null)
-                                {
-                                    accessListB.Remove(matchString);
-                                }
-                            }
-                            retValue = accessListB.Count == 0;
-                        }
-                        else
-                        {
-                            retValue = false;
-                        }
-
-                        //retValue = tempAccess == Access;
-                        if (!retValue)
-                        {
-                            Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
-                        }
-                    }
-                    return;
-                }
+                if (Target == Item.ACCESS) { CheckAccess(regKey); return; }
 
                 //  Accountチェック
-                if (Target == Item.ACCOUNT)
-                {
-                    string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                    foreach (string tempAccessString in tempAccess.Split('/'))
-                    {
-                        string tempAccount = tempAccessString.Split(';')[0];
-                        retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
-                            !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
-                        if (retValue)
-                        {
-                            break;
-                        }
-                    }
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
-                    }
-                }
+                if (Target == Item.ACCOUNT) { CheckAccount(regKey); return; }
 
                 //  Inheritedチェック
-                if (Target == Item.INHERITED)
-                {
-                    bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;
-                    retValue = tempInherit == Inherited;
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
-                    }
-                    return;
-                }
+                if (Target == Item.INHERITED) { CheckInherited(regKey); return; }
             }
         }
 
@@ -236,7 +138,6 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// レジストリのパラメータ名/種類/値のチェック
-        /// 長かったので独立したメソッドに
         /// </summary>
         /// <param name="regKey">RegistryKeyインスタンス</param>
         private void CheckRegValue(RegistryKey regKey)
@@ -286,6 +187,112 @@ namespace PSFile.Cmdlet
             {
                 //  Name,Type,Valueの条件で名前の有無チェック
                 Console.Error.WriteLine("Name無し： {0}", Name);
+            }
+        }
+
+        //  所有者チェック
+        private void CheckOwner(RegistryKey regKey)
+        {
+            //string owner = security.GetOwner(typeof(NTAccount)).Value;
+            string tempOwner = new RegistrySummary(regKey, false, true).Owner;
+            retValue = tempOwner == Owner;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("所有者名不一致： {0} / {1}", Owner, tempOwner);
+            }
+        }
+
+        //  アクセス権チェック
+        private void CheckAccess(RegistryKey regKey)
+        {
+            string tempAccess = new RegistrySummary(regKey, false, true).Access;
+            if (Access == string.Empty)
+            {
+                retValue = string.IsNullOrEmpty(tempAccess);
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
+                }
+            }
+            else if (TestMode == Item.CONTAIN)
+            {
+                //  Accessパラメータで指定したAccess文字列が、対象のレジストリキーに含まれているかチェック
+                //  Access文字列は複数の場合は、全て対象のレジストリキーに含まれているかをチェック
+                //string tempAccess = new RegistrySummary(regKey, false, true).Access;
+                string[] tempAccessArray = tempAccess.Split('/');
+                foreach (string accessString in Access.Split('/'))
+                {
+                    retValue = tempAccessArray.Any(x => RegistryControl.IsMatchAccess(x, accessString));
+                    if (!retValue)
+                    {
+                        Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                //string tempAccess = new RegistrySummary(regKey, false, true).Access;
+                List<string> accessListA = new List<string>();
+                accessListA.AddRange(tempAccess.Split('/'));
+
+                List<string> accessListB = new List<string>();
+                accessListB.AddRange(Access.Split('/'));
+
+                if (accessListA.Count == accessListB.Count)
+                {
+                    for (int i = accessListA.Count - 1; i >= 0; i--)
+                    {
+                        string matchString =
+                            accessListB.FirstOrDefault(x => RegistryControl.IsMatchAccess(x, accessListA[i]));
+                        if (matchString != null)
+                        {
+                            accessListB.Remove(matchString);
+                        }
+                    }
+                    retValue = accessListB.Count == 0;
+                }
+                else
+                {
+                    retValue = false;
+                }
+
+                //retValue = tempAccess == Access;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
+                }
+            }
+        }
+
+        //  Accountチェック
+        private void CheckAccount(RegistryKey regKey)
+        {
+            string tempAccess = new RegistrySummary(regKey, false, true).Access;
+            foreach (string tempAccessString in tempAccess.Split('/'))
+            {
+                string tempAccount = tempAccessString.Split(';')[0];
+                retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                    !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
+                if (retValue)
+                {
+                    break;
+                }
+            }
+            if (!retValue)
+            {
+                Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
+            }
+        }
+
+        //  Inheritedチェック
+        private void CheckInherited(RegistryKey regKey)
+        {
+            bool tempInherit = (bool)new RegistrySummary(regKey, false, true).Inherited;
+            retValue = tempInherit == Inherited;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
             }
         }
     }

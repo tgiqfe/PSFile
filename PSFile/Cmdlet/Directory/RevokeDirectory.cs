@@ -12,6 +12,9 @@ namespace PSFile.Cmdlet
 {
     /// <summary>
     /// フォルダーへのアクセス権や属性を剥奪
+    /// TestGenerator : Test-Directory -Path ～ -Access ""    (ALLの場合)
+    ///                 Test-Directory -Path ～ -Account ～   (一部アクセス権を剥奪した場合)
+    ///                 Test-Directory -Path ～ -Attributes ～ (属性を剥奪した場合)
     /// </summary>
     [Cmdlet(VerbsSecurity.Revoke, "Directory")]
     public class RevokeDirectory : PSCmdlet
@@ -44,11 +47,11 @@ namespace PSFile.Cmdlet
             //  アクセス権を剥奪
             if (All)
             {
+                //  テスト自動生成
+                _generator.DirectoryAccess(Path, "", false);
+
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
-                    //  テスト自動生成
-                    _generator.DirectoryAccount(Path, rule.IdentityReference.Value);
-
                     security.RemoveAccessRule(rule);
                     isChange = true;
                 }

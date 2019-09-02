@@ -11,6 +11,16 @@ using System.Diagnostics;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// フォルダーへ各種設定
+    /// TestGenerator : Test-Directory -Path ～
+    ///                 Test-Directory -Path ～ -Access ～
+    ///                 Test-Directory -Path ～ -Owner ～
+    ///                 Test-Directory -Path ～ -Inherited ～
+    ///                 Test-Directory -Path ～ -Attributes ～
+    ///                 Test-Directory -Path ～ -CreationTime ～
+    ///                 Test-Directory -Path ～ -LastWriteTime ～
+    /// </summary>
     [Cmdlet(VerbsCommon.Set, "Directory")]
     public class SetDirectory : PSCmdlet
     {
@@ -30,11 +40,16 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
             Inherited = Item.CheckCase(Inherited);
             _Attributes = Item.CheckCase(Attributes);
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -48,6 +63,10 @@ namespace PSFile.Cmdlet
                 if (Access != null)
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.DirectoryAccess(Path, Access, false);
+
                     foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
                         security.RemoveAccessRule(removeRule);
@@ -70,6 +89,9 @@ namespace PSFile.Cmdlet
                     //  管理者実行確認
                     Functions.CheckAdmin();
 
+                    //  テスト自動生成
+                    _generator.DirectoryOwner(Path, Owner);
+
                     using (Process proc = new Process())
                     {
                         proc.StartInfo.FileName = subinacl;
@@ -84,6 +106,10 @@ namespace PSFile.Cmdlet
                 if (Inherited != Item.NONE)
                 {
                     if (security == null) { security = Directory.GetAccessControl(Path); }
+
+                    //  テスト自動生成
+                    _generator.DirectoryInherited(Path, Inherited == Item.ENABLE);
+
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -103,18 +129,27 @@ namespace PSFile.Cmdlet
                 //  作成日時
                 if (CreationTime != null)
                 {
+                    //  テスト自動生成
+                    _generator.DirectoryCreationTime(Path, (DateTime)CreationTime);
+
                     Directory.SetCreationTime(Path, (DateTime)CreationTime);
                 }
 
                 //  更新一時
                 if (LastWriteTime != null)
                 {
+                    //  テスト自動生成
+                    _generator.DirectoryLastWriteTime(Path, (DateTime)LastWriteTime);
+
                     Directory.SetLastWriteTime(Path, (DateTime)LastWriteTime);
                 }
 
                 //  フォルダー属性
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
+                    //  テスト自動生成
+                    _generator.DirectoryAttributes(Path, _Attributes, false);
+
                     if (!_Attributes.Contains(Item.DIRECTORY))
                     {
                         _Attributes += ", " + Item.DIRECTORY;

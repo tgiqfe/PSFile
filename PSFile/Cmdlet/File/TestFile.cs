@@ -115,7 +115,6 @@ namespace PSFile.Cmdlet
             //  ファイルの有無チェック
             if (!File.Exists(Path))
             {
-                //  全条件でファイルの有無チェック
                 Console.Error.WriteLine("対象のファイル無し： {0}", Path);
                 return;
             }
@@ -126,202 +125,227 @@ namespace PSFile.Cmdlet
             }
 
             //  Hashチェック
-            if (Target == Item.HASH)
-            {
-                string hashString = new FileSummary(Path, true, true, false, true, true, true).Hash;
-                retValue = hashString == Hash;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("ハッシュ不一致： {0} / {1}", Hash, hashString);
-                }
-                return;
-            }
+            if (Target == Item.HASH) { CheckHash(); return; }
 
             //  アクセス権チェック
-            if (Target == Item.ACCESS)
-            {
-                if (Access == string.Empty)
-                {
-                    string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
-                    retValue = string.IsNullOrEmpty(tempAccess);
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
-                    }
-                }
-                else if (TestMode == Item.CONTAIN)
-                {
-                    string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
-                    string[] tempAccessArray = tempAccess.Split('/');
-                    foreach (string accessString in Access.Split('/'))
-                    {
-                        //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
-                        retValue = tempAccessArray.Any(x => FileControl.IsMatchAccess(x, accessString));
-                        if (!retValue)
-                        {
-                            Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
-                    List<string> accessListA = new List<string>();
-                    accessListA.AddRange(tempAccess.Split('/'));
-
-                    List<string> accessListB = new List<string>();
-                    accessListB.AddRange(Access.Split('/'));
-
-                    if (accessListA.Count == accessListB.Count)
-                    {
-                        for (int i = accessListA.Count - 1; i >= 0; i--)
-                        {
-                            string matchString =
-                                accessListB.FirstOrDefault(x => FileControl.IsMatchAccess(x, accessListA[i]));
-                            if (matchString != null)
-                            {
-                                accessListB.Remove(matchString);
-                            }
-                        }
-                        retValue = accessListB.Count == 0;
-                    }
-                    else
-                    {
-                        retValue = false;
-                    }
-
-                    //retValue = tempAccess == Access;
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
-                    }
-                }
-                return;
-            }
+            if (Target == Item.ACCESS) { CheckAccess(); return; }
 
             //  Accountチェック
-            if (Target == Item.ACCOUNT)
-            {
-                string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
-                foreach (string tempAccessString in tempAccess.Split('/'))
-                {
-                    string tempAccount = tempAccessString.Split(';')[0];
-                    retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
-                        !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
-                    if (retValue)
-                    {
-                        break;
-                    }
-                }
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
-                }
-            }
+            if (Target == Item.ACCOUNT) { CheckAccount(); return; }
 
             //  所有者チェック
-            if (Target == Item.OWNER)
-            {
-                string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
-                retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
-                    !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("所有者情報不一致： {0} / {1}", Owner, tempOwner);
-                }
-            }
+            if (Target == Item.OWNER) { CheckOwner(); return; }
 
             //  CreationTime
-            if (Target == Item.CREATIONTIME)
-            {
-                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
-                retValue = tempDate == CreationTime;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("作成日時不一致： {0} / {1}", CreationTime, tempDate);
-                }
-            }
+            if (Target == Item.CREATIONTIME) { CheckCreationTime(); return; }
 
             //  LastWriteTime
-            if (Target == Item.LASTWRITETIME)
-            {
-                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
-                retValue = tempDate == LastWriteTime;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("更新日時不一致： {0} / {1}", LastWriteTime, tempDate);
-                }
-            }
+            if (Target == Item.LASTWRITETIME) { CheckLastWriteTime(); return; }
 
             //  属性チェック
-            if (Target == Item.ATTRIBUTES)
-            {
-                string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
-                if (TestMode == Item.CONTAIN)
-                {
-                    string[] tempAttribArray = Functions.SplitComma(tempAttribute);
-                    foreach (string attribString in
-                        _Attributes.Split(new string[1] { ", " }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        retValue = tempAttribArray.Any(x => x == attribString);
-                        if (!retValue)
-                        {
-                            Console.Error.WriteLine("属性不一致： {0} / {1}", _Attributes, tempAttribute);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    retValue = tempAttribute == _Attributes;
-                    if (!retValue)
-                    {
-                        Console.Error.WriteLine("属性不一致： {0} / {1}", _Attributes, tempAttribute);
-                    }
-                }
-                return;
-            }
+            if (Target == Item.ATTRIBUTES) { CheckAttributes(); return; }
 
-            //  Size
-            if (Target == Item.SIZE)
-            {
-                long tempSize = (long)new FileSummary(Path, true, true, true, false, true, true).Size;
-                retValue = tempSize == Size;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("サイズ不一致： {0} / {1}", Size, tempSize);
-                }
-            }
+            //  Sizeチェック
+            if (Target == Item.SIZE) { CheckSize(); return; }
 
             //  継承設定チェック
-            if (Target == Item.INHERITED)
-            {
-                bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
-                retValue = tempInherit == Inherited;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
-                }
-                return;
-            }
+            if (Target == Item.INHERITED) { CheckInherited(); return; }
 
             //  セキュリティブロックチェック
-            if (Target == Item.SECURITYBLOCK)
-            {
-                bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).SecurityBlock;
-                retValue = tempSecurityBlock == SecurityBlock;
-                if (!retValue)
-                {
-                    Console.Error.WriteLine("セキュリティブロック設定一致： {0} / {1}", SecurityBlock, tempSecurityBlock);
-                }
-                return;
-            }
+            if (Target == Item.SECURITYBLOCK) { CheckSecurityBlock(); return; }
         }
 
         protected override void EndProcessing()
         {
             WriteObject(retValue);
+        }
+
+        //  Hashチェック
+        private void CheckHash()
+        {
+            string hashString = new FileSummary(Path, true, true, false, true, true, true).Hash;
+            retValue = hashString == Hash;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("ハッシュ不一致： {0} / {1}", Hash, hashString);
+            }
+        }
+
+        //  Accessチェック
+        private void CheckAccess()
+        {
+            string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+            if (Access == string.Empty)
+            {
+                retValue = string.IsNullOrEmpty(tempAccess);
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
+                }
+            }
+            else if (TestMode == Item.CONTAIN)
+            {
+                //string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+                string[] tempAccessArray = tempAccess.Split('/');
+                foreach (string accessString in Access.Split('/'))
+                {
+                    //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
+                    retValue = tempAccessArray.Any(x => FileControl.IsMatchAccess(x, accessString));
+                    if (!retValue)
+                    {
+                        Console.Error.WriteLine("指定のアクセス権無し： {0} / {1}", Access, tempAccess);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                //string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+                List<string> accessListA = new List<string>();
+                accessListA.AddRange(tempAccess.Split('/'));
+
+                List<string> accessListB = new List<string>();
+                accessListB.AddRange(Access.Split('/'));
+
+                if (accessListA.Count == accessListB.Count)
+                {
+                    for (int i = accessListA.Count - 1; i >= 0; i--)
+                    {
+                        string matchString =
+                            accessListB.FirstOrDefault(x => FileControl.IsMatchAccess(x, accessListA[i]));
+                        if (matchString != null)
+                        {
+                            accessListB.Remove(matchString);
+                        }
+                    }
+                    retValue = accessListB.Count == 0;
+                }
+                else
+                {
+                    retValue = false;
+                }
+
+                //retValue = tempAccess == Access;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
+                }
+            }
+        }
+
+        //  Accountチェック
+        private void CheckAccount()
+        {
+            string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+            foreach (string tempAccessString in tempAccess.Split('/'))
+            {
+                string tempAccount = tempAccessString.Split(';')[0];
+                retValue = Account.Contains("\\") && tempAccount.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
+                    !Account.Contains("\\") && tempAccount.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase);
+                if (retValue)
+                {
+                    break;
+                }
+            }
+            if (!retValue)
+            {
+                Console.Error.WriteLine("対象アカウントのアクセス権無し： {0} / {1}", Account, tempAccess);
+            }
+        }
+
+        //  所有者チェック
+        private void CheckOwner()
+        {
+            string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
+            retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
+                !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
+            if (!retValue)
+            {
+                Console.Error.WriteLine("所有者情報不一致： {0} / {1}", Owner, tempOwner);
+            }
+        }
+
+        //  CreationTime
+        private void CheckCreationTime()
+        {
+            DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+            retValue = tempDate == CreationTime;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("作成日時不一致： {0} / {1}", CreationTime, tempDate);
+            }
+        }
+
+        //  LastWriteTime
+        private void CheckLastWriteTime()
+        {
+            DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+            retValue = tempDate == LastWriteTime;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("更新日時不一致： {0} / {1}", LastWriteTime, tempDate);
+            }
+        }
+
+        //  属性チェック
+        private void CheckAttributes()
+        {
+            string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
+            if (TestMode == Item.CONTAIN)
+            {
+                string[] tempAttribArray = Functions.SplitComma(tempAttribute);
+                foreach (string attribString in
+                    _Attributes.Split(new string[1] { ", " }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    retValue = tempAttribArray.Any(x => x == attribString);
+                    if (!retValue)
+                    {
+                        Console.Error.WriteLine("属性不一致： {0} / {1}", _Attributes, tempAttribute);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                retValue = tempAttribute == _Attributes;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("属性不一致： {0} / {1}", _Attributes, tempAttribute);
+                }
+            }
+        }
+
+        //  Sizeチェック
+        private void CheckSize()
+        {
+            long tempSize = (long)new FileSummary(Path, true, true, true, false, true, true).Size;
+            retValue = tempSize == Size;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("サイズ不一致： {0} / {1}", Size, tempSize);
+            }
+        }
+
+        //  継承設定チェック
+        private void CheckInherited()
+        {
+            bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
+            retValue = tempInherit == Inherited;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("継承設定不一致： {0} / {1}", Inherited, tempInherit);
+            }
+        }
+
+        //  セキュリティブロックチェック
+        private void CheckSecurityBlock()
+        {
+            bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).SecurityBlock;
+            retValue = tempSecurityBlock == SecurityBlock;
+            if (!retValue)
+            {
+                Console.Error.WriteLine("セキュリティブロック設定一致： {0} / {1}", SecurityBlock, tempSecurityBlock);
+            }
         }
     }
 }
