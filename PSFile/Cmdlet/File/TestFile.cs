@@ -19,7 +19,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTES, Item.INHERITED, Item.SECURITYBLOCK)]
+        [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.OWNER, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE, Item.INHERITED, Item.SECURITYBLOCK)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -31,8 +31,14 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
+        public DateTime? CreationTime { get; set; }
+        [Parameter]
+        public DateTime? LastWriteTime { get; set; }
+        [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public long? Size { get; set; }
         [Parameter]
         public bool? Inherited { get; set; }
         [Parameter]
@@ -52,7 +58,7 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// Targetパラメータの自動解析
-        /// 解析優先度： Hash -> Access -> Owner -> Attributes -> Inherited -> SecurityBlock -> Path
+        /// 解析優先度： Hash -> Access -> Owner -> CreationTime -> LastWriteTime -> Attributes -> Size -> Inherited -> SecurityBlock -> Path
         /// </summary>
         private void DetectTargetParameter()
         {
@@ -70,9 +76,21 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.OWNER;
                 }
+                else if (CreationTime != null)
+                {
+                    Target = Item.CREATIONTIME;
+                }
+                else if (LastWriteTime != null)
+                {
+                    Target = Item.LASTWRITETIME;
+                }
                 else if (!string.IsNullOrEmpty(_Attributes))
                 {
                     Target = Item.ATTRIBUTES;
+                }
+                else if(Size != null)
+                {
+                    Target = Item.SIZE;
                 }
                 else if (Inherited != null)
                 {
@@ -182,6 +200,28 @@ namespace PSFile.Cmdlet
                 }
             }
 
+            //  CreationTime
+            if (Target == Item.CREATIONTIME)
+            {
+                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+                retValue = tempDate == CreationTime;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("作成日時不一致： {0} / {1}", CreationTime, tempDate);
+                }
+            }
+
+            //  LastWriteTime
+            if (Target == Item.LASTWRITETIME)
+            {
+                DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+                retValue = tempDate == LastWriteTime;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("更新日時不一致： {0} / {1}", LastWriteTime, tempDate);
+                }
+            }
+
             //  属性チェック
             if (Target == Item.ATTRIBUTES)
             {
@@ -209,6 +249,17 @@ namespace PSFile.Cmdlet
                     }
                 }
                 return;
+            }
+
+            //  Size
+            if (Target == Item.SIZE)
+            {
+                long tempSize = (long)new FileSummary(Path, true, true, true, false, true, true).Size;
+                retValue = tempSize == Size;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("サイズ不一致： {0} / {1}", Size, tempSize);
+                }
             }
 
             //  継承設定チェック

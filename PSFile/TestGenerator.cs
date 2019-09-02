@@ -99,23 +99,22 @@ namespace PSFile
             WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -SecurityBlock ${2}",
                 path, Item.SECURITYBLOCK, securityBlock));
         }
-
         public void FileSize(string path, long size)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -Size {2}",
+            WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -Size {2}",
                 path, Item.SIZE, size));
         }
         public void FileCreationTime(string path, DateTime creationTime)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
+            WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
                 path, Item.CREATIONTIME, creationTime.ToString("yyyy/MM/dd hh:mm:ss")));
         }
         public void FileLastWriteTime(string path, DateTime lastWriteTime)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-File -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
+            WriteCode(string.Format("Test-File -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
                 path, Item.CREATIONTIME, lastWriteTime.ToString("yyyy/MM/dd hh:mm:ss")));
         }
         public void FileCompare(string path, string difference,
@@ -177,23 +176,22 @@ namespace PSFile
             WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Inherited ${2}",
                 path, Item.INHERITED, inherited));
         }
-
         public void DirectorySize(string path, long size)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -Size {2}",
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -Size {2}",
                 path, Item.SIZE, size));
         }
         public void DirectoryCreationTime(string path, DateTime creationTime)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -CreationTime \"{2}\"",
                 path, Item.CREATIONTIME, creationTime.ToString("yyyy/MM/dd hh:mm:ss")));
         }
         public void DirectoryLastWriteTime(string path, DateTime lastWriteTime)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Compare-Directory -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
+            WriteCode(string.Format("Test-Directory -Path \"{0}\" -Target {1} -LastWriteTime \"{2}\"",
                 path, Item.CREATIONTIME, lastWriteTime.ToString("yyyy/MM/dd hh:mm:ss")));
         }
         public void DirectoryCompare(string path, string difference,
