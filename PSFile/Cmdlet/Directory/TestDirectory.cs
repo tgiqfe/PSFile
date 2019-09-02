@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
         [Parameter]
-        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.ATTRIBUTES, Item.INHERITED)]
+        [ValidateSet(Item.PATH, Item.ACCESS, Item.OWNER, Item.INHERITED, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE)]
         public string Target { get; set; }
         [Parameter]
         [ValidateSet(Item.CONTAIN, Item.MATCH)]
@@ -26,8 +26,14 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string Owner { get; set; }
         [Parameter]
+        public DateTime? CreationTime { get; set; }
+        [Parameter]
+        public DateTime? LastWriteTime { get; set; }
+        [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public long? Size { get; set; }
         [Parameter]
         public bool? Inherited { get; set; }
 
@@ -45,7 +51,7 @@ namespace PSFile.Cmdlet
 
         /// <summary>
         /// Targetパラメータの自動解析
-        /// 解析優先度：Access -> Owner -> Attributes -> Inherited -> Path
+        /// 解析優先度：Access -> Owner -> CreationTime -> LastWriteTime -> Attributes -> Size -> Inherited -> Path
         /// </summary>
         private void DetectTargetParameter()
         {
@@ -59,9 +65,21 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.OWNER;
                 }
+                else if (CreationTime != null)
+                {
+                    Target = Item.CREATIONTIME;
+                }
+                else if (LastWriteTime != null)
+                {
+                    Target = Item.LASTWRITETIME;
+                }
                 else if (!string.IsNullOrEmpty(_Attributes))
                 {
                     Target = Item.ATTRIBUTES;
+                }
+                else if (Size != null)
+                {
+                    Target = Item.SIZE;
                 }
                 else if (Inherited != null)
                 {
@@ -88,7 +106,7 @@ namespace PSFile.Cmdlet
                 retValue = true;
             }
 
-            //  アクセス権チェック
+            //  Accessチェック
             if (Target == Item.ACCESS)
             {
                 if (TestMode == Item.CONTAIN)
@@ -97,7 +115,6 @@ namespace PSFile.Cmdlet
                     string[] tempAccessArray = tempAccess.Split('/');
                     foreach (string accessString in Access.Split('/'))
                     {
-                        //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
                         retValue = tempAccessArray.Any(x => DirectoryControl.IsMatchAccess(x, accessString));
                         if (!retValue)
                         {
@@ -133,7 +150,6 @@ namespace PSFile.Cmdlet
                         retValue = false;
                     }
 
-                    //retValue = tempAccess == Access;
                     if (!retValue)
                     {
                         Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);
@@ -141,7 +157,7 @@ namespace PSFile.Cmdlet
                 }
             }
 
-            //  所有者チェック
+            //  Owner
             if (Target == Item.OWNER)
             {
                 string tempOwner = new DirectorySummary(Path, false, true, true, true, true, true).Owner;
@@ -153,7 +169,29 @@ namespace PSFile.Cmdlet
                 }
             }
 
-            //  属性チェック
+            //  CreationTime
+            if (Target == Item.CREATIONTIME)
+            {
+                DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).CreationTime;
+                retValue = tempDate == CreationTime;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("作成日時不一致： {0} / {1}", CreationTime, tempDate);
+                }
+            }
+
+            //  LastWriteTime
+            if (Target == Item.LASTWRITETIME)
+            {
+                DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).LastWriteTime;
+                retValue = tempDate == LastWriteTime;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("更新日時不一致： {0} / {1}", LastWriteTime, tempDate);
+                }
+            }
+
+            //  Attributes
             if (Target == Item.ATTRIBUTES)
             {
                 string tempAttribute = new DirectorySummary(Path, true, true, false, true, true, true).Attributes;
@@ -183,7 +221,18 @@ namespace PSFile.Cmdlet
                 return;
             }
 
-            //  継承設定チェック
+            //  Size
+            if (Target == Item.SIZE)
+            {
+                long tempSize = (long)new DirectorySummary(Path, true, true, true, false, true, true).Size;
+                retValue = tempSize == Size;
+                if (!retValue)
+                {
+                    Console.Error.WriteLine("サイズ不一致： {0} / {1}", Size, tempSize);
+                }
+            }
+
+            //  Inherited
             if (Target == Item.INHERITED)
             {
                 bool tempInherit = (bool)new DirectorySummary(Path, false, true, true, true, true, true).Inherited;

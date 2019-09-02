@@ -18,8 +18,8 @@ namespace PSFile.Cmdlet
     ///                 Test-Directory -Path ～ -Owner ～
     ///                 Test-Directory -Path ～ -Inherited ～
     ///                 Test-Directory -Path ～ -Attributes ～
-    ///                 Compare-Directory -Path ～ -CreationTime ～
-    ///                 Compare-Directory -Path ～ -LastWriteTime ～
+    ///                 Test-Directory -Path ～ -CreationTime ～
+    ///                 Test-Directory -Path ～ -LastWriteTime ～
     /// </summary>
     [Cmdlet(VerbsCommon.New, "Directory")]
     public class NewDirectory : PSCmdlet
@@ -54,7 +54,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (Directory.Exists(Path)){ return; }
+            if (Directory.Exists(Path)) { return; }
 
             //  テスト自動生成
             _generator.DirectoryPath(Path);
@@ -132,6 +132,8 @@ namespace PSFile.Cmdlet
             //  作成日時
             if (CreationTime != null)
             {
+                //  テスト自動生成
+                _generator.DirectoryCreationTime(Path, (DateTime)CreationTime);
 
                 Directory.SetCreationTime(Path, (DateTime)CreationTime);
             }
@@ -139,6 +141,8 @@ namespace PSFile.Cmdlet
             //  更新一時
             if (LastWriteTime != null)
             {
+                //  テスト自動生成
+                _generator.DirectoryLastWriteTime(Path, (DateTime)LastWriteTime);
 
                 Directory.SetLastWriteTime(Path, (DateTime)LastWriteTime);
             }
@@ -146,6 +150,9 @@ namespace PSFile.Cmdlet
             //  フォルダー属性
             if (!string.IsNullOrEmpty(_Attributes))
             {
+                //  テスト自動生成
+                _generator.DirectoryAttributes(Path, _Attributes, false);
+
                 if (!_Attributes.Contains(Item.DIRECTORY))
                 {
                     _Attributes += ", " + Item.DIRECTORY;
