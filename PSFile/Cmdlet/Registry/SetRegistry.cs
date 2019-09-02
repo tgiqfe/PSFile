@@ -50,24 +50,21 @@ namespace PSFile.Cmdlet
                 RegistrySecurity security = null;
 
                 //  Access文字列からの設定
-                if (!string.IsNullOrEmpty(Access))
+                //  ""で全アクセス権設定を削除
+                if (Access != null)
                 {
                     if (security == null) { security = regKey.GetAccessControl(); }
                     foreach (RegistryAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
                         security.RemoveAccessRule(removeRule);
                     }
-                    foreach (RegistryAccessRule addRule in RegistryControl.StringToAccessRules(Access))
+                    if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
                     {
-                        security.AddAccessRule(addRule);
+                        foreach (RegistryAccessRule addRule in RegistryControl.StringToAccessRules(Access))
+                        {
+                            security.AddAccessRule(addRule);
+                        }
                     }
-
-                    /*
-                    foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
-                    {
-                        security.SetAccessRule(rule);
-                    }
-                    */
                 }
 
                 //  上位からのアクセス権継承の設定変更

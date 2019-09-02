@@ -59,7 +59,7 @@ namespace PSFile.Cmdlet
         {
             if (Target == null)
             {
-                if (!string.IsNullOrEmpty(Access))
+                if (Access != null)
                 {
                     Target = Item.ACCESS;
                 }
@@ -115,7 +115,16 @@ namespace PSFile.Cmdlet
             //  Accessチェック
             if (Target == Item.ACCESS)
             {
-                if (TestMode == Item.CONTAIN)
+                if (Access == string.Empty)
+                {
+                    string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
+                    retValue = string.IsNullOrEmpty(tempAccess);
+                    if (!retValue)
+                    {
+                        Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
+                    }
+                }
+                else if (TestMode == Item.CONTAIN)
                 {
                     string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
                     string[] tempAccessArray = tempAccess.Split('/');

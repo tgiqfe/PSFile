@@ -75,7 +75,7 @@ namespace PSFile.Cmdlet
                 {
                     Target = Item.OWNER;
                 }
-                else if (!string.IsNullOrEmpty(Access))
+                else if (Access != null)
                 {
                     Target = Item.ACCESS;
                 }
@@ -134,16 +134,23 @@ namespace PSFile.Cmdlet
                 //  アクセス権チェック
                 if (Target == Item.ACCESS)
                 {
-                    if (TestMode == Item.CONTAIN)
+                    if (Access == string.Empty)
+                    {
+                        string tempAccess = new RegistrySummary(regKey, false, true).Access;
+                        retValue = string.IsNullOrEmpty(tempAccess);
+                        if (!retValue)
+                        {
+                            Console.Error.WriteLine("指定のアクセス権無し： \"{0}\" / \"{1}\"", Access, tempAccess);
+                        }
+                    }
+                    else if (TestMode == Item.CONTAIN)
                     {
                         //  Accessパラメータで指定したAccess文字列が、対象のレジストリキーに含まれているかチェック
                         //  Access文字列は複数の場合は、全て対象のレジストリキーに含まれているかをチェック
                         string tempAccess = new RegistrySummary(regKey, false, true).Access;
-                        //string[] tempAccessArray = tempAccess.Contains("/") ? tempAccess.Split('/') : new string[1] { tempAccess };
                         string[] tempAccessArray = tempAccess.Split('/');
                         foreach (string accessString in Access.Split('/'))
                         {
-                            //retValue = tempAccessArray.Any(x => x.Equals(accessString, StringComparison.OrdinalIgnoreCase));
                             retValue = tempAccessArray.Any(x => RegistryControl.IsMatchAccess(x, accessString));
                             if (!retValue)
                             {

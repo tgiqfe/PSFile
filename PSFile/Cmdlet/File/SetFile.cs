@@ -48,16 +48,20 @@ namespace PSFile.Cmdlet
                 FileSecurity security = null;
 
                 //  Access設定
-                if (!string.IsNullOrEmpty(Access))
+                //  ""で全アクセス権設定を削除
+                if (Access != null)
                 {
                     if (security == null) { security = File.GetAccessControl(Path); }
                     foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
                         security.RemoveAccessRule(removeRule);
                     }
-                    foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
+                    if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
                     {
-                        security.AddAccessRule(addRule);
+                        foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
+                        {
+                            security.AddAccessRule(addRule);
+                        }
                     }
                 }
 
