@@ -10,6 +10,10 @@ using System.IO;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリキー同士を比較
+    /// TestGenerator : 無し
+    /// </summary>
     [Cmdlet(VerbsData.Compare, "Registry")]
     public class CompareRegistry : PSCmdlet
     {

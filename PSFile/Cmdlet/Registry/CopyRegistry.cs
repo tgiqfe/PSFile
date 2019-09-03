@@ -9,6 +9,11 @@ using System.Diagnostics;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリキーをコピー
+    /// TestGenerator : Test-Registry -Path ～
+    ///                 Compare-Registry -Path ～
+    /// </summary>
     [Cmdlet(VerbsCommon.Copy, "Registry")]
     public class CopyRegistry : PSCmdlet
     {
@@ -20,6 +25,14 @@ namespace PSFile.Cmdlet
         public string Name { get; set; }
         [Parameter]
         public string DestinationName { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -90,6 +103,11 @@ namespace PSFile.Cmdlet
             using (RegistryKey sourceKey = RegistryControl.GetRegistryKey(source, false, true))
             using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destination, true, true))
             {
+                //  テスト自動生成
+                _generator.RegistryPath(Path);
+                _generator.RegistryPath(Destination);
+                _generator.RegistryCompare(Path, Destination, true, false);
+
                 copyRegKey(sourceKey, destinationKey);
                 //  コピー元を削除する場合
                 //sourceKey.DeleteSubKeyTree("");
@@ -110,6 +128,12 @@ namespace PSFile.Cmdlet
                 {
                     destinationName = name;
                 }
+
+                //  テスト自動生成
+                _generator.RegistryName(Path, Name);
+                _generator.RegistryName(Path, destinationName);
+                _generator.RegistryValue(Path, destinationName, 
+                    RegistryControl.RegistryValueToString(sourceKey, Name, valueKind, true));
 
                 destinationKey.SetValue(destinationName, sourceValue, valueKind);
                 //  コピー元を削除する場合

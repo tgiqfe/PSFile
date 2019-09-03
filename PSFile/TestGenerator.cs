@@ -235,6 +235,24 @@ namespace PSFile
             WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1}",
                 path, Item.PATH));
         }
+        public void RegistryName(string path, string name)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Name \"{2}\"",
+                path, Item.NAME, name));
+        }
+        public void RegistryValue(string path, string name, string valu)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Name \"{2}\" -Value \"{3}\"",
+                path, Item.VALUE, name, valu));
+        }
+        public void RegistryType(string path, string name, string type)
+        {
+            if (!_writable) { return; }
+            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Type {2}",
+                path, Item.TYPE, name, type));
+        }
         public void RegistryAccess(string path, string access, bool isContain)
         {
             if (!_writable) { return; }

@@ -7,6 +7,9 @@ using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// ロードしたレジストリキーをアンロード
+    /// </summary>
     [Cmdlet(VerbsCommon.Close, "Registry")]
     public class CloseRegistry : PSCmdlet
     {
