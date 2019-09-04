@@ -46,6 +46,7 @@ namespace PSFile
         public static RegistryKey GetRegistryKey(string path, bool isCreate, bool writable)
         {
             string keyName = path.Substring(path.IndexOf("\\") + 1);
+
             return isCreate ?
                 GetRootkey(path).CreateSubKey(keyName, writable) :
                 GetRootkey(path).OpenSubKey(keyName, writable);
