@@ -5,6 +5,9 @@ using System.Management.Automation;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリ情報を取得してRegistrySummaryインスタンスを返す
+    /// </summary>
     [Cmdlet(VerbsCommon.Get, "Registry")]
     public class GetRegistry : PSCmdlet
     {

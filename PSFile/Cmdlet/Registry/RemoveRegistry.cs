@@ -9,6 +9,11 @@ using System.Diagnostics;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリ削除
+    /// TestGenerator : Test-Registry -Path ～ (不在確認)
+    ///                 Test-Registry -Path ～ -Name ～ (不在確認)
+    /// </summary>
     [Cmdlet(VerbsCommon.Remove, "Registry")]
     public class RemoveRegistry : PSCmdlet
     {
@@ -16,6 +21,14 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -25,6 +38,9 @@ namespace PSFile.Cmdlet
                 {
                     try
                     {
+                        //  テスト自動生成
+                        _generator.RegistryPath(Path);
+
                         regKey.DeleteSubKeyTree("");
                     }
                     catch
@@ -41,6 +57,9 @@ namespace PSFile.Cmdlet
                 }
                 else
                 {
+                    //  テスト自動生成
+                    _generator.RegistryName(Path, Name);
+
                     regKey.DeleteValue(Name);
                 }
             }

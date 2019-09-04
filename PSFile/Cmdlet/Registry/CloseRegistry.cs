@@ -15,6 +15,14 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -25,6 +33,10 @@ namespace PSFile.Cmdlet
             {
                 if (regKey == null) { return; }
             }
+
+            //  テスト自動生成
+            _generator.RegistryPath(Path);
+
             string keyName = Path.Substring(Path.IndexOf("\\") + 1);
             RegistryHive.UnLoad(keyName);
 

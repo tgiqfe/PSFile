@@ -11,6 +11,9 @@ using System.Security.AccessControl;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリをロード
+    /// </summary>
     [Cmdlet(VerbsCommon.Open, "Registry")]
     public class OpenRegistry : PSCmdlet
     {
@@ -18,6 +21,14 @@ namespace PSFile.Cmdlet
         public string Path { get; set; }
         [Parameter]
         public string File { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -28,6 +39,10 @@ namespace PSFile.Cmdlet
             {
                 if (regKey != null) { return; }
             }
+
+            //  テスト自動生成
+            _generator.RegistryPath(Path);
+
             string keyName = Path.Substring(Path.IndexOf("\\") + 1);
             RegistryHive.Load(keyName, File);
 

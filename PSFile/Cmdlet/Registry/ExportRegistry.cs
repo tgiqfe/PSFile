@@ -13,6 +13,9 @@ using System.Xml.Serialization;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリ情報をエクスポートしてDirectorySummaryインスタンスをシリアライズ
+    /// </summary>
     [Cmdlet(VerbsData.Export, "Registry")]
     public class ExportRegistry : PSCmdlet
     {

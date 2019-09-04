@@ -12,8 +12,7 @@ namespace PSFile.Cmdlet
 {
     /// <summary>
     /// フォルダー削除
-    /// TestGenerator : Test-Directory -Path ～
-    ///                 存在しないことを確認
+    /// TestGenerator : Test-Directory -Path ～ (不在確認)
     /// </summary>
     [Cmdlet(VerbsCommon.Remove, "Directory")]
     public class RemoveDirectory : PSCmdlet

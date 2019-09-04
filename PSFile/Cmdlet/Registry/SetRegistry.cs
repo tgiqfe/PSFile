@@ -7,6 +7,13 @@ using System.Security.Principal;
 
 namespace PSFile.Cmdlet
 {
+    /// <summary>
+    /// レジストリへの各種設定
+    /// TestGenerator : Test-Registry -Path ～
+    ///                 Test-Registry -Path ～ -Access ～
+    ///                 Test-Registry -Path ～ -Owner ～
+    ///                 Test-Registry -Path ～ -Inherited ～
+    /// </summary>
     [Cmdlet(VerbsCommon.Set, "Registry")]
     public class SetRegistry : PSCmdlet
     {
@@ -28,6 +35,9 @@ namespace PSFile.Cmdlet
         [Parameter]
         [ValidateSet(Item.NONE, Item.ENABLE, Item.DISABLE, Item.REMOVE)]
         public string Inherited { get; set; } = Item.NONE;
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
 
         protected override void BeginProcessing()
         {
@@ -39,6 +49,8 @@ namespace PSFile.Cmdlet
                 string keyName = Path.Substring(Path.IndexOf("\\") + 1);
                 Path = System.IO.Path.Combine(Chroot, keyName);
             }
+
+            _generator = new TestGenerator(Test);
         }
 
         protected override void ProcessRecord()
@@ -46,6 +58,9 @@ namespace PSFile.Cmdlet
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
             {
                 if (regKey == null) { return; }
+
+                //  テスト自動生成
+                _generator.RegistryPath(Path);
 
                 RegistrySecurity security = null;
 
@@ -58,6 +73,10 @@ namespace PSFile.Cmdlet
                     {
                         security.RemoveAccessRule(removeRule);
                     }
+
+                    //  テスト自動生成
+                    _generator.RegistryAccess(Path, Access, false);
+
                     if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
                     {
                         foreach (RegistryAccessRule addRule in RegistryControl.StringToAccessRules(Access))
@@ -71,6 +90,10 @@ namespace PSFile.Cmdlet
                 if (Inherited != Item.NONE)
                 {
                     if (security == null) { security = regKey.GetAccessControl(); }
+
+                    //  テスト自動生成
+                    _generator.RegistryInherited(Path, Inherited == Item.ENABLE);
+
                     switch (Inherited)
                     {
                         case Item.ENABLE:
@@ -95,6 +118,9 @@ namespace PSFile.Cmdlet
 
                 //  管理者実行確認
                 Functions.CheckAdmin();
+
+                //  テスト自動生成
+                _generator.RegistryOwner(Path, Owner);
 
                 using (Process proc = new Process())
                 {

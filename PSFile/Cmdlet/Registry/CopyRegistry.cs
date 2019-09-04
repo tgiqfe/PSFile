@@ -104,9 +104,9 @@ namespace PSFile.Cmdlet
             using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destination, true, true))
             {
                 //  テスト自動生成
-                _generator.RegistryPath(Path);
-                _generator.RegistryPath(Destination);
-                _generator.RegistryCompare(Path, Destination, true, false);
+                _generator.RegistryPath(source);
+                _generator.RegistryPath(destination);
+                _generator.RegistryCompare(source, destination, true, false);
 
                 copyRegKey(sourceKey, destinationKey);
                 //  コピー元を削除する場合
@@ -130,10 +130,10 @@ namespace PSFile.Cmdlet
                 }
 
                 //  テスト自動生成
-                _generator.RegistryName(Path, Name);
-                _generator.RegistryName(Path, destinationName);
-                _generator.RegistryValue(Path, destinationName, 
-                    RegistryControl.RegistryValueToString(sourceKey, Name, valueKind, true));
+                _generator.RegistryName(source, name);
+                _generator.RegistryName(source, destinationName);
+                _generator.RegistryValue(source, destinationName,
+                    RegistryControl.RegistryValueToString(sourceKey, name, valueKind, true));
 
                 destinationKey.SetValue(destinationName, sourceValue, valueKind);
                 //  コピー元を削除する場合

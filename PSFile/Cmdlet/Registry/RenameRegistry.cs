@@ -20,6 +20,14 @@ namespace PSFile.Cmdlet
         public string Name { get; set; }
         [Parameter]
         public string NewName { get; set; }
+        [Parameter]
+        public string Test { get; set; }
+        private TestGenerator _generator = null;
+
+        protected override void BeginProcessing()
+        {
+            _generator = new TestGenerator(Test);
+        }
 
         protected override void ProcessRecord()
         {
@@ -88,6 +96,11 @@ namespace PSFile.Cmdlet
             using (RegistryKey sourceKey = RegistryControl.GetRegistryKey(source, false, true))
             using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destination, true, true))
             {
+                //  テスト自動生成
+                _generator.RegistryPath(source);
+                _generator.RegistryPath(destination);
+                _generator.RegistryCompare(source, destination, true, false);
+
                 copyRegKey(sourceKey, destinationKey);
                 //  コピー元を削除する場合
                 sourceKey.DeleteSubKeyTree("");
@@ -109,6 +122,12 @@ namespace PSFile.Cmdlet
                 {
                     destinationName = name;
                 }
+
+                //  テスト自動生成
+                _generator.RegistryName(source, name);
+                _generator.RegistryName(source, destinationName);
+                _generator.RegistryValue(source, destinationName,
+                    RegistryControl.RegistryValueToString(sourceKey, name, valueKind, true));
 
                 sourceKey.SetValue(destinationName, sourceValue, valueKind);
                 //  コピー元を削除する場合
