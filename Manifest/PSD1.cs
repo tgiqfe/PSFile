@@ -26,7 +26,7 @@ namespace Manifest
                         if (Regex.IsMatch(readLine, @"^\s*\[Cmdlet\(Verbs"))
                         {
                             string cmdPre = readLine.Substring(
-                                readLine.IndexOf("."), readLine.IndexOf(",") - readLine.IndexOf(".") - 1);
+                                readLine.IndexOf(".") + 1, readLine.IndexOf(",") - readLine.IndexOf(".") - 1);
                             string cmdSuf = readLine.Substring(
                                 readLine.IndexOf("\"") + 1, readLine.LastIndexOf("\"") - readLine.IndexOf("\"") - 1);
                             CmdletsToExport.Add(cmdPre + "-" + cmdSuf);
