@@ -250,7 +250,7 @@ namespace PSFile
         public void RegistryType(string path, string name, string type)
         {
             if (!_writable) { return; }
-            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Type {2}",
+            WriteCode(string.Format("Test-Registry -Path \"{0}\" -Target {1} -Name \"{2}\" -Type {3}",
                 path, Item.TYPE, name, type));
         }
         public void RegistryAccess(string path, string access, bool isContain)

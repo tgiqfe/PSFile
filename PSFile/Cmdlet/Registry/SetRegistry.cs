@@ -59,9 +59,6 @@ namespace PSFile.Cmdlet
             {
                 if (regKey == null) { return; }
 
-                //  テスト自動生成
-                _generator.RegistryPath(Path);
-
                 RegistrySecurity security = null;
 
                 //  Access文字列からの設定
@@ -136,6 +133,9 @@ namespace PSFile.Cmdlet
             if (Name != null)
             {
                 //  テスト自動生成
+                _generator.RegistryType(Path, Name, Type);
+                _generator.RegistryValue(Path, Name, Value);
+
                 switch (Type)
                 {
                     case Item.REG_SZ:
