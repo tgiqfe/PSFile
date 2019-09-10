@@ -166,7 +166,9 @@ namespace PSFile.Cmdlet
                     FileControl.RemoveSecurityBlock(Path);
                 }
 
+                /*  実行していて結構うっとおしいので、出力しないことにします。
                 WriteObject(new FileSummary(Path, true));
+                */
             }
         }
     }

@@ -162,10 +162,12 @@ namespace PSFile.Cmdlet
                 }
             }
 
+            /*  実行していて結構うっとおしいので、出力しないことにします。
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
             {
                 WriteObject(new RegistrySummary(regKey, true));
             }
+            */
         }
     }
 }

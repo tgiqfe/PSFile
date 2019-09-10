@@ -157,7 +157,9 @@ namespace PSFile.Cmdlet
                     File.SetAttributes(Path, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
                 }
 
+                /*  実行していて結構うっとおしいので、出力しないことにします。
                 WriteObject(new DirectorySummary(Path, true));
+                */
             }
         }
     }
