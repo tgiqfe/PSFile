@@ -14,8 +14,8 @@ namespace PSFile.Cmdlet
     /// <summary>
     /// レジストリをロード
     /// </summary>
-    [Cmdlet(VerbsCommon.Open, "Registry")]
-    public class OpenRegistry : PSCmdlet
+    [Cmdlet(VerbsData.Mount, "Registry")]
+    public class MountRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }

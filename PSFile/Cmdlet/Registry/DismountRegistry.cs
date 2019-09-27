@@ -10,8 +10,8 @@ namespace PSFile.Cmdlet
     /// <summary>
     /// ロードしたレジストリキーをアンロード
     /// </summary>
-    [Cmdlet(VerbsCommon.Close, "Registry")]
-    public class CloseRegistry : PSCmdlet
+    [Cmdlet(VerbsData.Dismount, "Registry")]
+    public class DismountRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public string Path { get; set; }

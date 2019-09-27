@@ -61,7 +61,7 @@
     <Compile Include="Cmdlet\Registry\ExportRegistry.cs" />
     <Compile Include="Cmdlet\Registry\CompareRegistry.cs" />
     <Compile Include="Cmdlet\Registry\CopyRegistry.cs" />
-    <Compile Include="Cmdlet\Registry\CloseRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\DismountRegistry.cs" />
     <Compile Include="Cmdlet\Directory\CopyDirectory.cs" />
     <Compile Include="Cmdlet\Directory\ExportDirectory.cs" />
     <Compile Include="Cmdlet\File\CopyFile.cs" />
@@ -81,7 +81,7 @@
     <Compile Include="Class\RegistryControl.cs" />
     <Compile Include="Class\RegistryHive.cs" />
     <Compile Include="Class\RegistrySummary.cs" />
-    <Compile Include="Cmdlet\Registry\OpenRegistry.cs" />
+    <Compile Include="Cmdlet\Registry\MountRegistry.cs" />
     <Compile Include="Cmdlet\Registry\GetRegistry.cs" />
     <Compile Include="Cmdlet\Registry\SetRegistry.cs" />
     <Compile Include="Cmdlet\Registry\TestRegistry.cs" />
