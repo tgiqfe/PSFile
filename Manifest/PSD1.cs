@@ -7,6 +7,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Manifest
 {
@@ -19,6 +20,8 @@ namespace Manifest
             string dllFile = Path.Combine(outputDir, projectName + ".dll");
             string outputFile = Path.Combine(outputDir, projectName + EXTENSION);
             if (!File.Exists(dllFile)) { return; }
+
+            string dllFile_absolute = Path.GetFullPath(dllFile);
 
             List<string> CmdletsToExport = new List<string>();
             string cmdletDir = @"..\..\..\" + projectName + @"\Cmdlet";
@@ -42,10 +45,12 @@ namespace Manifest
             }
 
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(dllFile);
+            GuidAttribute attr =
+                Attribute.GetCustomAttribute(Assembly.LoadFile(dllFile_absolute), typeof(GuidAttribute)) as GuidAttribute;
 
             string RootModule = Path.GetFileName(dllFile);
             string ModuleVersion = fvi.FileVersion;
-            string Guid = "663118e5-b580-4f06-afd7-e9ec4e4020af";
+            string Guid = attr.Value;
             string Author = "q";
             string CompanyName = "q";
             string Copyright = fvi.LegalCopyright;

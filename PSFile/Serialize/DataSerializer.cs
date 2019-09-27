@@ -81,7 +81,7 @@ namespace PSFile
                 case ".json":
                     if (JsonConvert_DefaultSettings == null)
                     {
-                        JsonConvert_DefaultSettings = (() =>
+                        JsonConvert_DefaultSettings = () =>
                         {
                             JsonSerializerSettings settings = new JsonSerializerSettings()
                             {
@@ -90,7 +90,7 @@ namespace PSFile
                             };
                             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                             return settings;
-                        });
+                        };
                         JsonConvert.DefaultSettings = JsonConvert_DefaultSettings;
                     }
                     tw.WriteLine(JsonConvert.SerializeObject(obj));
