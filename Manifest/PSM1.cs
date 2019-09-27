@@ -9,8 +9,12 @@ namespace Manifest
 {
     class PSM1
     {
-        public static void Create(string dllFile, string cmdletDir, string outputFile)
+        const string EXTENSION = ".psm1";
+        public static void Create(string projectName, string outputDir)
         {
+            string dllFile = Path.Combine(outputDir, projectName + ".dll");
+            string outputFile = Path.Combine(outputDir, projectName + EXTENSION);
+            if (!File.Exists(dllFile)) { return; }
             using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.UTF8))
             {
                 sw.WriteLine();

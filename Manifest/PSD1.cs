@@ -12,10 +12,16 @@ namespace Manifest
 {
     class PSD1
     {
-        public static void Create(string dllFile, string cmdletDir, string outputFile)
+        const string EXTENSION = ".psd1";
+
+        public static void Create(string projectName, string outputDir)
         {
-            //  CmdletsToExportの為のコマンドレットの一覧を取得
+            string dllFile = Path.Combine(outputDir, projectName + ".dll");
+            string outputFile = Path.Combine(outputDir, projectName + EXTENSION);
+            if (!File.Exists(dllFile)) { return; }
+
             List<string> CmdletsToExport = new List<string>();
+            string cmdletDir = @"..\..\..\" + projectName + @"\Cmdlet";
             foreach (string csFile in Directory.GetFiles(cmdletDir, "*.cs", SearchOption.AllDirectories))
             {
                 using (StreamReader sr = new StreamReader(csFile, Encoding.UTF8))
@@ -34,16 +40,16 @@ namespace Manifest
                     }
                 }
             }
-            
+
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(dllFile);
 
-            string RootModule = "PSFile.dll";
+            string RootModule = Path.GetFileName(dllFile);
             string ModuleVersion = fvi.FileVersion;
-            string Guid = "EBBAF360-F8E4-4EFC-A089-F9E0C78530E2";   //  GUIDは固定で
+            string Guid = "663118e5-b580-4f06-afd7-e9ec4e4020af";
             string Author = "q";
             string CompanyName = "q";
             string Copyright = fvi.LegalCopyright;
-            string Description = "Registry control according to PowerShell";
+            string Description = "File/Directory/Registry IO by PowerShell";
 
             string manifestString = string.Format(@"@{{
 RootModule = ""{0}""
@@ -60,7 +66,6 @@ CmdletsToExport = @(
 RootModule, ModuleVersion, Guid, Author, CompanyName, Copyright, Description,
 string.Join("\", \"", CmdletsToExport)
 );
-            Console.WriteLine(outputFile);
             using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.UTF8))
             {
                 sw.WriteLine(manifestString);
