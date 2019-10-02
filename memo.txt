@@ -1,20 +1,3 @@
 
 Test-Directory ～ Accessが空文字の場合、アクセス権設定無しのチェック
 
-====================================================
-
-ContainerInherit, ObjectInherit等の略称に対応させる。
-⇒済み
-System, ReadOnly, Hidden等の略称に対応させる。
-⇒済み
-System, ReadOnly, Hiddenの順番変更にも対応させる。
-⇒済み
-Grant-Registry
-⇒アクセス権追加なのに、上書きしてしまっているような
-⇒OK
-Test-Registry
-⇒TestModeが未実装
-⇒実装済み
-
-
-

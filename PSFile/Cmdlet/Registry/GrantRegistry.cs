@@ -70,18 +70,6 @@ namespace PSFile.Cmdlet
                     {
                         security.AddAccessRule(addRule);
                     }
-
-                    /*
-                    RegistryAccessRule rule = new RegistryAccessRule(
-                        new NTAccount(Account),
-                        (RegistryRights)Enum.Parse(typeof(RegistryRights), _Rights),
-                        Recursive ?
-                            InheritanceFlags.ContainerInherit :
-                            InheritanceFlags.None,
-                        PropagationFlags.None,
-                        (AccessControlType)Enum.Parse(typeof(AccessControlType), AccessControl));
-                    security.AddAccessRule(rule);
-                    */
                 }
 
                 //  Access文字列からの設定

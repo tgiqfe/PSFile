@@ -88,7 +88,8 @@ namespace PSFile
                                 Formatting = Newtonsoft.Json.Formatting.Indented,
                                 NullValueHandling = NullValueHandling.Ignore,
                             };
-                            settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+                            //settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+                            settings.Converters.Add(new StringEnumConverter());
                             return settings;
                         };
                         JsonConvert.DefaultSettings = JsonConvert_DefaultSettings;
