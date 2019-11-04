@@ -11,7 +11,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Get, "Registry")]
     public class GetRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }

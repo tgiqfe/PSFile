@@ -14,7 +14,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsDiagnostic.Test, "Registry")]
     public class TestRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter]
         public string Name { get; set; }

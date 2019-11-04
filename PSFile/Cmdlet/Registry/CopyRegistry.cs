@@ -17,7 +17,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Copy, "Registry")]
     public class CopyRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }

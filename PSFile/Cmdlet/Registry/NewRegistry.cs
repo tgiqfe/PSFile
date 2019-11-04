@@ -15,7 +15,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.New, "Registry")]
     public class NewRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter]
         public string Access { get; set; }

@@ -14,7 +14,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsSecurity.Revoke, "Registry")]
     public class RevokeRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter]
         public string Account { get; set; }

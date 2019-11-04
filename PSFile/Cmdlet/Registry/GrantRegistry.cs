@@ -14,7 +14,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsSecurity.Grant, "Registry")]
     public class GrantRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Access { get; set; }

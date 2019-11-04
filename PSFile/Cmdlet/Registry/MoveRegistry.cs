@@ -18,7 +18,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Move, "Registry")]
     public class MoveRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }

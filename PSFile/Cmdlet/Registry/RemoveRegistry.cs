@@ -17,7 +17,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Remove, "Registry")]
     public class RemoveRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }

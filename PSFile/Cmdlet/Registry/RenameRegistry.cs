@@ -12,7 +12,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Rename, "Registry")]
     public class RenameRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter]
         public string NewKey { get; set; }

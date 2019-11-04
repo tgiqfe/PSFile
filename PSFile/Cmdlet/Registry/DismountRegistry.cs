@@ -13,7 +13,7 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsData.Dismount, "Registry")]
     public class DismountRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter]
         public string Test { get; set; }

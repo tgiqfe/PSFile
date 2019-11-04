@@ -10,6 +10,9 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsDiagnostic.Measure, "Registry")]
     public class MeasureRegistry : PSCmdlet
     {
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string RegistryPath { get; set; }
+
 
     }
 }
