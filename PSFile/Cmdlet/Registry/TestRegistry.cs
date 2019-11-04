@@ -161,7 +161,6 @@ namespace PSFile.Cmdlet
                 //  Type用チェック
                 if (Target == Item.TYPE)
                 {
-                    //retValue = valueKind == RegistryControl.StringToValueKind(Type);
                     string tempVlueKind = RegistryControl.ValueKindToString(valueKind);
                     retValue = tempVlueKind == Type;
                     if (!retValue)
@@ -196,7 +195,6 @@ namespace PSFile.Cmdlet
         /// <param name="regKey"></param>
         private void CheckOwner(RegistryKey regKey)
         {
-            //string owner = security.GetOwner(typeof(NTAccount)).Value;
             string tempOwner = new RegistrySummary(regKey, false, true).Owner;
             retValue = tempOwner == Owner;
             if (!retValue)
@@ -238,7 +236,6 @@ namespace PSFile.Cmdlet
             }
             else
             {
-                //string tempAccess = new RegistrySummary(regKey, false, true).Access;
                 List<string> accessListA = new List<string>();
                 accessListA.AddRange(tempAccess.Split('/'));
 
@@ -263,7 +260,6 @@ namespace PSFile.Cmdlet
                     retValue = false;
                 }
 
-                //retValue = tempAccess == Access;
                 if (!retValue)
                 {
                     Console.Error.WriteLine("アクセス権不一致： {0} / {1}", Access, tempAccess);

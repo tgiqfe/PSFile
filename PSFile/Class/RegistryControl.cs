@@ -130,7 +130,7 @@ namespace PSFile
                 }
                 return tempBytes.ToArray();
             }
-            return null;
+            return new byte[0] { };
         }
 
         /// <summary>
