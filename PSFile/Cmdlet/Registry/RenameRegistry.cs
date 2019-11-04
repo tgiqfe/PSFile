@@ -13,7 +13,7 @@ namespace PSFile.Cmdlet
     public class RenameRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter]
         public string NewKey { get; set; }
         [Parameter]
@@ -34,12 +34,12 @@ namespace PSFile.Cmdlet
             if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(NewName))
             {
                 //  レジストリ値をコピー
-                CopyRegistryValue(Path, Name, NewName);
+                CopyRegistryValue(RegistryPath, Name, NewName);
             }
             else if (!string.IsNullOrEmpty(NewKey))
             {
                 //  レジストリキーをコピー
-                CopyRegistryKey(Path, NewKey);
+                CopyRegistryKey(RegistryPath, NewKey);
             }
         }
 

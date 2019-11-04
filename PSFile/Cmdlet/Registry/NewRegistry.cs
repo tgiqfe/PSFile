@@ -16,7 +16,7 @@ namespace PSFile.Cmdlet
     public class NewRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter]
         public string Access { get; set; }
         [Parameter]
@@ -37,15 +37,15 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 if(regKey != null) { return; }
             }
 
             //  テスト自動生成
-            _generator.RegistryPath(Path);
+            _generator.RegistryPath(RegistryPath);
 
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, true, true))
             {
                 RegistrySecurity security = null;
 
@@ -55,7 +55,7 @@ namespace PSFile.Cmdlet
                     if (security == null) { security = regKey.GetAccessControl(); }
 
                     //  テスト自動生成
-                    _generator.RegistryAccess(Path, Access, false);
+                    _generator.RegistryAccess(RegistryPath, Access, false);
 
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
@@ -69,7 +69,7 @@ namespace PSFile.Cmdlet
                     if (security == null) { security = regKey.GetAccessControl(); }
 
                     //  テスト自動生成
-                    _generator.RegistryInherited(Path, Inherited == Item.ENABLE);
+                    _generator.RegistryInherited(RegistryPath, Inherited == Item.ENABLE);
 
                     switch (Inherited)
                     {
@@ -98,19 +98,19 @@ namespace PSFile.Cmdlet
                 Functions.CheckAdmin();
 
                 //  テスト自動生成
-                _generator.RegistryOwner(Path, Owner);
+                _generator.RegistryOwner(RegistryPath, Owner);
 
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = subinacl;
-                    proc.StartInfo.Arguments = $"/subkeyreg \"{Path}\" /owner=\"{Owner}\"";
+                    proc.StartInfo.Arguments = $"/subkeyreg \"{RegistryPath}\" /owner=\"{Owner}\"";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
                 }
             }
 
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 WriteObject(new RegistrySummary(regKey, true));
             }

@@ -15,7 +15,7 @@ namespace PSFile.Cmdlet
     public class TestRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter]
         public string Name { get; set; }
         [Parameter]
@@ -96,12 +96,12 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 //  レジストリキーの有無チェック
                 if (regKey == null)
                 {
-                    Console.Error.WriteLine("対象のレジストリキー (Path) 無し： {0}", Path.ToString());
+                    Console.Error.WriteLine("対象のレジストリキー (Path) 無し： {0}", RegistryPath.ToString());
                     return;
                 }
                 if (Target == Item.PATH)

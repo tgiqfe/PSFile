@@ -18,7 +18,7 @@ namespace PSFile.Cmdlet
     public class SetRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
         [Parameter(Position = 2)]
@@ -46,8 +46,8 @@ namespace PSFile.Cmdlet
 
             if (Chroot != null)
             {
-                string keyName = Path.Substring(Path.IndexOf("\\") + 1);
-                Path = System.IO.Path.Combine(Chroot, keyName);
+                string keyName = RegistryPath.Substring(RegistryPath.IndexOf("\\") + 1);
+                RegistryPath = System.IO.Path.Combine(Chroot, keyName);
             }
 
             _generator = new TestGenerator(Test);
@@ -55,7 +55,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, true, true))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, true, true))
             {
                 if (regKey == null) { return; }
 
@@ -72,7 +72,7 @@ namespace PSFile.Cmdlet
                     }
 
                     //  テスト自動生成
-                    _generator.RegistryAccess(Path, Access, false);
+                    _generator.RegistryAccess(RegistryPath, Access, false);
 
                     if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
                     {
@@ -89,7 +89,7 @@ namespace PSFile.Cmdlet
                     if (security == null) { security = regKey.GetAccessControl(); }
 
                     //  テスト自動生成
-                    _generator.RegistryInherited(Path, Inherited == Item.ENABLE);
+                    _generator.RegistryInherited(RegistryPath, Inherited == Item.ENABLE);
 
                     switch (Inherited)
                     {
@@ -117,12 +117,12 @@ namespace PSFile.Cmdlet
                 Functions.CheckAdmin();
 
                 //  テスト自動生成
-                _generator.RegistryOwner(Path, Owner);
+                _generator.RegistryOwner(RegistryPath, Owner);
 
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = subinacl;
-                    proc.StartInfo.Arguments = $"/subkeyreg \"{Path}\" /owner=\"{Owner}\"";
+                    proc.StartInfo.Arguments = $"/subkeyreg \"{RegistryPath}\" /owner=\"{Owner}\"";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
@@ -133,31 +133,31 @@ namespace PSFile.Cmdlet
             if (Name != null)
             {
                 //  テスト自動生成
-                _generator.RegistryType(Path, Name, Type);
-                _generator.RegistryValue(Path, Name, Value);
+                _generator.RegistryType(RegistryPath, Name, Type);
+                _generator.RegistryValue(RegistryPath, Name, Value);
 
                 switch (Type)
                 {
                     case Item.REG_SZ:
-                        Registry.SetValue(Path, Name, Value, RegistryValueKind.String);
+                        Registry.SetValue(RegistryPath, Name, Value, RegistryValueKind.String);
                         break;
                     case Item.REG_BINARY:
-                        Registry.SetValue(Path, Name, RegistryControl.StringToRegBinary(Value), RegistryValueKind.Binary);
+                        Registry.SetValue(RegistryPath, Name, RegistryControl.StringToRegBinary(Value), RegistryValueKind.Binary);
                         break;
                     case Item.REG_DWORD:
-                        Registry.SetValue(Path, Name, int.Parse(Value), RegistryValueKind.DWord);
+                        Registry.SetValue(RegistryPath, Name, int.Parse(Value), RegistryValueKind.DWord);
                         break;
                     case Item.REG_QWORD:
-                        Registry.SetValue(Path, Name, long.Parse(Value), RegistryValueKind.QWord);
+                        Registry.SetValue(RegistryPath, Name, long.Parse(Value), RegistryValueKind.QWord);
                         break;
                     case Item.REG_MULTI_SZ:
-                        Registry.SetValue(Path, Name, Functions.SplitBQt0(Value), RegistryValueKind.MultiString);
+                        Registry.SetValue(RegistryPath, Name, Functions.SplitBQt0(Value), RegistryValueKind.MultiString);
                         break;
                     case Item.REG_EXPAND_SZ:
-                        Registry.SetValue(Path, Name, Value, RegistryValueKind.ExpandString);
+                        Registry.SetValue(RegistryPath, Name, Value, RegistryValueKind.ExpandString);
                         break;
                     case Item.REG_NONE:
-                        Registry.SetValue(Path, Name, new byte[2] { 0, 0 }, RegistryValueKind.None);
+                        Registry.SetValue(RegistryPath, Name, new byte[2] { 0, 0 }, RegistryValueKind.None);
                         break;
                 }
             }

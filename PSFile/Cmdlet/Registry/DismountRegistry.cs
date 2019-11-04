@@ -14,7 +14,7 @@ namespace PSFile.Cmdlet
     public class DismountRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter]
         public string Test { get; set; }
         private TestGenerator _generator = null;
@@ -29,19 +29,19 @@ namespace PSFile.Cmdlet
             //  管理者実行確認
             Functions.CheckAdmin();
 
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 if (regKey == null) { return; }
             }
 
             //  テスト自動生成
-            _generator.RegistryPath(Path);
+            _generator.RegistryPath(RegistryPath);
 
-            string keyName = Path.Substring(Path.IndexOf("\\") + 1);
+            string keyName = RegistryPath.Substring(RegistryPath.IndexOf("\\") + 1);
             RegistryHive.UnLoad(keyName);
 
             //  アンロード成功確認
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 if (regKey == null) { return; }
             }
@@ -50,7 +50,7 @@ namespace PSFile.Cmdlet
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "reg.exe";
-                proc.StartInfo.Arguments = $"unload \"{Path}\"";
+                proc.StartInfo.Arguments = $"unload \"{RegistryPath}\"";
                 proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 proc.Start();
                 proc.WaitForExit();

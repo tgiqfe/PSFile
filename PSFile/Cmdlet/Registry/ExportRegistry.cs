@@ -19,8 +19,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsData.Export, "Registry")]
     public class ExportRegistry : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string RegistryPath { get; set; }
         [Parameter]
         public string File { get; set; }
         [Parameter]
@@ -76,7 +76,7 @@ namespace PSFile.Cmdlet
                     }
                 }
             };
-            using (RegistryKey startKey = RegistryControl.GetRegistryKey(Path, false, false))
+            using (RegistryKey startKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
             {
                 getPReg(startKey);
             }
@@ -91,16 +91,16 @@ namespace PSFile.Cmdlet
             if (File == null)
             {
                 //  reg export一時出力先
-                string tempDir = System.IO.Path.Combine(
+                string tempDir = Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
                     Item.APPLICATION_NAME);
-                File = System.IO.Path.Combine(tempDir, "Reg_Export.reg");
+                File = Path.Combine(tempDir, "Reg_Export.reg");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
 
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = "reg.exe";
-                    proc.StartInfo.Arguments = $"export \"{Path}\" \"{File}\" /y";
+                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{File}\" /y";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
@@ -115,7 +115,7 @@ namespace PSFile.Cmdlet
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = "reg.exe";
-                    proc.StartInfo.Arguments = $"export \"{Path}\" \"{File}\" /y";
+                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{File}\" /y";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
@@ -133,16 +133,16 @@ namespace PSFile.Cmdlet
 
             if (File == null)
             {
-                string tempDir = System.IO.Path.Combine(
+                string tempDir = Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
                     Item.APPLICATION_NAME);
-                File = System.IO.Path.Combine(tempDir, "Reg_Export.dat");
+                File = Path.Combine(tempDir, "Reg_Export.dat");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
             }
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "reg.exe";
-                proc.StartInfo.Arguments = $"save \"{Path}\" \"{File}\" /y";
+                proc.StartInfo.Arguments = $"save \"{RegistryPath}\" \"{File}\" /y";
                 proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 proc.Start();
                 proc.WaitForExit();

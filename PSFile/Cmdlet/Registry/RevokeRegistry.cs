@@ -15,7 +15,7 @@ namespace PSFile.Cmdlet
     public class RevokeRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter]
         public string Account { get; set; }
         [Parameter]
@@ -31,14 +31,14 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, true))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, true))
             {
                 bool isChange = false;
                 RegistrySecurity security = security = regKey.GetAccessControl();
                 if (All)
                 {
                     //  テスト自動生成
-                    _generator.RegistryAccess(Path, "", false);
+                    _generator.RegistryAccess(RegistryPath, "", false);
 
                     foreach (RegistryAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
@@ -53,7 +53,7 @@ namespace PSFile.Cmdlet
                         string account = rule.IdentityReference.Value;
 
                         //  テスト自動生成
-                        _generator.RegistryAccount(Path, account);
+                        _generator.RegistryAccount(RegistryPath, account);
 
                         if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                             !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))

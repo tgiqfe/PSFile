@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Cmdlet\Directory\CompareDirectory.cs" />
     <Compile Include="Cmdlet\File\CompareFile.cs" />
+    <Compile Include="Cmdlet\MeasureRegistry.cs" />
     <Compile Include="Cmdlet\Registry\NewRegistry.cs" />
     <Compile Include="Cmdlet\Registry\GrantRegistry.cs" />
     <Compile Include="Cmdlet\Registry\MoveRegistry.cs" />

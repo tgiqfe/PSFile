@@ -12,7 +12,7 @@ namespace PSFile.Cmdlet
     public class GetRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
 
@@ -31,7 +31,7 @@ namespace PSFile.Cmdlet
             if (Name == null)
             {
                 //  レジストリキーの取得
-                using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
                 {
                     WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues));
                 }
@@ -39,7 +39,7 @@ namespace PSFile.Cmdlet
             else
             {
                 //  レジストリ値の取得
-                using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, false))
+                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
                 {
                     RegistryValueKind valueKind = regKey.GetValueKind(Name);
                     if (RawValue)

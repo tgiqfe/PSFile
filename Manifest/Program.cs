@@ -9,6 +9,7 @@ using System.Diagnostics;
 
 namespace Manifest
 {
+    //  V0.01.002
     class Program
     {
         const string PROJECT_NAME = "PSFile";
@@ -32,7 +33,7 @@ namespace Manifest
                 {
                     proc.StartInfo.FileName = "robocopy.exe";
                     proc.StartInfo.Arguments = string.Format(
-                        "\"{0}\" \"{1}\" /MIR /E /XJD /XJF", releaseDir, moduleDir);
+                        "\"{0}\" \"{1}\" /COPY:DAT /MIR /E /XJD /XJF", releaseDir, moduleDir);
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();

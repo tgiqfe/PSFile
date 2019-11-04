@@ -7,9 +7,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Manifest
 {
+    //  V0.01.002
     class PSD1
     {
         const string EXTENSION = ".psd1";
@@ -20,6 +22,9 @@ namespace Manifest
             string outputFile = Path.Combine(outputDir, projectName + EXTENSION);
             if (!File.Exists(dllFile)) { return; }
 
+            string dllFile_absolute = Path.GetFullPath(dllFile);
+
+            //  Cmdletを探してセット
             List<string> CmdletsToExportList = new List<string>();
             string cmdletDir = @"..\..\..\" + projectName + @"\Cmdlet";
             foreach (string csFile in Directory.GetFiles(cmdletDir, "*.cs", SearchOption.AllDirectories))
@@ -40,24 +45,25 @@ namespace Manifest
                     }
                 }
             }
-            string CmdletsToExport = "\"" + string.Join("\", \"", CmdletsToExportList) + "\"";
-            int cursor = 0;
-            int commaCount = 0;
-            while ((cursor = CmdletsToExport.IndexOf(",", cursor)) >= 0)
+
+            //  Format.ps1xmlを探してセット
+            List<string> FormatsToProcessList = new List<string>();
+            string formatDir = string.Format(@"..\..\..\{0}\Format", projectName);
+            foreach (string formatFile in Directory.GetFiles(formatDir, "*.ps1xml"))
             {
-                cursor += 2;
-                commaCount++;
-                if ((commaCount % 4) == 0)
-                {
-                    CmdletsToExport = CmdletsToExport.Insert(cursor, "\r\n");
-                }
+                FormatsToProcessList.Add(Path.GetFileName(formatFile));
             }
 
+            //  バージョン取得
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(dllFile);
+
+            //  GUID取得
+            GuidAttribute attr =
+                Attribute.GetCustomAttribute(Assembly.LoadFile(dllFile_absolute), typeof(GuidAttribute)) as GuidAttribute;
 
             string RootModule = Path.GetFileName(dllFile);
             string ModuleVersion = fvi.FileVersion;
-            string Guid = "75e60d76-7594-4f1b-af01-a2629646e1ec";
+            string Guid = attr.Value;
             string Author = "q";
             string CompanyName = "q";
             string Copyright = fvi.LegalCopyright;
@@ -71,10 +77,16 @@ Author = ""{3}""
 CompanyName = ""{4}""
 Copyright = ""{5}""
 Description = ""{6}""
-CmdletsToExport = @({7})
+CmdletsToExport = @(
+  ""{7}""
+)
+FormatsToProcess = @(
+  ""{8}""
+)
 }}",
 RootModule, ModuleVersion, Guid, Author, CompanyName, Copyright, Description,
-CmdletsToExport
+string.Join("\",\r\n  \"", CmdletsToExportList),
+string.Join("\",\r\n  \"", FormatsToProcessList)
 );
             using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.UTF8))
             {

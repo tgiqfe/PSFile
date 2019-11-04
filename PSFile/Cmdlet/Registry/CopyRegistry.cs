@@ -18,7 +18,7 @@ namespace PSFile.Cmdlet
     public class CopyRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -36,17 +36,17 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (Functions.CheckChildItem(Path, Destination)) { return; }
+            if (Functions.CheckChildItem(RegistryPath, Destination)) { return; }
 
             if (Name == null)
             {
                 //  レジストリキーをコピー
-                CopyRegistryKey(Path, Destination);
+                CopyRegistryKey(RegistryPath, Destination);
             }
             else
             {
                 //  レジストリ値をコピー
-                CopyRegistryValue(Path, Destination, Name, DestinationName);
+                CopyRegistryValue(RegistryPath, Destination, Name, DestinationName);
             }
         }
 

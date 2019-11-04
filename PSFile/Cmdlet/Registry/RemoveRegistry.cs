@@ -18,7 +18,7 @@ namespace PSFile.Cmdlet
     public class RemoveRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
         [Parameter]
@@ -32,14 +32,14 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, true))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, true))
             {
                 if (Name == null)
                 {
                     try
                     {
                         //  テスト自動生成
-                        _generator.RegistryPath(Path);
+                        _generator.RegistryPath(RegistryPath);
 
                         regKey.DeleteSubKeyTree("");
                     }
@@ -48,7 +48,7 @@ namespace PSFile.Cmdlet
                         using (Process proc = new Process())
                         {
                             proc.StartInfo.FileName = "reg";
-                            proc.StartInfo.Arguments = $"delete \"{Path}\" /f";
+                            proc.StartInfo.Arguments = $"delete \"{RegistryPath}\" /f";
                             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             proc.Start();
                             proc.WaitForExit();
@@ -58,7 +58,7 @@ namespace PSFile.Cmdlet
                 else
                 {
                     //  テスト自動生成
-                    _generator.RegistryName(Path, Name);
+                    _generator.RegistryName(RegistryPath, Name);
 
                     regKey.DeleteValue(Name);
                 }

@@ -15,7 +15,7 @@ namespace PSFile.Cmdlet
     public class GrantRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Access { get; set; }
         [Parameter]
@@ -46,7 +46,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(Path, false, true))
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, true))
             {
                 if (regKey == null) { return; }
 
@@ -64,7 +64,7 @@ namespace PSFile.Cmdlet
                         AccessControl);
 
                     //  テスト自動生成
-                    _generator.RegistryAccess(Path, accessString, true);
+                    _generator.RegistryAccess(RegistryPath, accessString, true);
 
                     foreach(RegistryAccessRule addRule in RegistryControl.StringToAccessRules(accessString))
                     {
@@ -78,7 +78,7 @@ namespace PSFile.Cmdlet
                     if (security == null) { security = regKey.GetAccessControl(); }
 
                     //  テスト自動生成
-                    _generator.RegistryAccess(Path, Access, true);
+                    _generator.RegistryAccess(RegistryPath, Access, true);
 
                     foreach (RegistryAccessRule rule in RegistryControl.StringToAccessRules(Access))
                     {
@@ -92,7 +92,7 @@ namespace PSFile.Cmdlet
                     if (security == null) { security = regKey.GetAccessControl(); }
 
                     //  テスト自動生成
-                    _generator.RegistryInherited(Path, Inherited == Item.ENABLE);
+                    _generator.RegistryInherited(RegistryPath, Inherited == Item.ENABLE);
 
                     switch (Inherited)
                     {

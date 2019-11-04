@@ -18,7 +18,7 @@ namespace PSFile.Cmdlet
     public class CompareRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Difference { get; set; }
         [Parameter]
@@ -35,9 +35,9 @@ namespace PSFile.Cmdlet
             }
 
             //  比較元レジストリのサマリを取得
-            List<RegistrySummary> compare_ref = GetSummaryList(Path, IgnoreSecurity, IgnoreValues);
+            List<RegistrySummary> compare_ref = GetSummaryList(RegistryPath, IgnoreSecurity, IgnoreValues);
             string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
-            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_ref.json"),
+            using (StreamWriter sw = new StreamWriter(Path.Combine(tempDir, "compre_ref.json"),
                 false, Encoding.UTF8))
             {
                 sw.WriteLine(text_ref);
@@ -46,7 +46,7 @@ namespace PSFile.Cmdlet
             //  比較先レジストリのサマリを取得
             List<RegistrySummary> compare_dif = GetSummaryList(Difference, IgnoreSecurity, IgnoreValues);
             string text_dif = JsonConvert.SerializeObject(compare_dif, Formatting.Indented);
-            using (StreamWriter sw = new StreamWriter(System.IO.Path.Combine(tempDir, "compre_dif.json"),
+            using (StreamWriter sw = new StreamWriter(Path.Combine(tempDir, "compre_dif.json"),
                 false, Encoding.UTF8))
             {
                 sw.WriteLine(text_dif);

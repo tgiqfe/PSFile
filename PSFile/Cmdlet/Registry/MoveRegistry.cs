@@ -19,7 +19,7 @@ namespace PSFile.Cmdlet
     public class MoveRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -40,12 +40,12 @@ namespace PSFile.Cmdlet
             if (Name == null)
             {
                 //  レジストリキーを移動
-                CopyRegistryKey(Path, Destination);
+                CopyRegistryKey(RegistryPath, Destination);
             }
             else
             {
                 //  レジストリ値を移動
-                CopyRegistryValue(Path, Destination, Name, DestinationName);
+                CopyRegistryValue(RegistryPath, Destination, Name, DestinationName);
             }
         }
 
