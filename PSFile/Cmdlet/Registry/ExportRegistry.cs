@@ -21,8 +21,8 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
-        [Parameter]
-        public string File { get; set; }
+        [Parameter, Alias("File")]
+        public string OutputFile { get; set; }
         [Parameter]
         [ValidateSet(Item.REG, Item.DAT, Item.XML, Item.JSON, Item.YML)]
         public string DataType { get; set; } = Item.JSON;
@@ -45,13 +45,13 @@ namespace PSFile.Cmdlet
                 case Item.XML:
                 case Item.JSON:
                 case Item.YML:
-                    if (File == null)
+                    if (OutputFile == null)
                     {
                         DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Console.Out, DataType);
                     }
                     else
                     {
-                        DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), File);
+                        DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), OutputFile);
                     }
                     break;
             }
@@ -88,24 +88,24 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void OutputReg()
         {
-            if (File == null)
+            if (OutputFile == null)
             {
                 //  reg export一時出力先
                 string tempDir = Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
                     Item.APPLICATION_NAME);
-                File = Path.Combine(tempDir, "Reg_Export.reg");
+                OutputFile = Path.Combine(tempDir, "Reg_Export.reg");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
 
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = "reg.exe";
-                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{File}\" /y";
+                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{OutputFile}\" /y";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
                 }
-                using (StreamReader sr = new StreamReader(File, Encoding.UTF8))
+                using (StreamReader sr = new StreamReader(OutputFile, Encoding.UTF8))
                 {
                     Console.WriteLine(sr.ReadToEnd());
                 }
@@ -115,7 +115,7 @@ namespace PSFile.Cmdlet
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = "reg.exe";
-                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{File}\" /y";
+                    proc.StartInfo.Arguments = $"export \"{RegistryPath}\" \"{OutputFile}\" /y";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     proc.Start();
                     proc.WaitForExit();
@@ -131,18 +131,18 @@ namespace PSFile.Cmdlet
             //  管理者実行確認
             Functions.CheckAdmin();
 
-            if (File == null)
+            if (OutputFile == null)
             {
                 string tempDir = Path.Combine(
                     Environment.ExpandEnvironmentVariables("%TEMP%"),
                     Item.APPLICATION_NAME);
-                File = Path.Combine(tempDir, "Reg_Export.dat");
+                OutputFile = Path.Combine(tempDir, "Reg_Export.dat");
                 if (!Directory.Exists(tempDir)) { Directory.CreateDirectory(tempDir); ; }
             }
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "reg.exe";
-                proc.StartInfo.Arguments = $"save \"{RegistryPath}\" \"{File}\" /y";
+                proc.StartInfo.Arguments = $"save \"{RegistryPath}\" \"{OutputFile}\" /y";
                 proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 proc.Start();
                 proc.WaitForExit();

@@ -5,16 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 using Microsoft.Win32;
+using System.IO;
 
 namespace PSFile.Cmdlet
 {
-    [Cmdlet(VerbsDiagnostic.Measure, "Registry")]
-    public class MeasureRegistry : PSCmdlet
+    [Cmdlet(VerbsData.Convert, "Registry")]
+    public class ConvertRegistry : PSCmdlet
     {
         [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
-        [Parameter]
-        public string File { get; set; }
+        [Parameter, Alias("File")]
+        public string OutputFile { get; set; }
         [Parameter]
         public SwitchParameter Recursive { get; set; }
 
@@ -78,7 +79,17 @@ namespace PSFile.Cmdlet
                 measureRegistry(regKey);
             }
 
-            WriteObject(commandList);
+            if (OutputFile == null)
+            {
+                WriteObject(commandList);
+            }
+            else
+            {
+                using (StreamWriter sw = new StreamWriter(OutputFile, false, Encoding.GetEncoding("Shift_JIS")))
+                {
+
+                }
+            }
         }
     }
 }

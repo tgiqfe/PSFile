@@ -19,8 +19,8 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
-        [Parameter]
-        public string File { get; set; }
+        [Parameter, Alias("File")]
+        public string DatFile { get; set; }
         [Parameter]
         public string Test { get; set; }
         private TestGenerator _generator = null;
@@ -44,7 +44,7 @@ namespace PSFile.Cmdlet
             _generator.RegistryPath(RegistryPath);
 
             string keyName = RegistryPath.Substring(RegistryPath.IndexOf("\\") + 1);
-            RegistryHive.Load(keyName, File);
+            RegistryHive.Load(keyName, DatFile);
 
             //  ロード成功確認
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
@@ -60,7 +60,7 @@ namespace PSFile.Cmdlet
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "reg.exe";
-                proc.StartInfo.Arguments = $"load \"{RegistryPath}\" \"{File}\"";
+                proc.StartInfo.Arguments = $"load \"{RegistryPath}\" \"{DatFile}\"";
                 proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 proc.Start();
                 proc.WaitForExit();
