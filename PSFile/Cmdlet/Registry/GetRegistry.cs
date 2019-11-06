@@ -15,25 +15,38 @@ namespace PSFile.Cmdlet
         public string RegistryPath { get; set; }
         [Parameter(Position = 1)]
         public string Name { get; set; }
-
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
         public SwitchParameter IgnoreValues { get; set; }
-
         [Parameter]
         public SwitchParameter NoResolv { get; set; }
         [Parameter]
         public SwitchParameter RawValue { get; set; }
+        [Parameter]
+        public SwitchParameter ReturnReadonlyKey { get; set; }
+        [Parameter]
+        public SwitchParameter ReturnWritableKey { get; set; }
 
         protected override void ProcessRecord()
         {
             if (Name == null)
             {
                 //  レジストリキーの取得
-                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                if (ReturnReadonlyKey)
                 {
-                    WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues));
+                    WriteObject(RegistryControl.GetRegistryKey(RegistryPath, false, false));
+                }
+                else if (ReturnWritableKey)
+                {
+                    WriteObject(RegistryControl.GetRegistryKey(RegistryPath, true, true));
+                }
+                else
+                {
+                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                    {
+                        WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues));
+                    }
                 }
             }
             else

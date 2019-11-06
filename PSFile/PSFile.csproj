@@ -94,8 +94,6 @@
     <Compile Include="Serialize\DictionaryExtensions.cs" />
     <Compile Include="Serialize\JSON.cs" />
     <Compile Include="Serialize\SerializableDictionary.cs" />
-    <Compile Include="Serialize\SerializableDictionary_.cs" />
-    <Compile Include="Serialize\DataSerializer_.cs" />
     <Compile Include="EmbeddedResource.cs" />
     <Compile Include="Class\FileControl.cs" />
     <Compile Include="Class\FileSummary.cs" />
