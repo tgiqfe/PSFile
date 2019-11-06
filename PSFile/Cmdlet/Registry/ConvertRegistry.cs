@@ -58,13 +58,17 @@ namespace PSFile.Cmdlet
 
                             commandList.Add(string.Format(
                                 "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
-                                    targetKey, valueName, regValue, RegistryControl.ValueKindToString(valueKind)));
+                                    ReplaceDoller(targetKey.ToString()),
+                                    ReplaceDoller(valueName),
+                                    ReplaceDoller(regValue),
+                                    RegistryControl.ValueKindToString(valueKind)));
                         }
                     }
                     else
                     {
                         //  レジストリ値設定無し。空レジストリキー作成
-                        commandList.Add(string.Format("New-Registry -Path \"{0}\"", targetKey));
+                        commandList.Add(string.Format("New-Registry -Path \"{0}\"", 
+                            ReplaceDoller(targetKey.ToString())));
                     }
 
                     //  配下のレジストリキーを再帰的にチェック
@@ -108,9 +112,17 @@ namespace PSFile.Cmdlet
                             break;
                     }
 
+                    /*
                     commandList.Add(string.Format(
                         "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
                             targetKey, Name, regValue, RegistryControl.ValueKindToString(valueKind)));
+                    */
+                    commandList.Add(string.Format(
+                        "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
+                            ReplaceDoller(targetKey.ToString()),
+                            ReplaceDoller(Name),
+                            ReplaceDoller(regValue),
+                            RegistryControl.ValueKindToString(valueKind)));
                 }
             }
 
@@ -126,6 +138,11 @@ namespace PSFile.Cmdlet
                     sw.WriteLine(string.Join("\r\n", commandList));
                 }
             }
+        }
+
+        private string ReplaceDoller(string sourceText)
+        {
+            return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;
         }
     }
 }
