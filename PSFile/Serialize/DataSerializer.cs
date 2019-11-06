@@ -3,103 +3,156 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Xml.Schema;
-using System.Xml.Linq;
-using YamlDotNet;
-using YamlDotNet.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Converters;
 using System.IO;
 
-namespace PSFile
+namespace PSFile.Serialize
 {
     class DataSerializer
     {
-        //  静的パラメータ
-        private static XmlSerializerNamespaces XmlSerializer_Namespaces = null;
-        private static Func<JsonSerializerSettings> JsonConvert_DefaultSettings = null;
+        #region Deserialize
 
-        //  デシリアライズ
-        public static T Deserialize<T>(string fileName) where T : class, new()
+        /// <summary>
+        /// ファイルからオブジェクトにデシリアライズ
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static T Deserialize<T>(string fileName) where T : class
         {
-            try
+            if (File.Exists(fileName))
             {
                 using (StreamReader sr = new StreamReader(fileName, Encoding.UTF8))
                 {
-                    return Deserialize<T>(sr, Path.GetExtension(fileName));
+                    return Deserialize<T>(sr, Enum.TryParse(
+                        Path.GetExtension(fileName).TrimStart('.'), true, out DataType extension) ?
+                        extension : DataType.None);
                 }
             }
-            catch { }
-            //catch (Exception e) { Console.WriteLine(e.ToString()); }
-            //catch (Exception e) { Console.WriteLine(e.Message); }
-            return null;
-        }
-        public static T Deserialize<T>(TextReader tr, string extension) where T : class, new()
-        {
-            switch (extension)
+            else
             {
-                case ".xml":
-                    return new XmlSerializer(typeof(T)).Deserialize(tr) as T;
-                case ".json":
-                    return JsonConvert.DeserializeObject<T>(tr.ReadToEnd());
-                case ".yml":
-                    return new Deserializer().Deserialize<T>(tr) as T;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 文字列からオブジェクトにデシリアライズ
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sourceText"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static T Deserialize<T>(string sourceText, DataType extension) where T : class
+        {
+            if (!string.IsNullOrEmpty(sourceText))
+            {
+                using (StringReader sr = new StringReader(sourceText))
+                {
+                    return Deserialize<T>(sr, extension);
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// TextStreamからオブジェクトにデシリアライズ
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tr"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static T Deserialize<T>(TextReader tr, DataType extension) where T : class
+        {
+            try
+            {
+                switch (extension)
+                {
+                    case DataType.Json:
+                        return JSON.Deserialize<T>(tr);
+                    case DataType.Xml:
+                        return XML.Deserialize<T>(tr);
+                    case DataType.Yml:
+                        return YML.Deserialize<T>(tr);
+                }
+            }
+            catch
+            {
+                //return new T();
+                //  ↑のようにする場合は、where T : new() が必要。
+                //  但し、この場合は配列を T として指定できなくなるので注意
+                return null;
             }
             return null;
         }
 
-        //  シリアライズ
+        #endregion
+
+        #region Serialize
+
+        /// <summary>
+        /// オブジェクトをシリアライズしてファイルに出力
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="fileName"></param>
         public static void Serialize<T>(object obj, string fileName)
         {
-            try
+            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
             {
-                using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8))
+                Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            }
+            using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8))
+            {
+                Serialize<T>(obj, sw, Enum.TryParse(
+                    Path.GetExtension(fileName).TrimStart('.'), true, out DataType extension) ?
+                    extension : DataType.None);
+            }
+        }
+
+        /// <summary>
+        /// オブジェクトをシリアライズして文字列として返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static string Serialize<T>(object obj, DataType extension)
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                Serialize<T>(obj, sw, extension);
+                return sw.ToString();
+            }
+        }
+
+        /// <summary>
+        /// オブジェクトをシリアライズしてTextStreamに出力
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="tw"></param>
+        /// <param name="extension"></param>
+        public static void Serialize<T>(object obj, TextWriter tw, DataType extension)
+        {
+            if (obj != null)
+            {
+                switch (extension)
                 {
-                    Serialize<T>(obj, sw, Path.GetExtension(fileName));
+                    case DataType.Json:
+                        JSON.Serialize<T>(obj, tw);
+                        break;
+                    case DataType.Xml:
+                        XML.Serialize<T>(obj, tw);
+                        break;
+                    case DataType.Yml:
+                        YML.Serialize<T>(obj, tw);
+                        break;
                 }
             }
-            catch { }
-            //catch (Exception e) { Console.WriteLine(e.ToString()); }
-            //catch (Exception e) { Console.WriteLine(e.Message); }
         }
-        public static void Serialize<T>(object obj, TextWriter tw, string extension)
-        {
-            if (!extension.StartsWith(".")) { extension = "." + extension; }
-            switch (extension.ToLower())
-            {
-                case ".xml":
-                    if (XmlSerializer_Namespaces == null)
-                    {
-                        XmlSerializer_Namespaces = new XmlSerializerNamespaces(
-                            new XmlQualifiedName[1] { XmlQualifiedName.Empty });
-                    }
-                    new XmlSerializer(typeof(T)).Serialize(tw, obj, XmlSerializer_Namespaces);
-                    break;
-                case ".json":
-                    if (JsonConvert_DefaultSettings == null)
-                    {
-                        JsonConvert_DefaultSettings = () =>
-                        {
-                            JsonSerializerSettings settings = new JsonSerializerSettings()
-                            {
-                                Formatting = Newtonsoft.Json.Formatting.Indented,
-                                NullValueHandling = NullValueHandling.Ignore,
-                            };
-                            //settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
-                            settings.Converters.Add(new StringEnumConverter());
-                            return settings;
-                        };
-                        JsonConvert.DefaultSettings = JsonConvert_DefaultSettings;
-                    }
-                    tw.WriteLine(JsonConvert.SerializeObject(obj));
-                    break;
-                case ".yml":
-                    new Serializer().Serialize(tw, obj);
-                    break;
-            }
-        }
+
+        #endregion
     }
 }

@@ -10,6 +10,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using PSFile.Serialize;
 
 namespace PSFile.Cmdlet
 {
@@ -47,7 +48,19 @@ namespace PSFile.Cmdlet
                 case Item.YML:
                     if (OutputFile == null)
                     {
-                        DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Console.Out, DataType);
+                        //DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Console.Out, DataType);
+                        switch (DataType)
+                        {
+                            case Item.XML:
+                                DataSerializer.Serialize<List<FileSummary>>(GetPRegList(), Console.Out, PSFile.Serialize.DataType.Xml);
+                                break;
+                            case Item.JSON:
+                                DataSerializer.Serialize<List<FileSummary>>(GetPRegList(), Console.Out, PSFile.Serialize.DataType.Json);
+                                break;
+                            case Item.YML:
+                                DataSerializer.Serialize<List<FileSummary>>(GetPRegList(), Console.Out, PSFile.Serialize.DataType.Yml);
+                                break;
+                        }
                     }
                     else
                     {

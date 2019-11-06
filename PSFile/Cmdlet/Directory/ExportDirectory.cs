@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 using System.IO;
+using PSFile.Serialize;
 
 namespace PSFile.Cmdlet
 {
@@ -46,7 +47,19 @@ namespace PSFile.Cmdlet
 
             if(Output == null)
             {
-                DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, DataType);
+                //DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, DataType);
+                switch (DataType)
+                {
+                    case Item.XML:
+                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Xml);
+                        break;
+                    case Item.JSON:
+                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Json);
+                        break;
+                    case Item.YML:
+                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Yml);
+                        break;
+                }
             }
             else
             {

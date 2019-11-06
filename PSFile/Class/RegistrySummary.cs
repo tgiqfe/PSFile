@@ -2,6 +2,7 @@
 using System;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using PSFile.Serialize;
 
 namespace PSFile
 {

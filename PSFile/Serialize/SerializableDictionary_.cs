@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace PSFile.Serialize
+namespace PSFile
 {
-    /// <summary>
-    /// XMLでDictionary型をシリアライズする為のクラス
-    /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable
     {
         public class KeyValue
@@ -23,10 +19,6 @@ namespace PSFile.Serialize
                 this.Value = value;
             }
         }
-
-        public SerializableDictionary() { }
-
-        public SerializableDictionary(IEqualityComparer<TKey> comparer) : base(0, comparer) { }
 
         public XmlSchema GetSchema() { return null; }
 
@@ -59,3 +51,4 @@ namespace PSFile.Serialize
         }
     }
 }
+*/

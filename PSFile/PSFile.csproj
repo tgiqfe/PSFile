@@ -89,8 +89,13 @@
     <Compile Include="Cmdlet\Registry\RevokeRegistry.cs" />
     <Compile Include="Cmdlet\Registry\RemoveRegistry.cs" />
     <Compile Include="Cmdlet\Registry\RenameRegistry.cs" />
-    <Compile Include="Serialize\SerializableDictionary.cs" />
     <Compile Include="Serialize\DataSerializer.cs" />
+    <Compile Include="Serialize\DataType.cs" />
+    <Compile Include="Serialize\DictionaryExtensions.cs" />
+    <Compile Include="Serialize\JSON.cs" />
+    <Compile Include="Serialize\SerializableDictionary.cs" />
+    <Compile Include="Serialize\SerializableDictionary_.cs" />
+    <Compile Include="Serialize\DataSerializer_.cs" />
     <Compile Include="EmbeddedResource.cs" />
     <Compile Include="Class\FileControl.cs" />
     <Compile Include="Class\FileSummary.cs" />
@@ -105,6 +110,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cmdlet\File\TestFile.cs" />
     <Compile Include="Cmdlet\File\SetFile.cs" />
+    <Compile Include="Serialize\XML.cs" />
+    <Compile Include="Serialize\YML.cs" />
     <Compile Include="TestGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
