@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manifest", "Manifest\Manife
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{669DCF42-7EAC-44F3-92E2-8C068D1C1BBA}"
 	ProjectSection(SolutionItems) = preProject
+		CodeDownload.bat = CodeDownload.bat
 		CreateManifest.bat = CreateManifest.bat
 	EndProjectSection
 EndProject
