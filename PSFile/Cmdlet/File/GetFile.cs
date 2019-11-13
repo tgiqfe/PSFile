@@ -33,7 +33,7 @@ namespace PSFile.Cmdlet
         {
             FileSummary fs = new FileSummary(Path,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
-            WriteObject(fs);
+            WriteObject(fs, true);
         }
     }
 }

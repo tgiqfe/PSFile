@@ -34,7 +34,7 @@ namespace PSFile.Cmdlet
         {
             DirectorySummary ds = new DirectorySummary(Path,
                 IgnoreSecurity, IgnoreTime, IgnoreAttributes, IgnoreSize, IgnoreFiles, IsLightFiles);
-            WriteObject(ds);
+            WriteObject(ds, true);
         }
 
 

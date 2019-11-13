@@ -45,7 +45,7 @@ namespace PSFile.Cmdlet
                 {
                     using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
                     {
-                        WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues));
+                        WriteObject(new RegistrySummary(regKey, IgnoreSecurity, IgnoreValues), true);
                     }
                 }
             }
