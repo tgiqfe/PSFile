@@ -45,5 +45,45 @@ namespace PSFile.Serialize
             }
             return source.ContainsKey(key) ? source[key] : null;
         }
+
+        /// <summary>
+        /// Valueが真偽値で、且つtrueになる値の場合はtrue。それ以外はfalse。キー無しの場合もfalse
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool GetBool<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key)
+        {
+            if (source == null)
+            {
+                source = new Dictionary<TKey, TValue>();
+            }
+            if (source.ContainsKey(key))
+            {
+                object val = source[key];
+                if (val == null) { return false; }
+                switch (val)
+                {
+                    case bool b:
+                        return b;
+                    case int i:
+                        return i != 0;
+                    case long l:
+                        return l != 0;
+                    case double d:
+                        return d != 0;
+                    case string s:
+                        return !new string[] { "", "0", "-", "false", "fals", "no", "not", "none", "non", "empty", "null", "否", "不", "無" }.Any(
+                            x => x.Equals(s, System.StringComparison.OrdinalIgnoreCase));
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
