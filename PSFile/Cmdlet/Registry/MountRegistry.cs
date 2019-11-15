@@ -19,7 +19,7 @@ namespace PSFile.Cmdlet
     {
         [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
-        [Parameter, Alias("File")]
+        [Parameter(Position = 1), Alias("File")]
         public string DatFile { get; set; }
         [Parameter]
         public string Test { get; set; }
