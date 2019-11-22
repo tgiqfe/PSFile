@@ -24,6 +24,10 @@ namespace Manifest
             List<string> CmdletsToExportList = new List<string>();
             foreach (string csFile in Directory.GetFiles(info.CmdletDir, "*.cs", SearchOption.AllDirectories))
             {
+                if (info.ExcludeCmdlet.Any(x => x.Equals(Path.GetFileName(csFile), StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
                 using (StreamReader sr = new StreamReader(csFile, Encoding.UTF8))
                 {
                     string readLine = "";
@@ -31,10 +35,6 @@ namespace Manifest
                     {
                         if (Regex.IsMatch(readLine, @"^\s*\[Cmdlet\(Verbs"))
                         {
-                            if (Regex.IsMatch(readLine, @"\/\/\s*Ignore"))
-                            {
-                                break;
-                            }
                             string cmdPre = readLine.Substring(
                                 readLine.IndexOf(".") + 1, readLine.IndexOf(",") - readLine.IndexOf(".") - 1);
                             string cmdSuf = readLine.Substring(

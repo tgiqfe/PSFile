@@ -103,7 +103,7 @@ namespace Manifest
                 {
                     File.Delete(info.ModuleZip);
                 }
-                ZipFile.CreateFromDirectory(info.ModuleDir, info.ModuleZip, CompressionLevel.NoCompression, false);
+                ZipFile.CreateFromDirectory(info.ModuleDir, info.ModuleZip, CompressionLevel.Optimal, false);
             }
         }
     }

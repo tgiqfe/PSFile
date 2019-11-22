@@ -173,18 +173,6 @@ namespace PSFile
                 }
             }
             return string.Join(", ", valueList);
-            /*
-            string[] valu = Functions.SplitComma(val);
-            for (int i = 0; i < valu.Length; i++)
-            {
-                string matchVal = fields.FirstOrDefault(x => x.Equals(valu[i], StringComparison.OrdinalIgnoreCase));
-                if (matchVal != null)
-                {
-                    valu[i] = matchVal;
-                }
-            }
-            return string.Join(", ", valu);
-            */
         }
         public static string CheckCase(string[] valu)
         {
@@ -195,13 +183,6 @@ namespace PSFile
                 valueList.Add(Item.CheckCase(valuu));
             }
             return string.Join(", ", valueList);
-            /*
-            for (int i = 0; i < valu.Length; i++)
-            {
-                valu[i] = Item.CheckCase(valu[i]);
-            }
-            return string.Join(", ", valu);
-            */
         }
         #endregion
     }
