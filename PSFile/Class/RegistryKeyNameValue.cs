@@ -12,7 +12,6 @@ namespace PSFile
     {
         public string RegistryKey { get; set; }
         public SerializableDictionary<string, string> RegistryValue { get; set; }
-        public bool Enabled { get; set; }
 
         public RegistryKeyNameValue() { }
 
@@ -23,7 +22,6 @@ namespace PSFile
         public void AddKey(string registryKey)
         {
             this.RegistryKey = registryKey;
-            Enabled = true;
         }
 
         /// <summary>
@@ -33,7 +31,6 @@ namespace PSFile
         public void AddKey(RegistryKey regKey)
         {
             this.RegistryKey = regKey.ToString();
-            Enabled = true;
         }
 
         /// <summary>
@@ -50,7 +47,6 @@ namespace PSFile
                 RegistryValue = new SerializableDictionary<string, string>();
             }
             RegistryValue[registryName] = registryValue;
-            Enabled = true;
         }
 
         /// <summary>
@@ -67,7 +63,18 @@ namespace PSFile
                 RegistryValue = new SerializableDictionary<string, string>();
             }
             RegistryValue[registryName] = registryValue;
-            Enabled = true;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder($"[{RegistryKey}]\r\n");
+            foreach (KeyValuePair<string, string> pair in RegistryValue)
+            {
+                sb.AppendLine(string.Format("{0}=\"{1}\"",
+                    string.IsNullOrEmpty(pair.Key) ? "(既定)" : $"\"{pair.Key}\"",
+                    pair.Value));
+            }
+            return sb.ToString();
         }
     }
 }

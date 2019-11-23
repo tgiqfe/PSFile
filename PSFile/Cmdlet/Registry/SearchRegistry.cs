@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 using PSFile.Serialize;
+using System.IO;
 
 namespace PSFile.Cmdlet
 {
@@ -20,28 +21,28 @@ namespace PSFile.Cmdlet
         public string RegistryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string SearchText { get; set; }
-        [Parameter, ValidateSet(Item.PATH, Item.NAME, Item.VALUE)]
-        public string[] SearchTarget { get; set; }
-        private string _SearchTarget = null;
+        [Parameter]
+        public string SearchTarget { get; set; }
         [Parameter, ValidateSet(Item.XML, Item.JSON, Item.YML, Item.TXT)]
         public string DataType { get; set; } = Item.TXT;
 
         private bool hasPath = true;
         private bool hasName = true;
         private bool hasValue = true;
+        private bool isText = false;
 
         private List<RegistryKeyNameValue> KNVList = null;
 
         protected override void BeginProcessing()
         {
-            _SearchTarget = Item.CheckCase(SearchTarget);
-            if (!string.IsNullOrEmpty(_SearchTarget))
+            if (!string.IsNullOrEmpty(SearchTarget))
             {
-                hasPath = _SearchTarget.Contains(Item.PATH);
-                hasName = _SearchTarget.Contains(Item.NAME);
-                hasValue = _SearchTarget.Contains(Item.VALUE);
+                hasPath = new string[] { Item.PATH, "Key", "RegistryKey" }.Any(x => SearchTarget.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
+                hasName = new string[] { Item.NAME, "RegistryName", "ValueName" }.Any(x => SearchTarget.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
+                hasValue = new string[] { Item.VALUE, "RegistryValue" }.Any(x => SearchTarget.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
             }
             DataType = Item.CheckCase(DataType);
+            isText = DataType == Item.TXT;
 
             KNVList = new List<RegistryKeyNameValue>();
         }
@@ -67,6 +68,8 @@ namespace PSFile.Cmdlet
                     WriteObject(
                         DataSerializer.Serialize<List<RegistryKeyNameValue>>(KNVList, PSFile.Serialize.DataType.Yml));
                     break;
+                case Item.TXT:
+                    break;
                 default:
                     WriteObject(KNVList);
                     break;
@@ -76,11 +79,14 @@ namespace PSFile.Cmdlet
         private void SearchKeyNameValue(RegistryKey targetKey)
         {
             RegistryKeyNameValue regKNV = new RegistryKeyNameValue();
+            bool isAdded = false;
 
             //  レジストリキーをチェック
-            if (hasPath && (targetKey.ToString().IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0))
+            if (hasPath && (
+                Path.GetFileName(targetKey.ToString()).IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0))
             {
                 regKNV.AddKey(targetKey);
+                isAdded = true;
             }
 
             //  レジストリ値をチェック
@@ -95,6 +101,7 @@ namespace PSFile.Cmdlet
                         targetKey,
                         valueName,
                         RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true));
+                    isAdded = true;
                     continue;
                 }
 
@@ -110,13 +117,20 @@ namespace PSFile.Cmdlet
                     if (tempStringValue.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         regKNV.AddValue(targetKey, tempValueName, tempStringValue);
+                        isAdded = true;
                     }
                 }
             }
-
-            if (regKNV.Enabled)
+            if (isAdded)
             {
-                KNVList.Add(regKNV);
+                if (isText)
+                {
+                    Console.WriteLine(regKNV);
+                }
+                else
+                {
+                    KNVList.Add(regKNV);
+                }
             }
 
             foreach (string keyName in targetKey.GetSubKeyNames())

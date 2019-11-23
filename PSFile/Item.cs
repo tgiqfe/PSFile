@@ -108,7 +108,7 @@ namespace PSFile
         public const string XML = "Xml";
         public const string JSON = "Json";
         public const string YML = "Yml";
-        public const string TXT = "Text";
+        public const string TXT = "Txt";
 
         //  テスト対象
         public const string PATH = "Path";
