@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\RegistryKeyNameValue.cs" />
     <Compile Include="Cmdlet\Directory\CompareDirectory.cs" />
     <Compile Include="Cmdlet\File\CompareFile.cs" />
     <Compile Include="Cmdlet\Registry\ConvertRegistry.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="TestGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Format\PSFile.Format.ps1xml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

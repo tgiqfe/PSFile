@@ -24,8 +24,7 @@ namespace PSFile.Cmdlet
         public string RegistryPath { get; set; }
         [Parameter, Alias("File")]
         public string OutputFile { get; set; }
-        [Parameter]
-        [ValidateSet(Item.REG, Item.DAT, Item.XML, Item.JSON, Item.YML)]
+        [Parameter, ValidateSet(Item.REG, Item.DAT, Item.XML, Item.JSON, Item.YML)]
         public string DataType { get; set; } = Item.JSON;
 
         protected override void BeginProcessing()
@@ -48,7 +47,6 @@ namespace PSFile.Cmdlet
                 case Item.YML:
                     if (OutputFile == null)
                     {
-                        //DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Console.Out, DataType);
                         switch (DataType)
                         {
                             case Item.XML:

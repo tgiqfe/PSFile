@@ -1,7 +1,7 @@
 # Debug
 C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
--ExecutionPolicy Unrestricted -NoExit -Command "Import-Module ..\..\..\PSFile\bin\Debug\PSFile.dll"
+-ExecutionPolicy Unrestricted -NoExit -Command "Import-Module ..\..\..\PSFile\bin\Debug\PSFile.dll; Update-FormatData -AppendPath ..\..\..\PSFile\Format\PSFile.Format.ps1xml"
 
 # Release
 C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
--ExecutionPolicy Unrestricted -NoExit -Command "Import-Module ..\..\..\PSFile\bin\Release\PSFile.dll"
+-ExecutionPolicy Unrestricted -NoExit -Command "Import-Module ..\..\..\PSFile\bin\Release\PSFile.dll; Update-FormatData -AppendPath ..\..\..\PSFile\Format\PSFile.Format.ps1xml"
