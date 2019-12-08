@@ -32,7 +32,7 @@ namespace Manifest
         public string CompanyName { get; set; } = "q";
         public string Copyright { get; set; } = null;
 
-        public string[] ExcludeCmdlet { get; set; }
+        public string[] ExcludeCmdlet { get; set; } = new string[0] { };
 
         public ProjectInfo() { }
     }
