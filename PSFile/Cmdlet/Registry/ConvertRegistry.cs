@@ -42,11 +42,19 @@ namespace PSFile.Cmdlet
             {
                 if (Dos)
                 {
-                    commandList = RegValue_ToDosCommand();
+                    commandList = new List<string>();
+                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                    {
+                        commandList.Add(CreateDosCommand(regKey, Name));
+                    }
                 }
                 else
                 {
-                    commandList = RegValue_ToSetCommand();
+                    commandList = new List<string>();
+                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                    {
+                        commandList.Add(CreateSetCommand(regKey, Name));
+                    }
                 }
             }
 
@@ -66,7 +74,7 @@ namespace PSFile.Cmdlet
 
         private string ReplaceDoller(string sourceText)
         {
-            return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;   
+            return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;
         }
 
         /// <summary>
@@ -85,7 +93,7 @@ namespace PSFile.Cmdlet
                 {
                     //  レジストリ値の設定用コマンド
                     foreach (string valueName in targetKey.GetValueNames())
-                    {                         
+                    {
                         RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
                         string regValue = RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
                         switch (RegistryControl.ValueKindToString(valueKind))
@@ -110,7 +118,7 @@ namespace PSFile.Cmdlet
                                 ReplaceDoller(valueName),
                                 ReplaceDoller(regValue),
                                 RegistryControl.ValueKindToString(valueKind)));
-                        
+
                     }
                 }
                 else
@@ -140,6 +148,7 @@ namespace PSFile.Cmdlet
             return commandList;
         }
 
+        /*
         /// <summary>
         /// レジストリ値をSetコマンドへコンバート
         /// </summary>
@@ -178,6 +187,7 @@ namespace PSFile.Cmdlet
 
             return commandList;
         }
+        */
 
         /// <summary>
         /// レジストリキーをDosコマンドへコンバート
@@ -252,6 +262,7 @@ namespace PSFile.Cmdlet
             return commandList;
         }
 
+        /*
         /// <summary>
         /// レジストリ値をDosコマンドへコンバート
         /// </summary>
@@ -280,6 +291,7 @@ namespace PSFile.Cmdlet
                         regValue = "";
                         break;
                 }
+
                 commandList.Add(string.Format(
                     "reg add \"{0}\" /v \"{1}\" /d {2} /t {3} /f",
                         ReplaceDoller(targetKey.ToString()),
@@ -289,6 +301,79 @@ namespace PSFile.Cmdlet
             }
 
             return commandList;
+        }
+        */
+
+        /// <summary>
+        /// レジストリ値をSetコマンドへコンバート
+        /// </summary>
+        /// <param name="targetKey"></param>
+        /// <param name="valueName"></param>
+        /// <returns></returns>
+        private string CreateSetCommand(RegistryKey targetKey, string valueName)
+        {
+            RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
+            string regValue = "";
+            switch (valueKind)
+            {
+                case RegistryValueKind.String:
+                case RegistryValueKind.MultiString:
+                case RegistryValueKind.ExpandString:
+                case RegistryValueKind.Binary:
+                    regValue = string.Format("\"{0}\"",
+                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true));
+                    break;
+                case RegistryValueKind.DWord:
+                case RegistryValueKind.QWord:
+                    regValue =
+                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                    break;
+                case RegistryValueKind.None:
+                default:
+                    break;
+            }
+            return string.Format(
+                "Set-Registry -Path \"{0}\" -Name \"{1}\" -Value {2} -Type {3}",
+                    ReplaceDoller(targetKey.ToString()),
+                    ReplaceDoller(valueName),
+                    ReplaceDoller(regValue),
+                    RegistryControl.ValueKindToString(valueKind));
+        }
+
+        /// <summary>
+        /// レジストリ値をDOSコマンドへコンバート
+        /// </summary>
+        /// <param name="targetKey"></param>
+        /// <param name="valueName"></param>
+        /// <returns></returns>
+        private string CreateDosCommand(RegistryKey targetKey, string valueName)
+        {
+            RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
+            string regValue = "";
+            switch (valueKind)
+            {
+                case RegistryValueKind.String:
+                case RegistryValueKind.MultiString:
+                case RegistryValueKind.ExpandString:
+                case RegistryValueKind.Binary:
+                    regValue = string.Format("\"{0}\"",
+                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true));
+                    break;
+                case RegistryValueKind.DWord:
+                case RegistryValueKind.QWord:
+                    regValue =
+                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                    break;
+                case RegistryValueKind.None:
+                default:
+                    break;
+            }
+            return string.Format(
+                "reg add \"{0}\" {1} /d {2} /t {3} /f",
+                    targetKey,
+                    valueName == "" ? "/ve" : $"/v \"{valueName}\"",
+                    regValue,
+                    RegistryControl.ValueKindToString(valueKind));
         }
     }
 }
