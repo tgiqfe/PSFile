@@ -20,109 +20,33 @@ namespace PSFile.Cmdlet
         public string OutputFile { get; set; }
         [Parameter]
         public SwitchParameter Recursive { get; set; }
+        [Parameter]
+        public SwitchParameter Dos { get; set; }
 
         protected override void ProcessRecord()
         {
-            List<string> commandList = new List<string>();
+            List<string> commandList = null;
 
             if (Name == null)
             {
-                //  レジストリキーをSetコマンドへコンバート
-                Action<RegistryKey> measureRegistry = null;
-                measureRegistry = (targetKey) =>
+                if (Dos)
                 {
-                    string[] valueNames = targetKey.GetValueNames();
-                    if (valueNames.Length > 0)
-                    {
-                        //  レジストリ値の設定用コマンド
-                        foreach (string valueName in targetKey.GetValueNames())
-                        {
-                            RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
-                            string regValue = RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
-                            switch (RegistryControl.ValueKindToString(valueKind))
-                            {
-                                case Item.REG_SZ:
-                                case Item.REG_MULTI_SZ:
-                                case Item.REG_EXPAND_SZ:
-                                case Item.REG_BINARY:
-                                    regValue = string.Format("-Value \"{0}\" ", regValue);
-                                    break;
-                                case Item.REG_DWORD:
-                                case Item.REG_QWORD:
-                                    regValue = string.Format("-Value {0} ", regValue);
-                                    break;
-                                case Item.NONE:
-                                    regValue = "";
-                                    break;
-                            }
-
-                            commandList.Add(string.Format(
-                                "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
-                                    ReplaceDoller(targetKey.ToString()),
-                                    ReplaceDoller(valueName),
-                                    ReplaceDoller(regValue),
-                                    RegistryControl.ValueKindToString(valueKind)));
-                        }
-                    }
-                    else
-                    {
-                        //  レジストリ値設定無し。空レジストリキー作成
-                        commandList.Add(string.Format("New-Registry -Path \"{0}\"", 
-                            ReplaceDoller(targetKey.ToString())));
-                    }
-
-                    //  配下のレジストリキーを再帰的にチェック
-                    if (Recursive)
-                    {
-                        foreach (string keyName in targetKey.GetSubKeyNames())
-                        {
-                            using (RegistryKey subTargetKey = targetKey.OpenSubKey(keyName, false))
-                            {
-                                measureRegistry(subTargetKey);
-                            }
-                        }
-                    }
-                };
-                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                    commandList = RegKey_ToDosCommand();
+                }
+                else
                 {
-                    measureRegistry(regKey);
+                    commandList = RegKey_ToSetCommand();
                 }
             }
             else
             {
-                //  レジストリ値をSetコマンドへコンバート
-                using (RegistryKey targetKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+                if (Dos)
                 {
-                    RegistryValueKind valueKind = targetKey.GetValueKind(Name);
-                    string regValue = RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
-                    switch (RegistryControl.ValueKindToString(valueKind))
-                    {
-                        case Item.REG_SZ:
-                        case Item.REG_MULTI_SZ:
-                        case Item.REG_EXPAND_SZ:
-                        case Item.REG_BINARY:
-                            regValue = string.Format("-Value \"{0}\" ", regValue);
-                            break;
-                        case Item.REG_DWORD:
-                        case Item.REG_QWORD:
-                            regValue = string.Format("-Value {0} ", regValue);
-                            break;
-                        case Item.NONE:
-                            regValue = "";
-                            break;
-                    }
-
-                    /*
-                    commandList.Add(string.Format(
-                        "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
-                            targetKey, Name, regValue, RegistryControl.ValueKindToString(valueKind)));
-                    */
-                    commandList.Add(string.Format(
-                        "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
-                            ReplaceDoller(targetKey.ToString()),
-                            ReplaceDoller(Name),
-                            ReplaceDoller(regValue),
-                            RegistryControl.ValueKindToString(valueKind)));
+                    commandList = RegValue_ToDosCommand();
+                }
+                else
+                {
+                    commandList = RegValue_ToSetCommand();
                 }
             }
 
@@ -142,7 +66,229 @@ namespace PSFile.Cmdlet
 
         private string ReplaceDoller(string sourceText)
         {
-            return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;
+            return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;   
+        }
+
+        /// <summary>
+        /// レジストリキーをSetコマンドへコンバート
+        /// </summary>
+        /// <returns></returns>
+        private List<string> RegKey_ToSetCommand()
+        {
+            List<string> commandList = new List<string>();
+
+            Action<RegistryKey> measureRegistry = null;
+            measureRegistry = (targetKey) =>
+            {
+                string[] valueNames = targetKey.GetValueNames();
+                if (valueNames.Length > 0)
+                {
+                    //  レジストリ値の設定用コマンド
+                    foreach (string valueName in targetKey.GetValueNames())
+                    {                         
+                        RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
+                        string regValue = RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
+                        switch (RegistryControl.ValueKindToString(valueKind))
+                        {
+                            case Item.REG_SZ:
+                            case Item.REG_MULTI_SZ:
+                            case Item.REG_EXPAND_SZ:
+                            case Item.REG_BINARY:
+                                regValue = string.Format("-Value \"{0}\" ", regValue);
+                                break;
+                            case Item.REG_DWORD:
+                            case Item.REG_QWORD:
+                                regValue = string.Format("-Value {0} ", regValue);
+                                break;
+                            case Item.REG_NONE:
+                                regValue = "";
+                                break;
+                        }
+                        commandList.Add(string.Format(
+                            "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
+                                ReplaceDoller(targetKey.ToString()),
+                                ReplaceDoller(valueName),
+                                ReplaceDoller(regValue),
+                                RegistryControl.ValueKindToString(valueKind)));
+                        
+                    }
+                }
+                else
+                {
+                    //  レジストリ値設定無し。空レジストリキー作成
+                    commandList.Add(string.Format("New-Registry -Path \"{0}\"",
+                        ReplaceDoller(targetKey.ToString())));
+                }
+
+                //  配下のレジストリキーを再帰的にチェック
+                if (Recursive)
+                {
+                    foreach (string keyName in targetKey.GetSubKeyNames())
+                    {
+                        using (RegistryKey subTargetKey = targetKey.OpenSubKey(keyName, false))
+                        {
+                            measureRegistry(subTargetKey);
+                        }
+                    }
+                }
+            };
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+            {
+                measureRegistry(regKey);
+            }
+
+            return commandList;
+        }
+
+        /// <summary>
+        /// レジストリ値をSetコマンドへコンバート
+        /// </summary>
+        /// <returns></returns>
+        private List<string> RegValue_ToSetCommand()
+        {
+            List<string> commandList = new List<string>();
+
+            using (RegistryKey targetKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+            {
+                RegistryValueKind valueKind = targetKey.GetValueKind(Name);
+                string regValue = RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                switch (RegistryControl.ValueKindToString(valueKind))
+                {
+                    case Item.REG_SZ:
+                    case Item.REG_MULTI_SZ:
+                    case Item.REG_EXPAND_SZ:
+                    case Item.REG_BINARY:
+                        regValue = string.Format("-Value \"{0}\" ", regValue);
+                        break;
+                    case Item.REG_DWORD:
+                    case Item.REG_QWORD:
+                        regValue = string.Format("-Value {0} ", regValue);
+                        break;
+                    case Item.REG_NONE:
+                        regValue = "";
+                        break;
+                }
+                commandList.Add(string.Format(
+                    "Set-Registry -Path \"{0}\" -Name \"{1}\" {2}-Type {3}",
+                        ReplaceDoller(targetKey.ToString()),
+                        ReplaceDoller(Name),
+                        ReplaceDoller(regValue),
+                        RegistryControl.ValueKindToString(valueKind)));
+            }
+
+            return commandList;
+        }
+
+        /// <summary>
+        /// レジストリキーをDosコマンドへコンバート
+        /// </summary>
+        /// <returns></returns>
+        private List<string> RegKey_ToDosCommand()
+        {
+            List<string> commandList = new List<string>();
+
+            Action<RegistryKey> measureRegistry = null;
+            measureRegistry = (targetKey) =>
+            {
+                string[] valueNames = targetKey.GetValueNames();
+                if (valueNames.Length > 0)
+                {
+                    //  レジストリ値の設定用コマンド
+                    foreach (string valueName in targetKey.GetValueNames())
+                    {
+                        RegistryValueKind valueKind = targetKey.GetValueKind(valueName);
+                        string regValue = RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
+                        switch (RegistryControl.ValueKindToString(valueKind))
+                        {
+                            case Item.REG_SZ:
+                            case Item.REG_MULTI_SZ:
+                            case Item.REG_EXPAND_SZ:
+                            case Item.REG_BINARY:
+                                regValue = string.Format("\"{0}\"", regValue);
+                                break;
+                            case Item.REG_DWORD:
+                            case Item.REG_QWORD:
+                                regValue = string.Format("{0}", regValue);
+                                break;
+                            case Item.REG_NONE:
+                                regValue = "";
+                                break;
+                        }
+                        commandList.Add(string.Format(
+                            "reg add \"{0}\" /v \"{1}\" /d {2} /t {3} /f",
+                                ReplaceDoller(targetKey.ToString()),
+                                ReplaceDoller(valueName),
+                                ReplaceDoller(regValue),
+                                RegistryControl.ValueKindToString(valueKind)));
+
+                    }
+                }
+                else
+                {
+                    //  レジストリ値設定無し。空レジストリキー作成
+                    commandList.Add(string.Format("reg add \"{0}\" /ve /f",
+                        ReplaceDoller(targetKey.ToString())));
+                    commandList.Add(string.Format("reg delete \"{0}\" /ve /f",
+                        ReplaceDoller(targetKey.ToString())));
+                }
+
+                //  配下のレジストリキーを再帰的にチェック
+                if (Recursive)
+                {
+                    foreach (string keyName in targetKey.GetSubKeyNames())
+                    {
+                        using (RegistryKey subTargetKey = targetKey.OpenSubKey(keyName, false))
+                        {
+                            measureRegistry(subTargetKey);
+                        }
+                    }
+                }
+            };
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+            {
+                measureRegistry(regKey);
+            }
+
+            return commandList;
+        }
+
+        /// <summary>
+        /// レジストリ値をDosコマンドへコンバート
+        /// </summary>
+        /// <returns></returns>
+        private List<string> RegValue_ToDosCommand()
+        {
+            List<string> commandList = new List<string>();
+
+            using (RegistryKey targetKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
+            {
+                RegistryValueKind valueKind = targetKey.GetValueKind(Name);
+                string regValue = RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                switch (RegistryControl.ValueKindToString(valueKind))
+                {
+                    case Item.REG_SZ:
+                    case Item.REG_MULTI_SZ:
+                    case Item.REG_EXPAND_SZ:
+                    case Item.REG_BINARY:
+                        regValue = string.Format("\"{0}\"", regValue);
+                        break;
+                    case Item.REG_DWORD:
+                    case Item.REG_QWORD:
+                        regValue = string.Format("{0}", regValue);
+                        break;
+                    case Item.REG_NONE:
+                        regValue = "";
+                        break;
+                }
+                commandList.Add(string.Format(
+                    "reg add \"{0}\" /v \"{1}\" /d {2} /t {3} /f",
+                        ReplaceDoller(targetKey.ToString()),
+                        ReplaceDoller(Name),
+                        ReplaceDoller(regValue),
+                        RegistryControl.ValueKindToString(valueKind)));
+            }
+
+            return commandList;
         }
     }
 }
