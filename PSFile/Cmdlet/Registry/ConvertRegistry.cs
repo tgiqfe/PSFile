@@ -25,36 +25,62 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            List<string> commandList = null;
+            List<string> commandList = new List<string>();
 
             if (Name == null)
             {
-                if (Dos)
+                Action<RegistryKey> measureRegistry = null;
+                measureRegistry = (targetKey) =>
                 {
-                    commandList = RegKey_ToDosCommand();
-                }
-                else
+                    List<string> valueNameList = new List<string>(targetKey.GetValueNames());
+                    valueNameList.Sort();
+                    if (valueNameList.Count > 0)
+                    {
+                        valueNameList.ForEach(x =>
+                            commandList.Add(Dos ?
+                                CreateDosCommand(targetKey, x) :
+                                CreateSetCommand(targetKey, x)));
+                    }
+                    else
+                    {
+                        //  レジストリ値設定無し。空レジストリキー作成
+                        if (Dos)
+                        {
+                            commandList.Add(string.Format("reg add \"{0}\" /ve /f",
+                                ReplaceDoller(targetKey.ToString())));
+                            commandList.Add(string.Format("reg delete \"{0}\" /ve /f",
+                                ReplaceDoller(targetKey.ToString())));
+                        }
+                        else
+                        {
+                            commandList.Add(string.Format("New-Registry -Path \"{0}\"",
+                                ReplaceDoller(targetKey.ToString())));
+                        }
+                    }
+
+                    if (Recursive)
+                    {
+                        foreach (string keyName in targetKey.GetSubKeyNames())
+                        {
+                            using (RegistryKey subTargetKey = targetKey.OpenSubKey(keyName, false))
+                            {
+                                measureRegistry(subTargetKey);
+                            }
+                        }
+                    }
+                };
+                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
                 {
-                    commandList = RegKey_ToSetCommand();
+                    measureRegistry(regKey);
                 }
             }
             else
             {
-                if (Dos)
+                using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
                 {
-                    commandList = new List<string>();
-                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
-                    {
-                        commandList.Add(CreateDosCommand(regKey, Name));
-                    }
-                }
-                else
-                {
-                    commandList = new List<string>();
-                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(RegistryPath, false, false))
-                    {
-                        commandList.Add(CreateSetCommand(regKey, Name));
-                    }
+                    commandList.Add(Dos ?
+                        CreateDosCommand(regKey, Name) :
+                        CreateSetCommand(regKey, Name));
                 }
             }
 
@@ -77,6 +103,7 @@ namespace PSFile.Cmdlet
             return sourceText.Contains("$") ? sourceText.Replace("$", "`$") : sourceText;
         }
 
+        /*
         /// <summary>
         /// レジストリキーをSetコマンドへコンバート
         /// </summary>
@@ -125,7 +152,7 @@ namespace PSFile.Cmdlet
                 {
                     //  レジストリ値設定無し。空レジストリキー作成
                     commandList.Add(string.Format("New-Registry -Path \"{0}\"",
-                        ReplaceDoller(targetKey.ToString())));
+                ReplaceDoller(targetKey.ToString())));
                 }
 
                 //  配下のレジストリキーを再帰的にチェック
@@ -147,6 +174,7 @@ namespace PSFile.Cmdlet
 
             return commandList;
         }
+        */
 
         /*
         /// <summary>
@@ -189,6 +217,7 @@ namespace PSFile.Cmdlet
         }
         */
 
+        /*
         /// <summary>
         /// レジストリキーをDosコマンドへコンバート
         /// </summary>
@@ -237,7 +266,7 @@ namespace PSFile.Cmdlet
                 {
                     //  レジストリ値設定無し。空レジストリキー作成
                     commandList.Add(string.Format("reg add \"{0}\" /ve /f",
-                        ReplaceDoller(targetKey.ToString())));
+                ReplaceDoller(targetKey.ToString())));
                     commandList.Add(string.Format("reg delete \"{0}\" /ve /f",
                         ReplaceDoller(targetKey.ToString())));
                 }
@@ -261,6 +290,7 @@ namespace PSFile.Cmdlet
 
             return commandList;
         }
+        */
 
         /*
         /// <summary>
@@ -321,12 +351,12 @@ namespace PSFile.Cmdlet
                 case RegistryValueKind.ExpandString:
                 case RegistryValueKind.Binary:
                     regValue = string.Format("\"{0}\"",
-                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true));
+                        RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true));
                     break;
                 case RegistryValueKind.DWord:
                 case RegistryValueKind.QWord:
                     regValue =
-                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                        RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
                     break;
                 case RegistryValueKind.None:
                 default:
@@ -357,12 +387,12 @@ namespace PSFile.Cmdlet
                 case RegistryValueKind.ExpandString:
                 case RegistryValueKind.Binary:
                     regValue = string.Format("\"{0}\"",
-                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true));
+                        RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true));
                     break;
                 case RegistryValueKind.DWord:
                 case RegistryValueKind.QWord:
                     regValue =
-                        RegistryControl.RegistryValueToString(targetKey, Name, valueKind, true);
+                        RegistryControl.RegistryValueToString(targetKey, valueName, valueKind, true);
                     break;
                 case RegistryValueKind.None:
                 default:
@@ -375,5 +405,9 @@ namespace PSFile.Cmdlet
                     regValue,
                     RegistryControl.ValueKindToString(valueKind));
         }
+
+
+
+
     }
 }
