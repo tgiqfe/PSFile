@@ -23,8 +23,8 @@ namespace PSFile.Cmdlet
         [Parameter(Mandatory = true, Position = 0), Alias("Path")]
         public string RegistryPath { get; set; }
         [Parameter, Alias("File")]
-        public string OutputFile { get; set; }
-        [Parameter, ValidateSet(Item.REG, Item.DAT, Item.XML, Item.JSON, Item.YML)]
+        //public string OutputFile { get; set; }
+        //[Parameter, ValidateSet(Item.REG, Item.DAT, Item.XML, Item.JSON, Item.YML)]
         public string DataType { get; set; } = Item.JSON;
 
         protected override void BeginProcessing()
@@ -36,15 +36,23 @@ namespace PSFile.Cmdlet
         {
             switch (DataType)
             {
+                /*
                 case Item.REG:
                     OutputReg();
                     break;
                 case Item.DAT:
                     OutputDat();
                     break;
+                */
                 case Item.XML:
+                    WriteObject(DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Serialize.DataType.Xml));
+                    break;
                 case Item.JSON:
+                    WriteObject(DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Serialize.DataType.Json));
+                    break;
                 case Item.YML:
+                    WriteObject(DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), Serialize.DataType.Yml));
+                    /*
                     if (OutputFile == null)
                     {
                         switch (DataType)
@@ -64,6 +72,7 @@ namespace PSFile.Cmdlet
                     {
                         DataSerializer.Serialize<List<RegistrySummary>>(GetPRegList(), OutputFile);
                     }
+                    */
                     break;
             }
         }
@@ -94,11 +103,13 @@ namespace PSFile.Cmdlet
             return pregList;
         }
 
+        /*
         /// <summary>
         /// reg exportコマンドによるエクスポート
         /// </summary>
         private void OutputReg()
         {
+
             if (OutputFile == null)
             {
                 //  reg export一時出力先
@@ -123,6 +134,7 @@ namespace PSFile.Cmdlet
             }
             else
             {
+
                 using (Process proc = new Process())
                 {
                     proc.StartInfo.FileName = "reg.exe";
@@ -133,7 +145,9 @@ namespace PSFile.Cmdlet
                 }
             }
         }
+        */
 
+        /*
         /// <summary>
         /// reg saveコマンドによるエクスポート
         /// </summary>
@@ -159,5 +173,6 @@ namespace PSFile.Cmdlet
                 proc.WaitForExit();
             }
         }
+        */
     }
 }
