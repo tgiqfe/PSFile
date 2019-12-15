@@ -37,6 +37,19 @@ namespace PSFile.Cmdlet
                 switch (DataType)
                 {
                     case Item.XML:
+                        WriteObject(DataSerializer.Serialize<List<FileSummary>>(fsList, Serialize.DataType.Xml));
+                        break;
+                    case Item.JSON:
+                        WriteObject(DataSerializer.Serialize<List<FileSummary>>(fsList, Serialize.DataType.Json));
+                        break;
+                    case Item.YML:
+                        WriteObject(DataSerializer.Serialize<List<FileSummary>>(fsList, Serialize.DataType.Yml));
+                        break;
+                }
+                /*
+                switch (DataType)
+                {
+                    case Item.XML:
                         DataSerializer.Serialize<List<FileSummary>>(fsList, Console.Out, PSFile.Serialize.DataType.Xml);
                         break;
                     case Item.JSON:
@@ -46,6 +59,7 @@ namespace PSFile.Cmdlet
                         DataSerializer.Serialize<List<FileSummary>>(fsList, Console.Out, PSFile.Serialize.DataType.Yml);
                         break;
                 }
+                */
             }
             else
             {

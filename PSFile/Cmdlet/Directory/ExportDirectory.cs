@@ -47,7 +47,19 @@ namespace PSFile.Cmdlet
 
             if(Output == null)
             {
-                //DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, DataType);
+                switch (DataType)
+                {
+                    case Item.XML:
+                        WriteObject(DataSerializer.Serialize<List<DirectorySummary>>(dsList, Serialize.DataType.Xml));
+                        break;
+                    case Item.JSON:
+                        WriteObject(DataSerializer.Serialize<List<DirectorySummary>>(dsList, Serialize.DataType.Json));
+                        break;
+                    case Item.YML:
+                        WriteObject(DataSerializer.Serialize<List<DirectorySummary>>(dsList, Serialize.DataType.Yml));
+                        break;
+                }
+                /*
                 switch (DataType)
                 {
                     case Item.XML:
@@ -60,6 +72,7 @@ namespace PSFile.Cmdlet
                         DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Yml);
                         break;
                 }
+                */
             }
             else
             {
