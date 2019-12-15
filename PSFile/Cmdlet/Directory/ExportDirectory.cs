@@ -51,13 +51,13 @@ namespace PSFile.Cmdlet
                 switch (DataType)
                 {
                     case Item.XML:
-                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Xml);
+                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Xml);
                         break;
                     case Item.JSON:
-                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Json);
+                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Json);
                         break;
                     case Item.YML:
-                        DataSerializer.Serialize<List<FileSummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Yml);
+                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Yml);
                         break;
                 }
             }

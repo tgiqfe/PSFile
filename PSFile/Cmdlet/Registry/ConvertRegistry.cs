@@ -91,6 +91,8 @@ namespace PSFile.Cmdlet
             }
             else
             {
+                Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
+
                 using (StreamWriter sw = new StreamWriter(OutputFile, false, Encoding.GetEncoding("Shift_JIS")))
                 {
                     sw.WriteLine(string.Join("\r\n", commandList));

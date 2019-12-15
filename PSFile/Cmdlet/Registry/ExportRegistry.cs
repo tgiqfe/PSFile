@@ -34,6 +34,9 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
+            //PathInfo cure = this.SessionState.Path.CurrentFileSystemLocation;
+            
+
             switch (DataType)
             {
                 /*
