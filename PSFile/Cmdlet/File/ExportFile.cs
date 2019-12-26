@@ -23,9 +23,15 @@ namespace PSFile.Cmdlet
         [ValidateSet(Item.XML, Item.JSON, Item.YML)]
         public string DataType { get; set; } = Item.JSON;
 
+        private string _currentDirectory = null;
+
         protected override void BeginProcessing()
         {
             DataType = Item.CheckCase(DataType);
+
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
         }
 
         protected override void ProcessRecord()
@@ -46,25 +52,17 @@ namespace PSFile.Cmdlet
                         WriteObject(DataSerializer.Serialize<List<FileSummary>>(fsList, Serialize.DataType.Yml));
                         break;
                 }
-                /*
-                switch (DataType)
-                {
-                    case Item.XML:
-                        DataSerializer.Serialize<List<FileSummary>>(fsList, Console.Out, PSFile.Serialize.DataType.Xml);
-                        break;
-                    case Item.JSON:
-                        DataSerializer.Serialize<List<FileSummary>>(fsList, Console.Out, PSFile.Serialize.DataType.Json);
-                        break;
-                    case Item.YML:
-                        DataSerializer.Serialize<List<FileSummary>>(fsList, Console.Out, PSFile.Serialize.DataType.Yml);
-                        break;
-                }
-                */
             }
             else
             {
                 DataSerializer.Serialize<List<FileSummary>>(fsList, Output);
             }
+        }
+
+        protected override void EndProcessing()
+        {
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
         }
     }
 }
