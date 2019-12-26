@@ -26,9 +26,15 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IsLightFiles { get; set; }
 
+        private string _currentDirectory = null;
+
         protected override void BeginProcessing()
         {
             DataType = Item.CheckCase(DataType);
+
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
         }
 
         protected override void ProcessRecord()
@@ -59,25 +65,17 @@ namespace PSFile.Cmdlet
                         WriteObject(DataSerializer.Serialize<List<DirectorySummary>>(dsList, Serialize.DataType.Yml));
                         break;
                 }
-                /*
-                switch (DataType)
-                {
-                    case Item.XML:
-                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Xml);
-                        break;
-                    case Item.JSON:
-                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Json);
-                        break;
-                    case Item.YML:
-                        DataSerializer.Serialize<List<DirectorySummary>>(dsList, Console.Out, PSFile.Serialize.DataType.Yml);
-                        break;
-                }
-                */
             }
             else
             {
                 DataSerializer.Serialize<List<DirectorySummary>>(dsList, Output);
             }
+        }
+
+        protected override void EndProcessing()
+        {
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
         }
     }
 }
