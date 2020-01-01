@@ -14,8 +14,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Get, "File")]
     public class GetFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get;set; }
         [Parameter]
@@ -31,7 +31,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            FileSummary fs = new FileSummary(Path,
+            FileSummary fs = new FileSummary(FilePath,
                 IgnoreSecurity, IgnoreTime, IgnoreHash, IgnoreAttributes, IgnoreSize, IgnoreSecurityBlock);
             WriteObject(fs, true);
         }

@@ -17,8 +17,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Rename, "File")]
     public class RenameFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string NewName { get; set; }
         [Parameter]
@@ -36,15 +36,15 @@ namespace PSFile.Cmdlet
             {
                 NewName = System.IO.Path.GetFileName(NewName);
             }
-            string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), NewName);
+            string newPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(FilePath), NewName);
 
             //  テスト自動生成
-            _generator.FilePath(Path);
+            _generator.FilePath(FilePath);
             _generator.FilePath(newPath);
 
-            if (File.Exists(Path))
+            if (File.Exists(FilePath))
             {
-                FileSystem.RenameFile(Path, NewName);
+                FileSystem.RenameFile(FilePath, NewName);
             }
             WriteObject(new FileSummary(newPath, true));
         }

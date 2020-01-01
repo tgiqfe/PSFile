@@ -17,8 +17,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Move, "File")]
     public class MoveFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -36,14 +36,14 @@ namespace PSFile.Cmdlet
         {
             if (Directory.Exists(Destination) || Destination.EndsWith("\\"))
             {
-                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
+                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(FilePath));
             }
 
             //  テスト自動生成
-            _generator.FilePath(Path);
+            _generator.FilePath(FilePath);
             _generator.FilePath(Destination);
 
-            FileSystem.MoveFile(Path, Destination, Force);
+            FileSystem.MoveFile(FilePath, Destination, Force);
 
             WriteObject(new FileSummary(Destination, true));
         }

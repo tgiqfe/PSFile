@@ -16,8 +16,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Copy, "File")]
     public class CopyFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -35,17 +35,17 @@ namespace PSFile.Cmdlet
         {
             if (Directory.Exists(Destination) || Destination.EndsWith("\\"))
             {
-                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
+                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(FilePath));
             }
 
             //  テスト自動生成
-            _generator.FilePath(Path);
+            _generator.FilePath(FilePath);
             _generator.FilePath(Destination);
-            _generator.FileCompare(Path, Destination, false, true, false, false, false, false);
+            _generator.FileCompare(FilePath, Destination, false, true, false, false, false, false);
 
             try
             {
-                FileSystem.CopyFile(Path, Destination, Force);
+                FileSystem.CopyFile(FilePath, Destination, Force);
             }
             catch (UnauthorizedAccessException)
             {
@@ -53,7 +53,7 @@ namespace PSFile.Cmdlet
                 if (Force)
                 {
                     new FileInfo(Destination).IsReadOnly = false;
-                    FileSystem.CopyFile(Path, Destination, Force);
+                    FileSystem.CopyFile(FilePath, Destination, Force);
                 }
             }
 

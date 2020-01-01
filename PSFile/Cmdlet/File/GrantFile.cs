@@ -19,8 +19,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsSecurity.Grant, "File")]
     public class GrantFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter(Position = 1)]
         public string Access { get; set; }
         [Parameter]
@@ -51,21 +51,21 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (File.Exists(Path))
+            if (File.Exists(FilePath))
             {
                 FileSecurity security = null;
 
                 //  Account, Rights, AccessControlから追加
                 if (!string.IsNullOrEmpty(Account))
                 {
-                    if (security == null) { security = File.GetAccessControl(Path); }
+                    if (security == null) { security = File.GetAccessControl(FilePath); }
                     string accessString = string.Format("{0};{1};{2}",
                         Account,
                         _Rights,
                         AccessControl);
 
                     //  テスト自動生成
-                    _generator.FileAccess(Path, accessString, true);
+                    _generator.FileAccess(FilePath, accessString, true);
 
                     foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(accessString))
                     {
@@ -76,10 +76,10 @@ namespace PSFile.Cmdlet
                 //  Access文字列で追加
                 if (!string.IsNullOrEmpty(Access))
                 {
-                    if (security == null) { security = File.GetAccessControl(Path); }
+                    if (security == null) { security = File.GetAccessControl(FilePath); }
 
                     //  テスト自動生成
-                    _generator.FileAccess(Path, Access, true);
+                    _generator.FileAccess(FilePath, Access, true);
 
                     foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
                     {
@@ -90,10 +90,10 @@ namespace PSFile.Cmdlet
                 //  Inherited設定
                 if (Inherited != Item.NONE)
                 {
-                    if (security == null) { security = File.GetAccessControl(Path); }
+                    if (security == null) { security = File.GetAccessControl(FilePath); }
 
                     //  テスト自動生成
-                    _generator.FileInherited(Path, Inherited == Item.ENABLE);
+                    _generator.FileInherited(FilePath, Inherited == Item.ENABLE);
 
                     switch (Inherited)
                     {
@@ -109,20 +109,20 @@ namespace PSFile.Cmdlet
                     }
                 }
 
-                if (security != null) { File.SetAccessControl(Path, security); }
+                if (security != null) { File.SetAccessControl(FilePath, security); }
 
                 //  ファイル属性を追加
                 if (!string.IsNullOrEmpty(_Attributes))
                 {
                     //  テスト自動生成
-                    _generator.FileAttributes(Path, _Attributes, true);
+                    _generator.FileAttributes(FilePath, _Attributes, true);
 
-                    FileAttributes nowAttr = File.GetAttributes(Path);
+                    FileAttributes nowAttr = File.GetAttributes(FilePath);
                     FileAttributes addAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
-                    File.SetAttributes(Path, nowAttr | addAttr);
+                    File.SetAttributes(FilePath, nowAttr | addAttr);
                 }
 
-                WriteObject(new FileSummary(Path, true));
+                WriteObject(new FileSummary(FilePath, true));
             }
         }
     }

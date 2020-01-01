@@ -16,8 +16,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Remove, "File")]
     public class RemoveFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         public SwitchParameter SendToRecycleBin { get; set; }
         [Parameter]
@@ -31,22 +31,11 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            /*
-            Action<string> deleteFileAction = (filePath) =>
-            {
-                FileSystem.DeleteFile(
-                    filePath,
-                    UIOption.OnlyErrorDialogs,
-                    SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
-                    UICancelOption.DoNothing);
-            };
-            */
-
-            if (System.IO.Path.GetFileName(Path).Contains("*"))
+            if (System.IO.Path.GetFileName(FilePath).Contains("*"))
             {
                 //  ファイル名にワイルドカードを含む場合
                 foreach (string fileName in
-                    Directory.GetFiles(System.IO.Path.GetDirectoryName(Path), System.IO.Path.GetFileName(Path), System.IO.SearchOption.TopDirectoryOnly))
+                    Directory.GetFiles(System.IO.Path.GetDirectoryName(FilePath), System.IO.Path.GetFileName(FilePath), System.IO.SearchOption.TopDirectoryOnly))
                 {
                     //  テスト自動生成
                     _generator.FilePath(fileName);
@@ -59,14 +48,14 @@ namespace PSFile.Cmdlet
                         UICancelOption.DoNothing);
                 }
             }
-            else if (File.Exists(Path))
+            else if (File.Exists(FilePath))
             {
                 //  テスト自動生成
-                _generator.FilePath(Path);
+                _generator.FilePath(FilePath);
 
                 //deleteFileAction(Path);
                 FileSystem.DeleteFile(
-                    Path,
+                    FilePath,
                     UIOption.OnlyErrorDialogs,
                     SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
                     UICancelOption.DoNothing);

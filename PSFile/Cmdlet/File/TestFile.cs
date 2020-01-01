@@ -13,8 +13,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsDiagnostic.Test, "File")]
     public class TestFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         [ValidateSet(Item.PATH, Item.HASH, Item.ACCESS, Item.ACCOUNT, Item.OWNER, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE, Item.INHERITED, Item.SECURITYBLOCK)]
         public string Target { get; set; }
@@ -113,9 +113,9 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             //  ファイルの有無チェック
-            if (!File.Exists(Path))
+            if (!File.Exists(FilePath))
             {
-                Console.Error.WriteLine("対象のファイル無し： {0}", Path);
+                Console.Error.WriteLine("対象のファイル無し： {0}", FilePath);
                 return;
             }
             if (Target == Item.PATH)
@@ -165,7 +165,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckHash()
         {
-            string hashString = new FileSummary(Path, true, true, false, true, true, true).Hash;
+            string hashString = new FileSummary(FilePath, true, true, false, true, true, true).Hash;
             retValue = hashString == Hash;
             if (!retValue)
             {
@@ -178,7 +178,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAccess()
         {
-            string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+            string tempAccess = new FileSummary(FilePath, false, true, true, true, true, true).Access;
             if (Access == string.Empty)
             {
                 retValue = string.IsNullOrEmpty(tempAccess);
@@ -242,7 +242,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAccount()
         {
-            string tempAccess = new FileSummary(Path, false, true, true, true, true, true).Access;
+            string tempAccess = new FileSummary(FilePath, false, true, true, true, true, true).Access;
             foreach (string tempAccessString in tempAccess.Split('/'))
             {
                 string tempAccount = tempAccessString.Split(';')[0];
@@ -264,7 +264,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckOwner()
         {
-            string tempOwner = new FileSummary(Path, false, true, true, true, true, true).Owner;
+            string tempOwner = new FileSummary(FilePath, false, true, true, true, true, true).Owner;
             retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
                 !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
             if (!retValue)
@@ -278,7 +278,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckCreationTime()
         {
-            DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+            DateTime tempDate = (DateTime)new FileSummary(FilePath, true, false, true, true, true, true).CreationTime;
             retValue = tempDate == CreationTime;
             if (!retValue)
             {
@@ -291,7 +291,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckLastWriteTime()
         {
-            DateTime tempDate = (DateTime)new FileSummary(Path, true, false, true, true, true, true).CreationTime;
+            DateTime tempDate = (DateTime)new FileSummary(FilePath, true, false, true, true, true, true).CreationTime;
             retValue = tempDate == LastWriteTime;
             if (!retValue)
             {
@@ -304,7 +304,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAttributes()
         {
-            string tempAttribute = new FileSummary(Path, true, true, true, false, true, true).Attributes;
+            string tempAttribute = new FileSummary(FilePath, true, true, true, false, true, true).Attributes;
             if (TestMode == Item.CONTAIN)
             {
                 string[] tempAttribArray = Functions.SplitComma(tempAttribute);
@@ -334,7 +334,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckSize()
         {
-            long tempSize = (long)new FileSummary(Path, true, true, true, false, true, true).Size;
+            long tempSize = (long)new FileSummary(FilePath, true, true, true, false, true, true).Size;
             retValue = tempSize == Size;
             if (!retValue)
             {
@@ -347,7 +347,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckInherited()
         {
-            bool tempInherit = (bool)new FileSummary(Path, false, true, true, true, true, true).Inherited;
+            bool tempInherit = (bool)new FileSummary(FilePath, false, true, true, true, true, true).Inherited;
             retValue = tempInherit == Inherited;
             if (!retValue)
             {
@@ -360,7 +360,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckSecurityBlock()
         {
-            bool? tempSecurityBlock = new FileSummary(Path, true, true, true, true, true, false).SecurityBlock;
+            bool? tempSecurityBlock = new FileSummary(FilePath, true, true, true, true, true, false).SecurityBlock;
             retValue = tempSecurityBlock == SecurityBlock;
             if (!retValue)
             {

@@ -20,13 +20,13 @@ namespace PSFile.Cmdlet
     ///                 Test-File -Path ～ -Attributes ～
     ///                 Test-File -Path ～ -CreationTime ～
     ///                 Test-File -Path ～ -LastWriteTime ～
-    ///                 Test-File -Path ～ -securityBlock ～
+    ///                 Test-File -Path ～ -SecurityBlock ～
     /// </summary>
     [Cmdlet(VerbsCommon.Set, "File")]
     public class SetFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         public string Access { get; set; }
         [Parameter]
@@ -57,7 +57,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (File.Exists(Path))
+            if (File.Exists(FilePath))
             {
                 FileSecurity security = null;
 
@@ -65,10 +65,10 @@ namespace PSFile.Cmdlet
                 //  ""で全アクセス権設定を削除
                 if (Access != null)
                 {
-                    if (security == null) { security = File.GetAccessControl(Path); }
+                    if (security == null) { security = File.GetAccessControl(FilePath); }
 
                     //  テスト自動生成
-                    _generator.FileAccess(Path, Access, false);
+                    _generator.FileAccess(FilePath, Access, false);
 
                     foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
                     {
@@ -93,12 +93,12 @@ namespace PSFile.Cmdlet
                     Functions.CheckAdmin();
 
                     //  テスト自動生成
-                    _generator.FileOwner(Path, Owner);
+                    _generator.FileOwner(FilePath, Owner);
 
                     using (Process proc = new Process())
                     {
                         proc.StartInfo.FileName = subinacl;
-                        proc.StartInfo.Arguments = $"/file \"{Path}\" /setowner=\"{Owner}\"";
+                        proc.StartInfo.Arguments = $"/file \"{FilePath}\" /setowner=\"{Owner}\"";
                         proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         proc.Start();
                         proc.WaitForExit();
@@ -108,10 +108,10 @@ namespace PSFile.Cmdlet
                 //  Inherited設定
                 if (Inherited != Item.NONE)
                 {
-                    if (security == null) { security = File.GetAccessControl(Path); }
+                    if (security == null) { security = File.GetAccessControl(FilePath); }
 
                     //  テスト自動生成
-                    _generator.FileInherited(Path, Inherited == Item.ENABLE);
+                    _generator.FileInherited(FilePath, Inherited == Item.ENABLE);
 
                     switch (Inherited)
                     {
@@ -127,24 +127,24 @@ namespace PSFile.Cmdlet
                     }
                 }
 
-                if (security != null) { File.SetAccessControl(Path, security); }
+                if (security != null) { File.SetAccessControl(FilePath, security); }
 
                 //  作成日時
                 if (CreationTime != null)
                 {
                     //  テスト自動生成
-                    _generator.FileCreationTime(Path, (DateTime)CreationTime);
+                    _generator.FileCreationTime(FilePath, (DateTime)CreationTime);
 
-                    File.SetCreationTime(Path, (DateTime)CreationTime);
+                    File.SetCreationTime(FilePath, (DateTime)CreationTime);
                 }
 
                 //  更新一時
                 if (LastWriteTime != null)
                 {
                     //  テスト自動生成
-                    _generator.FileLastWriteTime(Path, (DateTime)LastWriteTime);
+                    _generator.FileLastWriteTime(FilePath, (DateTime)LastWriteTime);
 
-                    File.SetLastWriteTime(Path, (DateTime)LastWriteTime);
+                    File.SetLastWriteTime(FilePath, (DateTime)LastWriteTime);
                 }
 
                 //  ファイル属性
@@ -152,18 +152,18 @@ namespace PSFile.Cmdlet
                 if(!string.IsNullOrEmpty(_Attributes))
                 {
                     //  テスト自動生成
-                    _generator.FileAttributes(Path, _Attributes, false);
+                    _generator.FileAttributes(FilePath, _Attributes, false);
 
-                    File.SetAttributes(Path, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
+                    File.SetAttributes(FilePath, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
                 }
 
                 //  セキュリティブロックの解除
                 if (RemoveSecurityBlock)
                 {
                     //  テスト自動生成
-                    _generator.FileSecurityBlock(Path, false);
+                    _generator.FileSecurityBlock(FilePath, false);
 
-                    FileControl.RemoveSecurityBlock(Path);
+                    FileControl.RemoveSecurityBlock(FilePath);
                 }
 
                 /*  実行していて結構うっとおしいので、出力しないことにします。

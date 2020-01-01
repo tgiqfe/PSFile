@@ -19,8 +19,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsSecurity.Revoke, "File")]
     public class RevokeFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         public string Account { get; set; }
         [Parameter]
@@ -44,13 +44,13 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             bool isChange = false;
-            FileSecurity security = File.GetAccessControl(Path);
+            FileSecurity security = File.GetAccessControl(FilePath);
 
             //  アクセス権を剥奪
             if (All)
             {
                 //  テスト自動生成
-                _generator.FileAccess(Path, "", false);
+                _generator.FileAccess(FilePath, "", false);
 
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
@@ -65,7 +65,7 @@ namespace PSFile.Cmdlet
                     string account = rule.IdentityReference.Value;
 
                     //  テスト自動生成
-                    _generator.FileAccount(Path, account);
+                    _generator.FileAccount(FilePath, account);
 
                     if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                         !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
@@ -76,29 +76,29 @@ namespace PSFile.Cmdlet
                 }
             }
 
-            if (isChange) { File.SetAccessControl(Path, security); }
+            if (isChange) { File.SetAccessControl(FilePath, security); }
 
             //  ファイル属性を剥奪
             if (!string.IsNullOrEmpty(_Attributes))
             {
                 //  テスト自動生成
-                _generator.FileAttributes(Path, _Attributes, true);
+                _generator.FileAttributes(FilePath, _Attributes, true);
 
-                FileAttributes nowAttr = File.GetAttributes(Path);
+                FileAttributes nowAttr = File.GetAttributes(FilePath);
                 FileAttributes delAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
-                File.SetAttributes(Path, nowAttr & (~delAttr));
+                File.SetAttributes(FilePath, nowAttr & (~delAttr));
             }
 
             //  セキュリティブロックの解除
             if (RemoveSecurityBlock)
             {
                 //  テスト自動生成
-                _generator.FileSecurityBlock(Path, false);
+                _generator.FileSecurityBlock(FilePath, false);
 
-                FileControl.RemoveSecurityBlock(Path);
+                FileControl.RemoveSecurityBlock(FilePath);
             }
 
-            WriteObject(new FileSummary(Path, true));
+            WriteObject(new FileSummary(FilePath, true));
         }
     }
 }

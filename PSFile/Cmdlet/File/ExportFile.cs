@@ -15,8 +15,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsData.Export, "File")]
     public class ExportFile : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string FilePath { get; set; }
         [Parameter]
         public string Output { get; set; }
         [Parameter]
@@ -37,7 +37,7 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             List<FileSummary> fsList = new List<FileSummary>();
-            fsList.Add(new FileSummary(Path, true));
+            fsList.Add(new FileSummary(FilePath, true));
             if (Output == null)
             {
                 switch (DataType)
