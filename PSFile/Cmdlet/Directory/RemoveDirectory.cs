@@ -17,8 +17,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Remove, "Directory")]
     public class RemoveDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter]
         public SwitchParameter SendToRecycleBin { get; set; }
         [Parameter]
@@ -32,13 +32,13 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (Directory.Exists(Path))
+            if (Directory.Exists(DirectoryPath))
             {
                 //  テスト自動生成
-                _generator.DirectoryPath(Path);
+                _generator.DirectoryPath(DirectoryPath);
 
                 FileSystem.DeleteDirectory(
-                    Path,
+                    DirectoryPath,
                     UIOption.OnlyErrorDialogs, 
                     SendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
                     UICancelOption.DoNothing);

@@ -18,8 +18,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Copy, "Directory")]
     public class CopyDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -37,20 +37,20 @@ namespace PSFile.Cmdlet
         {
             if (Destination.EndsWith("\\"))
             {
-                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
+                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(DirectoryPath));
             }
 
             //  テスト自動生成
-            _generator.DirectoryPath(Path);
+            _generator.DirectoryPath(DirectoryPath);
             _generator.DirectoryPath(Destination);
-            _generator.DirectoryCompare(Path, Destination, true, true, false, false, false, true);
+            _generator.DirectoryCompare(DirectoryPath, Destination, true, true, false, false, false, true);
 
             using (Process proc = new Process())
             {
                 proc.StartInfo.FileName = "robocopy.exe";
                 proc.StartInfo.Arguments = Force ?
-                    $"\"{Path}\" \"{Destination}\" /MIR /E /COPY:DAT /XJD /XJF /R:0 /W:0 /NP" :
-                    $"\"{Path}\" \"{Destination}\" /E /COPY:DAT /XJD /XJF /R:0 /W:0 /NP";
+                    $"\"{DirectoryPath}\" \"{Destination}\" /MIR /E /COPY:DAT /XJD /XJF /R:0 /W:0 /NP" :
+                    $"\"{DirectoryPath}\" \"{Destination}\" /E /COPY:DAT /XJD /XJF /R:0 /W:0 /NP";
                 proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 proc.Start();
                 proc.WaitForExit();

@@ -16,8 +16,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsData.Compare, "Directory")]
     public class CompareDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Difference { get; set; }
         [Parameter]
@@ -42,7 +42,7 @@ namespace PSFile.Cmdlet
             }
 
             //  比較元フォルダーのサマリを取得
-            List<DirectorySummary> compare_ref = GetSummaryList(Path,
+            List<DirectorySummary> compare_ref = GetSummaryList(DirectoryPath,
                 IgnoreSecurity, IgnoreTime, IgnoreAttributes, IgnoreSize, IgnoreFiles, IsLightFiles);
             string text_ref = JsonConvert.SerializeObject(compare_ref, Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(

@@ -19,8 +19,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsSecurity.Revoke, "Directory")]
     public class RevokeDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter]
         public string Account { get; set; }
         [Parameter]
@@ -42,13 +42,13 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             bool isChange = false;
-            DirectorySecurity security = Directory.GetAccessControl(Path);
+            DirectorySecurity security = Directory.GetAccessControl(DirectoryPath);
 
             //  アクセス権を剥奪
             if (All)
             {
                 //  テスト自動生成
-                _generator.DirectoryAccess(Path, "", false);
+                _generator.DirectoryAccess(DirectoryPath, "", false);
 
                 foreach (FileSystemAccessRule rule in security.GetAccessRules(true, false, typeof(NTAccount)))
                 {
@@ -63,7 +63,7 @@ namespace PSFile.Cmdlet
                     string account = rule.IdentityReference.Value;
 
                     //  テスト自動生成
-                    _generator.DirectoryAccount(Path, account);
+                    _generator.DirectoryAccount(DirectoryPath, account);
 
                     if (Account.Contains("\\") && account.Equals(Account, StringComparison.OrdinalIgnoreCase) ||
                         !Account.Contains("\\") && account.EndsWith("\\" + Account, StringComparison.OrdinalIgnoreCase))
@@ -74,20 +74,20 @@ namespace PSFile.Cmdlet
                 }
             }
 
-            if (isChange) { Directory.SetAccessControl(Path, security); }
+            if (isChange) { Directory.SetAccessControl(DirectoryPath, security); }
 
             //  フォルダー属性を剥奪
             if (!string.IsNullOrEmpty(_Attributes))
             {
                 //  テスト自動生成
-                _generator.DirectoryAttributes(Path, _Attributes, true);
+                _generator.DirectoryAttributes(DirectoryPath, _Attributes, true);
 
-                FileAttributes nowAttr = File.GetAttributes(Path);
+                FileAttributes nowAttr = File.GetAttributes(DirectoryPath);
                 FileAttributes delAttr = (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes);
-                File.SetAttributes(Path, nowAttr & (~delAttr));
+                File.SetAttributes(DirectoryPath, nowAttr & (~delAttr));
             }
 
-            WriteObject(new DirectorySummary(Path, true));
+            WriteObject(new DirectorySummary(DirectoryPath, true));
         }
     }
 }

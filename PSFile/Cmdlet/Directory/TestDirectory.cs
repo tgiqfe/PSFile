@@ -13,8 +13,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsDiagnostic.Test, "Directory")]
     public class TestDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter]
         [ValidateSet(Item.PATH, Item.ACCESS, Item.ACCOUNT, Item.OWNER, Item.INHERITED, Item.CREATIONTIME, Item.LASTWRITETIME, Item.ATTRIBUTES, Item.SIZE)]
         public string Target { get; set; }
@@ -101,9 +101,9 @@ namespace PSFile.Cmdlet
         protected override void ProcessRecord()
         {
             //  フォルダーの有無チェック
-            if (!Directory.Exists(Path))
+            if (!Directory.Exists(DirectoryPath))
             {
-                Console.Error.WriteLine("対象のフォルダー無し： {0}", Path);
+                Console.Error.WriteLine("対象のフォルダー無し： {0}", DirectoryPath);
                 return;
             }
             if (Target == Item.PATH)
@@ -147,7 +147,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAccess()
         {
-            string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
+            string tempAccess = new DirectorySummary(DirectoryPath, false, true, true, true, true, true).Access;
             if (Access == string.Empty)
             {
                 retValue = string.IsNullOrEmpty(tempAccess);
@@ -209,7 +209,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAccount()
         {
-            string tempAccess = new DirectorySummary(Path, false, true, true, true, true, true).Access;
+            string tempAccess = new DirectorySummary(DirectoryPath, false, true, true, true, true, true).Access;
             foreach (string tempAccessString in tempAccess.Split('/'))
             {
                 string tempAccount = tempAccessString.Split(';')[0];
@@ -231,7 +231,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckOwner()
         {
-            string tempOwner = new DirectorySummary(Path, false, true, true, true, true, true).Owner;
+            string tempOwner = new DirectorySummary(DirectoryPath, false, true, true, true, true, true).Owner;
             retValue = Owner.Contains("\\") && tempOwner.Equals(Owner, StringComparison.OrdinalIgnoreCase) ||
                 !Owner.Contains("\\") && tempOwner.EndsWith("\\" + Owner, StringComparison.OrdinalIgnoreCase);
             if (!retValue)
@@ -245,7 +245,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckCreationTime()
         {
-            DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).CreationTime;
+            DateTime tempDate = (DateTime)new DirectorySummary(DirectoryPath, true, false, true, true, true, true).CreationTime;
             retValue = tempDate == CreationTime;
             if (!retValue)
             {
@@ -258,7 +258,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckLastWriteTime()
         {
-            DateTime tempDate = (DateTime)new DirectorySummary(Path, true, false, true, true, true, true).LastWriteTime;
+            DateTime tempDate = (DateTime)new DirectorySummary(DirectoryPath, true, false, true, true, true, true).LastWriteTime;
             retValue = tempDate == LastWriteTime;
             if (!retValue)
             {
@@ -271,7 +271,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckAttributes()
         {
-            string tempAttribute = new DirectorySummary(Path, true, true, false, true, true, true).Attributes;
+            string tempAttribute = new DirectorySummary(DirectoryPath, true, true, false, true, true, true).Attributes;
             if (TestMode == Item.CONTAIN)
             {
                 string[] tempAttribArray = Functions.SplitComma(tempAttribute);
@@ -302,7 +302,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckSize()
         {
-            long tempSize = (long)new DirectorySummary(Path, true, true, true, false, true, true).Size;
+            long tempSize = (long)new DirectorySummary(DirectoryPath, true, true, true, false, true, true).Size;
             retValue = tempSize == Size;
             if (!retValue)
             {
@@ -315,7 +315,7 @@ namespace PSFile.Cmdlet
         /// </summary>
         private void CheckInherited()
         {
-            bool tempInherit = (bool)new DirectorySummary(Path, false, true, true, true, true, true).Inherited;
+            bool tempInherit = (bool)new DirectorySummary(DirectoryPath, false, true, true, true, true, true).Inherited;
             retValue = tempInherit == Inherited;
             if (!retValue)
             {

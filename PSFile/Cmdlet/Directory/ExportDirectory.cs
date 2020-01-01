@@ -16,8 +16,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsData.Export, "Directory")]
     public class ExportDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter]
         public string Output { get; set; }
         [Parameter]
@@ -49,7 +49,7 @@ namespace PSFile.Cmdlet
                     getDirSummary(di.FullName);
                 }
             };
-            getDirSummary(Path);
+            getDirSummary(DirectoryPath);
 
             if(Output == null)
             {

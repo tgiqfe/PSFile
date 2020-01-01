@@ -15,8 +15,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Get, "Directory")]
     public class GetDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter]
         public SwitchParameter IgnoreSecurity { get; set; }
         [Parameter]
@@ -32,7 +32,7 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            DirectorySummary ds = new DirectorySummary(Path,
+            DirectorySummary ds = new DirectorySummary(DirectoryPath,
                 IgnoreSecurity, IgnoreTime, IgnoreAttributes, IgnoreSize, IgnoreFiles, IsLightFiles);
             WriteObject(ds, true);
         }

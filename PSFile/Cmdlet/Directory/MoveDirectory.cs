@@ -17,8 +17,8 @@ namespace PSFile.Cmdlet
     [Cmdlet(VerbsCommon.Move, "Directory")]
     public class MoveDirectory : PSCmdlet
     {
-        [Parameter(Mandatory = true, Position = 0)]
-        public string Path { get; set; }
+        [Parameter(Mandatory = true, Position = 0), Alias("Path")]
+        public string DirectoryPath { get; set; }
         [Parameter(Mandatory = true, Position = 1)]
         public string Destination { get; set; }
         [Parameter]
@@ -36,17 +36,17 @@ namespace PSFile.Cmdlet
         {
             if (Destination.EndsWith("\\"))
             {
-                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(Path));
+                Destination = System.IO.Path.Combine(Destination, System.IO.Path.GetFileName(DirectoryPath));
             }
 
-            bool ret = Functions.CheckChildItem(Path, Destination);
+            bool ret = Functions.CheckChildItem(DirectoryPath, Destination);
             if (!ret)
             {
                 //  テスト自動生成
-                _generator.DirectoryPath(Path);
+                _generator.DirectoryPath(DirectoryPath);
                 _generator.DirectoryPath(Destination);
 
-                FileSystem.MoveDirectory(Path, Destination, Force);
+                FileSystem.MoveDirectory(DirectoryPath, Destination, Force);
             }
             WriteObject(new DirectorySummary(Destination, true));
         }
