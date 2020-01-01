@@ -30,6 +30,15 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IsLightFiles { get; set; }
 
+        private string _currentDirectory = null;
+
+        protected override void BeginProcessing()
+        {
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
+        }
+
         protected override void ProcessRecord()
         {
             DirectorySummary ds = new DirectorySummary(DirectoryPath,
@@ -37,6 +46,10 @@ namespace PSFile.Cmdlet
             WriteObject(ds, true);
         }
 
-
+        protected override void EndProcessing()
+        {
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
+        }
     }
 }

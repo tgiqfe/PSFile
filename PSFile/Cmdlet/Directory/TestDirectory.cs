@@ -42,6 +42,8 @@ namespace PSFile.Cmdlet
         //  戻り値
         bool retValue = false;
 
+        private string _currentDirectory = null;
+
         protected override void BeginProcessing()
         {
             Target = Item.CheckCase(Target);
@@ -49,6 +51,10 @@ namespace PSFile.Cmdlet
             _Attributes = Item.CheckCase(Attributes);
 
             DetectTargetParameter();
+
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
         }
 
         /// <summary>
@@ -140,6 +146,9 @@ namespace PSFile.Cmdlet
         protected override void EndProcessing()
         {
             WriteObject(retValue);
+
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
         }
 
         /// <summary>

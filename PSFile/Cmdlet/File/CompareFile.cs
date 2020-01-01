@@ -32,6 +32,15 @@ namespace PSFile.Cmdlet
         [Parameter]
         public SwitchParameter IgnoreSecurityBlock { get; set; }
 
+        private string _currentDirectory = null;
+
+        protected override void BeginProcessing()
+        {
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
+        }
+
         protected override void ProcessRecord()
         {
             string tempDir = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), Item.APPLICATION_NAME);
@@ -62,6 +71,12 @@ namespace PSFile.Cmdlet
 
             int retValue = string.Compare(text_ref, text_dif);
             WriteObject(retValue);
+        }
+
+        protected override void EndProcessing()
+        {
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
         }
 
         /// <summary>

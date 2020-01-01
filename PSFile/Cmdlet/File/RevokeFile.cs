@@ -34,11 +34,17 @@ namespace PSFile.Cmdlet
         public string Test { get; set; }
         private TestGenerator _generator = null;
 
+        private string _currentDirectory = null;
+
         protected override void BeginProcessing()
         {
             _Attributes = Item.CheckCase(Attributes);
 
             _generator = new TestGenerator(Test);
+
+            //  カレントディレクトリカレントディレクトリの一時変更
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
         }
 
         protected override void ProcessRecord()
@@ -99,6 +105,12 @@ namespace PSFile.Cmdlet
             }
 
             WriteObject(new FileSummary(FilePath, true));
+        }
+
+        protected override void EndProcessing()
+        {
+            //  カレントディレクトリを戻す
+            Environment.CurrentDirectory = _currentDirectory;
         }
     }
 }
