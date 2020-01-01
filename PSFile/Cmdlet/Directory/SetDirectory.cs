@@ -20,6 +20,7 @@ namespace PSFile.Cmdlet
     ///                 Test-Directory -Path ～ -Attributes ～
     ///                 Test-Directory -Path ～ -CreationTime ～
     ///                 Test-Directory -Path ～ -LastWriteTime ～
+    ///                 Test-Directory -Path ～ -SecurityBlock ～
     /// </summary>
     [Cmdlet(VerbsCommon.Set, "Directory")]
     public class SetDirectory : PSCmdlet
@@ -40,6 +41,8 @@ namespace PSFile.Cmdlet
         [Parameter]
         public string[] Attributes { get; set; }
         private string _Attributes = null;
+        [Parameter]
+        public SwitchParameter RemoveSecurityBlock { get; set; }
         [Parameter]
         public string Test { get; set; }
         private TestGenerator _generator = null;
@@ -155,6 +158,18 @@ namespace PSFile.Cmdlet
                         _Attributes += ", " + Item.DIRECTORY;
                     }
                     File.SetAttributes(DirectoryPath, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
+                }
+
+                //  セキュリティブロックの解除
+                if (RemoveSecurityBlock)
+                {
+                    foreach (string fileName in Directory.GetFiles(DirectoryPath, "*", SearchOption.AllDirectories))
+                    {
+                        //  テスト自動生成
+                        _generator.FileSecurityBlock(fileName, false);
+
+                        FileControl.RemoveSecurityBlock(fileName);
+                    }
                 }
 
                 /*  実行していて結構うっとおしいので、出力しないことにします。
