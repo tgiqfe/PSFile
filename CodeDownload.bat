@@ -18,16 +18,18 @@ powershell -Command "(Get-Content \".\Manifest\PSM1.cs\") -replace \"`n\",\"`r`n
 rem # Code for DataSerializer
 echo DataSerializer Code Update
 
-set DataSerializerCS=%ProjectName%\Serialize\DataSerializer.cs
-set DataTypeCS=%ProjectName%\Serialize\DataType.cs
-set DictionaryExtensionsCS=%ProjectName%\Serialize\DictionaryExtensions.cs
-set SerializableDictionaryCS=%ProjectName%\Serialize\SerializableDictionary.cs
-set JsonCS=%ProjectName%\Serialize\JSON.cs
-set XmlCS=%ProjectName%\Serialize\XML.cs
-set YmlCS=%ProjectName%\Serialize\YML.cs
+set SerialDir=%ProjectName%\Class\Serialize
+
+set DataSerializerCS=%SerialDir%\DataSerializer.cs
+set DataTypeCS=%SerialDir%\DataType.cs
+set DictionaryExtensionsCS=%SerialDir%\DictionaryExtensions.cs
+set SerializableDictionaryCS=%SerialDir%\SerializableDictionary.cs
+set JsonCS=%SerialDir%\JSON.cs
+set XmlCS=%SerialDir%\XML.cs
+set YmlCS=%SerialDir%\YML.cs
 
 set beforeNamespace=namespace DataSerializer
-set afterNamespace=namespace PSFile.Serialize
+set afterNamespace=namespace %ProjectName%.Serialize
 
 powershell -Command "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/tgiqfe/DataSerializer/master/DataSerializer/Serialize/DataSerializer.cs\" -OutFile \".\%DataSerializerCS%\""
 powershell -Command "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/tgiqfe/DataSerializer/master/DataSerializer/Serialize/DataType.cs\" -OutFile \".\%DataTypeCS%\""

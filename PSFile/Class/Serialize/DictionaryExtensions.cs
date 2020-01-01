@@ -22,10 +22,7 @@ namespace PSFile.Serialize
         /// <returns></returns>
         public static TValue GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, TValue defaultValue)
         {
-            if (source == null)
-            {
-                source = new Dictionary<TKey, TValue>();
-            }
+            if (source == null) { source = new Dictionary<TKey, TValue>(); }
             return source.ContainsKey(key) ? source[key] : defaultValue;
         }
 
@@ -39,10 +36,7 @@ namespace PSFile.Serialize
         /// <returns></returns>
         public static TValue GetOrNull<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key) where TValue : class
         {
-            if (source == null)
-            {
-                source = new Dictionary<TKey, TValue>();
-            }
+            if (source == null) { source = new Dictionary<TKey, TValue>(); }
             return source.ContainsKey(key) ? source[key] : null;
         }
 
@@ -56,10 +50,7 @@ namespace PSFile.Serialize
         /// <returns></returns>
         public static bool GetBool<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key)
         {
-            if (source == null)
-            {
-                source = new Dictionary<TKey, TValue>();
-            }
+            if (source == null) { source = new Dictionary<TKey, TValue>(); }
             if (source.ContainsKey(key))
             {
                 object val = source[key];
@@ -83,6 +74,22 @@ namespace PSFile.Serialize
             else
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Dictionaryに対象のキーが含まれている場合に削除
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="key"></param>
+        public static void DeleteIfContains<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key)
+        {
+            if (source == null) { source = new Dictionary<TKey, TValue>(); }
+            if (source.ContainsKey(key))
+            {
+                source.Remove(key);
             }
         }
     }
