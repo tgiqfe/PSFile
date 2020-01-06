@@ -65,123 +65,129 @@ namespace PSFile.Cmdlet
         {
             if (File.Exists(FilePath))
             {
-                FileSecurity security = null;
-
-                //  Access設定
-                //  ""で全アクセス権設定を削除
-                if (Access != null)
-                {
-                    if (security == null) { security = File.GetAccessControl(FilePath); }
-
-                    //  テスト自動生成
-                    _generator.FileAccess(FilePath, Access, false);
-
-                    foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
-                    {
-                        security.RemoveAccessRule(removeRule);
-                    }
-                    if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
-                    {
-                        foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
-                        {
-                            security.AddAccessRule(addRule);
-                        }
-                    }
-                }
-
-                //  Owner設定
-                if (!string.IsNullOrEmpty(Owner))
-                {
-                    //  埋め込みのsubinacl.exeを展開
-                    string subinacl = EmbeddedResource.GetSubinacl(Item.APPLICATION_NAME);
-
-                    //  管理者実行確認
-                    Functions.CheckAdmin();
-
-                    //  テスト自動生成
-                    _generator.FileOwner(FilePath, Owner);
-
-                    using (Process proc = new Process())
-                    {
-                        proc.StartInfo.FileName = subinacl;
-                        proc.StartInfo.Arguments = $"/file \"{FilePath}\" /setowner=\"{Owner}\"";
-                        proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        proc.Start();
-                        proc.WaitForExit();
-                    }
-                }
-
-                //  Inherited設定
-                if (Inherited != Item.NONE)
-                {
-                    if (security == null) { security = File.GetAccessControl(FilePath); }
-
-                    //  テスト自動生成
-                    _generator.FileInherited(FilePath, Inherited == Item.ENABLE);
-
-                    switch (Inherited)
-                    {
-                        case Item.ENABLE:
-                            security.SetAccessRuleProtection(false, false);
-                            break;
-                        case Item.DISABLE:
-                            security.SetAccessRuleProtection(true, true);
-                            break;
-                        case Item.REMOVE:
-                            security.SetAccessRuleProtection(true, false);
-                            break;
-                    }
-                }
-
-                if (security != null) { File.SetAccessControl(FilePath, security); }
-
-                //  作成日時
-                if (CreationTime != null)
-                {
-                    //  テスト自動生成
-                    _generator.FileCreationTime(FilePath, (DateTime)CreationTime);
-
-                    File.SetCreationTime(FilePath, (DateTime)CreationTime);
-                }
-
-                //  更新一時
-                if (LastWriteTime != null)
-                {
-                    //  テスト自動生成
-                    _generator.FileLastWriteTime(FilePath, (DateTime)LastWriteTime);
-
-                    File.SetLastWriteTime(FilePath, (DateTime)LastWriteTime);
-                }
-
-                //  ファイル属性
-                //if (!string.IsNullOrEmpty(Attributes))
-                if(!string.IsNullOrEmpty(_Attributes))
-                {
-                    //  テスト自動生成
-                    _generator.FileAttributes(FilePath, _Attributes, false);
-
-                    File.SetAttributes(FilePath, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
-                }
-
-                //  セキュリティブロックの解除
-                if (RemoveSecurityBlock)
-                {
-                    //  テスト自動生成
-                    _generator.FileSecurityBlock(FilePath, false);
-
-                    FileControl.RemoveSecurityBlock(FilePath);
-                }
-
-                /*  実行していて結構うっとおしいので、出力しないことにします。
-                WriteObject(new FileSummary(Path, true));
-                */
+                SetFileProcess();
             }
+            //  ファイルｐアスのワイルドカード対応予定
         }
 
         protected override void EndProcessing()
         {
             //  カレントディレクトリを戻す
             Environment.CurrentDirectory = _currentDirectory;
+        }
+
+        private void SetFileProcess()
+        {
+            FileSecurity security = null;
+
+            //  Access設定
+            //  ""で全アクセス権設定を削除
+            if (Access != null)
+            {
+                if (security == null) { security = File.GetAccessControl(FilePath); }
+
+                //  テスト自動生成
+                _generator.FileAccess(FilePath, Access, false);
+
+                foreach (FileSystemAccessRule removeRule in security.GetAccessRules(true, false, typeof(NTAccount)))
+                {
+                    security.RemoveAccessRule(removeRule);
+                }
+                if (Access != string.Empty)     //  このif文分岐が無くても同じ挙動するけれど、一応記述
+                {
+                    foreach (FileSystemAccessRule addRule in FileControl.StringToAccessRules(Access))
+                    {
+                        security.AddAccessRule(addRule);
+                    }
+                }
+            }
+
+            //  Owner設定
+            if (!string.IsNullOrEmpty(Owner))
+            {
+                //  埋め込みのsubinacl.exeを展開
+                string subinacl = EmbeddedResource.GetSubinacl(Item.APPLICATION_NAME);
+
+                //  管理者実行確認
+                Functions.CheckAdmin();
+
+                //  テスト自動生成
+                _generator.FileOwner(FilePath, Owner);
+
+                using (Process proc = new Process())
+                {
+                    proc.StartInfo.FileName = subinacl;
+                    proc.StartInfo.Arguments = $"/file \"{FilePath}\" /setowner=\"{Owner}\"";
+                    proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    proc.Start();
+                    proc.WaitForExit();
+                }
+            }
+
+            //  Inherited設定
+            if (Inherited != Item.NONE)
+            {
+                if (security == null) { security = File.GetAccessControl(FilePath); }
+
+                //  テスト自動生成
+                _generator.FileInherited(FilePath, Inherited == Item.ENABLE);
+
+                switch (Inherited)
+                {
+                    case Item.ENABLE:
+                        security.SetAccessRuleProtection(false, false);
+                        break;
+                    case Item.DISABLE:
+                        security.SetAccessRuleProtection(true, true);
+                        break;
+                    case Item.REMOVE:
+                        security.SetAccessRuleProtection(true, false);
+                        break;
+                }
+            }
+
+            if (security != null) { File.SetAccessControl(FilePath, security); }
+
+            //  作成日時
+            if (CreationTime != null)
+            {
+                //  テスト自動生成
+                _generator.FileCreationTime(FilePath, (DateTime)CreationTime);
+
+                File.SetCreationTime(FilePath, (DateTime)CreationTime);
+            }
+
+            //  更新一時
+            if (LastWriteTime != null)
+            {
+                //  テスト自動生成
+                _generator.FileLastWriteTime(FilePath, (DateTime)LastWriteTime);
+
+                File.SetLastWriteTime(FilePath, (DateTime)LastWriteTime);
+            }
+
+            //  ファイル属性
+            //if (!string.IsNullOrEmpty(Attributes))
+            if (!string.IsNullOrEmpty(_Attributes))
+            {
+                //  テスト自動生成
+                _generator.FileAttributes(FilePath, _Attributes, false);
+
+                File.SetAttributes(FilePath, (FileAttributes)Enum.Parse(typeof(FileAttributes), _Attributes));
+            }
+
+            //  セキュリティブロックの解除
+            if (RemoveSecurityBlock)
+            {
+                //  テスト自動生成
+                _generator.FileSecurityBlock(FilePath, false);
+
+                FileControl.RemoveSecurityBlock(FilePath);
+            }
+
+            /*  実行していて結構うっとおしいので、出力しないことにします。
+            WriteObject(new FileSummary(Path, true));
+            */
         }
     }
 }

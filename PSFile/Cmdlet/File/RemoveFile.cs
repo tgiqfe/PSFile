@@ -37,11 +37,11 @@ namespace PSFile.Cmdlet
 
         protected override void ProcessRecord()
         {
-            if (System.IO.Path.GetFileName(FilePath).Contains("*"))
+            if (Path.GetFileName(FilePath).Contains("*"))
             {
                 //  ファイル名にワイルドカードを含む場合
                 foreach (string fileName in
-                    Directory.GetFiles(System.IO.Path.GetDirectoryName(FilePath), System.IO.Path.GetFileName(FilePath), System.IO.SearchOption.TopDirectoryOnly))
+                    Directory.GetFiles(Path.GetDirectoryName(FilePath), Path.GetFileName(FilePath), System.IO.SearchOption.TopDirectoryOnly))
                 {
                     //  テスト自動生成
                     _generator.FilePath(fileName);
