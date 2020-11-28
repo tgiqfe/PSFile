@@ -96,6 +96,39 @@ namespace Manifest
                 }
             }
 
+            //  ヘルプファイルをコピー
+            if (Directory.Exists(info.HelpDir))
+            {
+                foreach (string fileName in Directory.GetFiles(info.HelpDir, "*.dll-Help.xml"))
+                {
+                    File.Copy(fileName, Path.Combine(info.ModuleDir, Path.GetFileName(fileName)), true);
+                }
+                using (Process proc = new Process())
+                {
+                    proc.StartInfo.FileName = "robocopy.exe";
+                    proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    foreach (string dirName in Directory.GetDirectories(info.HelpDir))
+                    {
+                        proc.StartInfo.Arguments = string.Format(
+                            "\"{0}\" \"{1}\" /COPY:DAT /MIR /E /XJD /XJF",
+                            dirName,
+                            Path.Combine(info.ModuleDir, Path.GetFileName(dirName)));
+                        proc.Start();
+                        proc.WaitForExit();
+                    }
+                }
+            }
+
+            //  外部パッケージをコピー
+            if (info.ExternalPackages != null)
+            {
+                foreach (ExternalPackage exPack in info.ExternalPackages)
+                {
+                    exPack.CopyPackage();
+                }
+            }
+
             //  モジュールフォルダーをZipアーカイブ
             if (Directory.Exists(info.ModuleDir))
             {

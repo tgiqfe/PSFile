@@ -56,6 +56,8 @@
     <Compile Include="Class\RegistryKeyNameValue.cs" />
     <Compile Include="Cmdlet\Directory\CompareDirectory.cs" />
     <Compile Include="Cmdlet\File\CompareFile.cs" />
+    <Compile Include="Cmdlet\File\GetFileBinaryText.cs" />
+    <Compile Include="Cmdlet\File\SetFileBinaryText.cs" />
     <Compile Include="Cmdlet\Registry\ConvertRegistry.cs" />
     <Compile Include="Cmdlet\Registry\SearchRegistry.cs" />
     <Compile Include="Cmdlet\Registry\NewRegistry.cs" />
